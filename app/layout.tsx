@@ -1,4 +1,4 @@
-import { Geist, Geist_Mono } from 'next/font/google';
+import { Archivo } from 'next/font/google';
 import { headers } from 'next/headers';
 import Script from 'next/script';
 
@@ -11,13 +11,8 @@ import type { Metadata } from 'next';
 
 import './globals.css';
 
-const geistSans = Geist({
+const geistSans = Archivo({
   variable: '--font-geist-sans',
-  subsets: ['latin'],
-});
-
-const geistMono = Geist_Mono({
-  variable: '--font-geist-mono',
   subsets: ['latin'],
 });
 
@@ -88,7 +83,7 @@ const RootLayout = async ({
         src="https://cloud.umami.is/script.js"
       />
       <body
-        className={`${geistSans.variable} bg-bg ${geistMono.variable} antialiased`}
+        className={`${geistSans.className} bg-bg antialiased`}
         data-body={encodedUserDetailsBase64}
       >
         <ThemeProvider

@@ -32,7 +32,7 @@ const Screen = ({ redirectsServer }: Props) => {
         <LottiePlayer
           autoplay
           loop
-          className="-mt-[10vh]"
+          className="-mt-[10vh] h-[400px] w-[400px]"
           height={200}
           speed={1}
           src="/no-data.lottie"
