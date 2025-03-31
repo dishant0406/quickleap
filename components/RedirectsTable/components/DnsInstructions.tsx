@@ -2,6 +2,8 @@ import React from 'react';
 
 import { Loader2, Lock, ShieldCheck } from 'lucide-react';
 
+import { Alert } from '@/components/ui/alert';
+
 interface DnsInstructionsProps {
   status: DomainStatus;
   isPolling: boolean;
@@ -11,7 +13,7 @@ export const DnsInstructions: React.FC<DnsInstructionsProps> = ({ status, isPoll
   if (status.status.success) {
     return (
       <div className="space-y-4 max-w-full">
-        <div className="bg-accent/10 border shadow-custom border-accent/20 rounded-lg p-3 md:p-4">
+        <Alert>
           <div className="flex items-start gap-2 md:gap-4">
             <div className="mt-1">
               <ShieldCheck className="h-5 w-5 md:h-6 md:w-6 text-accent-foreground" />
@@ -40,9 +42,9 @@ export const DnsInstructions: React.FC<DnsInstructionsProps> = ({ status, isPoll
               )}
             </div>
           </div>
-        </div>
+        </Alert>
 
-        <div className="bg-card rounded-lg p-3 md:p-4 text-xs md:text-sm text-muted-foreground border border-border">
+        <Alert variant={'destructive'}>
           <div className="space-y-2">
             <h4 className="font-medium text-foreground">DNS Configuration</h4>
             <div className="flex flex-col mt-2 gap-1 md:gap-2">
@@ -58,23 +60,23 @@ export const DnsInstructions: React.FC<DnsInstructionsProps> = ({ status, isPoll
               </div>
             </div>
           </div>
-        </div>
+        </Alert>
       </div>
     );
   }
 
   return (
     <div className="space-y-4 md:space-y-6 max-w-full">
-      <div className="bg-destructive/10 border border-destructive/20 rounded-lg p-3 md:p-4">
+      <Alert variant={'destructive'}>
         <h3 className="text-destructive text-sm md:text-base font-medium mb-1 md:mb-2">
           {status.status.title}
         </h3>
         <p className="text-muted-foreground text-xs md:text-sm">{status.status.summary}</p>
-      </div>
+      </Alert>
 
-      <div className="space-y-3 md:space-y-4">
+      <Alert>
         <h4 className="font-medium text-sm md:text-base text-foreground">Required DNS Record</h4>
-        <div className="bg-card rounded-lg p-3 md:p-4 mt-2 font-mono text-xs md:text-sm border border-border">
+        <div className="bg-card rounded-base p-3 md:p-4 mt-2 font-mono text-xs md:text-sm border border-border">
           <div className="flex flex-col gap-1 md:gap-2">
             <div className="flex flex-col sm:flex-row sm:items-center">
               <span className="text-muted-foreground">Type:</span>
@@ -86,7 +88,7 @@ export const DnsInstructions: React.FC<DnsInstructionsProps> = ({ status, isPoll
             </div>
           </div>
         </div>
-      </div>
+      </Alert>
 
       {status.instructions && (
         <div className="space-y-3 md:space-y-4">
@@ -110,7 +112,7 @@ export const DnsInstructions: React.FC<DnsInstructionsProps> = ({ status, isPoll
       )}
 
       {status.support && (
-        <div className="bg-card rounded-lg p-3 md:p-4 text-xs md:text-sm text-muted-foreground border border-border">
+        <Alert>
           <p>{status.support.additionalInfo}</p>
           <p className="mt-2">
             Need help?{' '}
@@ -122,7 +124,7 @@ export const DnsInstructions: React.FC<DnsInstructionsProps> = ({ status, isPoll
               Contact support
             </a>
           </p>
-        </div>
+        </Alert>
       )}
 
       {isPolling && (

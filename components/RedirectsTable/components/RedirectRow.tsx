@@ -5,6 +5,9 @@ import { ChevronDown, ExternalLink, Pencil, Trash2 } from 'lucide-react';
 import Link from 'next/link';
 
 import { CreateRedirectModal } from '@/components/Micro/CreateRedirect';
+import { Button } from '@/components/ui/button';
+import { Checkbox } from '@/components/ui/custom-checkbox';
+import { TableCell, TableRow } from '@/components/ui/table';
 import { deleteRedirect, verifyStatus } from '@/lib/api';
 import { formatUrl } from '@/lib/helpers';
 import { promiseToast } from '@/lib/toast';
@@ -51,7 +54,7 @@ export const RedirectRow: React.FC<RedirectRowProps> = ({
           setLoading: setIsDeleting,
         });
       },
-      variant: 'destructive',
+      variant: 'noShadow',
       disabled: isDeleting,
     },
   ];
@@ -107,19 +110,17 @@ export const RedirectRow: React.FC<RedirectRowProps> = ({
 
   return (
     <>
-      <tr
+      <TableRow
         className="group transition-colors hover:bg-muted/50 table-row"
         onClick={() => onRedirectClick?.(redirect)}
       >
-        <td className="p-4">
-          <input
-            className="rounded bg-muted border-border focus:ring-2 focus:ring-ring focus:ring-offset-2 focus:ring-offset-background"
-            type="checkbox"
-            onChange={(e) => onSelect?.(e.target.checked ? [redirect._id] : [])}
-            onClick={(e) => e.stopPropagation()}
+        <TableCell className="p-4">
+          <Checkbox
+            checked={false}
+            onCheckedChange={(checked) => onSelect?.(checked ? [redirect._id] : [])}
           />
-        </td>
-        <td className="p-4">
+        </TableCell>
+        <TableCell className="p-4">
           <div className="space-y-1.5">
             <Link
               className="font-medium md:text-base text-sm whitespace-nowrap text-foreground"
@@ -140,31 +141,33 @@ export const RedirectRow: React.FC<RedirectRowProps> = ({
               {redirect.toDomain}
             </div>
           </div>
-        </td>
-        <td className="p-4 text-right">
-          <DomainStatusBadge isLoading={isLoading} status={domainStatus} />
-        </td>
-        <td className="p-4">
+        </TableCell>
+        <TableCell className="p-4">
+          <div className=" flex justify-end">
+            <DomainStatusBadge isLoading={isLoading} status={domainStatus} />
+          </div>
+        </TableCell>
+        <TableCell className="p-4">
           <div className="flex items-center gap-2">
             <TableActions actions={tableActions} />
-            <button
-              className="text-muted-foreground hover:text-foreground transition-colors"
+            <Button
+              className="h-8 w-8 flex items-center justify-center gap-2 px-2 text-sm"
               onClick={handleExpandClick}
             >
               <ChevronDown
                 className={`transform transition-transform ${isExpanded ? 'rotate-180' : ''}`}
                 size={16}
               />
-            </button>
+            </Button>
           </div>
-        </td>
-      </tr>
+        </TableCell>
+      </TableRow>
       {isExpanded && domainStatus && (
-        <tr className="bg-muted/30 table-row">
-          <td className="p-6" colSpan={4}>
+        <TableRow className="bg-bg table-row">
+          <TableCell className="p-6" colSpan={4}>
             <DnsInstructions isPolling={isPolling} status={domainStatus} />
-          </td>
-        </tr>
+          </TableCell>
+        </TableRow>
       )}
       <CreateRedirectModal isOpen={isOpen} redirect={redirect} setIsOpen={setIsOpen} />
     </>

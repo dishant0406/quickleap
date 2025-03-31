@@ -88,14 +88,14 @@ const RootLayout = async ({
         src="https://cloud.umami.is/script.js"
       />
       <body
-        className={`${geistSans.variable} dark ${geistMono.variable} antialiased`}
+        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
         data-body={encodedUserDetailsBase64}
       >
         <ThemeProvider
           disableTransitionOnChange
           enableSystem
           attribute="class"
-          defaultTheme="system"
+          defaultTheme="light"
         >
           {children}
         </ThemeProvider>

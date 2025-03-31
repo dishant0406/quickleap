@@ -10,7 +10,7 @@ const Navbar: React.FC = async () => {
   const token = (await cookies()).get('token')?.value;
   const { user } = await getUserData(token);
   return (
-    <div className="w-full flex h-nav px-4 items-center justify-between border-b border-input">
+    <div className=" mx-auto items-center border-b-4 border-border dark:border-darkNavBorder bg-white dark:bg-secondaryBlack px-5 m500:h-16  w-full flex h-nav justify-between border-input">
       <div className="flex items-center justify-center gap-2">
         <Logo className="border border-white" height={50} width={50} />
         <div>

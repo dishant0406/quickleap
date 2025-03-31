@@ -1,3 +1,5 @@
+'use client';
+
 import React, { type ReactNode, useCallback, useEffect, useRef, useState } from 'react';
 
 import { X } from 'lucide-react';
@@ -5,6 +7,8 @@ import { useTheme } from 'next-themes';
 import ReactDOM from 'react-dom';
 
 import { cn } from '@/lib/utils';
+
+import { Button } from '../ui/button';
 
 type ModalProps = {
   isOpen: boolean;
@@ -22,8 +26,34 @@ export const ModalFooter: React.FC<{
   className?: string;
   children: ReactNode;
 }> = ({ className, children }) => (
-  <div className={cn('border-t bg-popover p-4', className)}>{children}</div>
+  <div
+    className={cn(
+      'flex flex-col-reverse sm:flex-row sm:justify-end sm:space-x-2 border-t-4 border-border p-4',
+      className
+    )}
+  >
+    {children}
+  </div>
 );
+
+export const ModalHeader: React.FC<React.HTMLAttributes<HTMLDivElement>> = ({
+  className,
+  ...props
+}) => (
+  <div className={cn('flex flex-col space-y-1.5 text-center sm:text-left', className)} {...props} />
+);
+
+export const ModalTitle: React.FC<React.HTMLAttributes<HTMLHeadingElement>> = ({
+  className,
+  ...props
+}) => (
+  <h2 className={cn('text-lg font-heading leading-none tracking-tight', className)} {...props} />
+);
+
+export const ModalDescription: React.FC<React.HTMLAttributes<HTMLParagraphElement>> = ({
+  className,
+  ...props
+}) => <p className={cn('text-sm font-base text-text', className)} {...props} />;
 
 const Modal: React.FC<ModalProps> = ({
   isOpen,
@@ -33,7 +63,6 @@ const Modal: React.FC<ModalProps> = ({
   className,
   overlayClassName,
   contentClassName,
-  closeButtonClassName,
   footer,
 }) => {
   const [isVisible, setIsVisible] = useState(false);
@@ -50,7 +79,6 @@ const Modal: React.FC<ModalProps> = ({
       setIsVisible(true);
     } else {
       const timer = setTimeout(() => setIsVisible(false), 300);
-
       return () => clearTimeout(timer);
     }
   }, [isOpen]);
@@ -98,8 +126,10 @@ const Modal: React.FC<ModalProps> = ({
   const modalContent = (
     <div
       className={cn(
-        'fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/30 backdrop-blur-[2px] transition-all duration-300 ease-out',
-        isOpen ? 'opacity-100' : 'opacity-0',
+        'fixed inset-0 z-50 bg-overlay backdrop-blur-[2px] transition-all duration-300 ease-out',
+        isOpen
+          ? 'opacity-100 data-[state=open]:animate-in data-[state=open]:fade-in-0'
+          : 'opacity-0 data-[state=closed]:animate-out data-[state=closed]:fade-out-0',
         {
           dark: isDarkTheme,
           light: !isDarkTheme,
@@ -110,36 +140,36 @@ const Modal: React.FC<ModalProps> = ({
       <div
         ref={modalRef}
         className={cn(
-          'bg-popover max-h-[90vh] border overflow-hidden text-popover-foreground rounded-lg w-full  transform transition-all duration-300 ease-out flex flex-col',
-          'shadow-[rgba(255,255,255,_0.15)_0px_2px_5px_0px,_rgba(255,_255,_255,_0.05)_0px_1px_1px_0px]',
+          'fixed left-[50%] top-[50%] z-50 grid w-full translate-x-[-50%] translate-y-[-50%] gap-4',
+          'rounded-base border-2 border-border bg-bg shadow-shadow',
+          'transform transition-all duration-300 flex flex-col',
+          'data-[state=open]:animate-in data-[state=closed]:animate-out',
+          'data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95',
+          'data-[state=closed]:slide-out-to-left-1/2 data-[state=closed]:slide-out-to-top-[48%]',
+          'data-[state=open]:slide-in-from-left-1/2 data-[state=open]:slide-in-from-top-[48%]',
           isOpen ? 'scale-100 opacity-100' : 'scale-95 opacity-0',
           className
         )}
         style={{
-          transform: `translate(${position.x}px, ${position.y}px)`,
+          transform: `translate(calc(-50% + ${position.x}px), calc(-50% + ${position.y}px))`,
           transition: isDragging ? 'none' : 'transform 0.3s ease-out',
         }}
         onClick={(e) => e.stopPropagation()}
         onMouseDown={handleMouseDown}
       >
         {title && (
-          <div className="p-4 border-b bg-popover z-10 flex justify-between items-center modal-handle cursor-move">
-            <h2 className="text-lg font-semibold">{title}</h2>
-            <button
-              className={cn(
-                'p-1 rounded-full text-foreground/50 hover:text-foreground/75 focus:outline-none',
-                closeButtonClassName
-              )}
-              onClick={onClose}
-            >
-              <X size={20} />
-            </button>
+          <div className="p-4 border-b-4 border-border z-10 flex justify-between items-center modal-handle cursor-move">
+            <h2 className="text-lg font-heading leading-none tracking-tight">{title}</h2>
+            <Button className="h-8 w-8" onClick={onClose}>
+              <X className="h-4 w-4" />
+              <span className="sr-only">Close</span>
+            </Button>
           </div>
         )}
         <div className={cn('flex-grow overflow-y-auto', contentClassName)}>
-          <div className="p-6">{children || <></>}</div>
+          <div className="p-4 py-0">{children || <></>}</div>
         </div>
-        {footer && <div className="bg-popover z-[1]">{footer}</div>}
+        {footer && <div className="z-[1]">{footer}</div>}
       </div>
     </div>
   );

@@ -1,7 +1,9 @@
 'use client';
 
+import { Table } from '../ui/table';
+
 import { RedirectRow } from './components/RedirectRow';
-import { TableHeader } from './components/TableHeader';
+import { Theader } from './components/TableHeader';
 
 interface RedirectsTableProps {
   redirects: Redirect[];
@@ -11,23 +13,21 @@ interface RedirectsTableProps {
 
 const RedirectsTable = ({ redirects, onSelect, onRedirectClick }: RedirectsTableProps) => {
   return (
-    <div className="bg-background rounded-lg overflow-hidden">
-      <div className="bg-card rounded-lg shadow-custom overflow-hidden border border-border">
-        <div className="overflow-x-auto">
-          <table className="w-full border-collapse">
-            <TableHeader />
-            <tbody className="divide-y divide-border">
-              {redirects.map((redirect) => (
-                <RedirectRow
-                  key={redirect._id}
-                  redirect={redirect}
-                  onRedirectClick={(redirect) => onRedirectClick && onRedirectClick(redirect)}
-                  onSelect={(ids) => onSelect && onSelect(ids)}
-                />
-              ))}
-            </tbody>
-          </table>
-        </div>
+    <div className="border-2 border-border dark:border-darkNavBorder rounded-base overflow-hidden">
+      <div className="overflow-x-auto">
+        <Table className="w-full border-collapse">
+          <Theader />
+          <tbody className="divide-y divide-border">
+            {redirects.map((redirect) => (
+              <RedirectRow
+                key={redirect._id}
+                redirect={redirect}
+                onRedirectClick={(redirect) => onRedirectClick && onRedirectClick(redirect)}
+                onSelect={(ids) => onSelect && onSelect(ids)}
+              />
+            ))}
+          </tbody>
+        </Table>
       </div>
     </div>
   );

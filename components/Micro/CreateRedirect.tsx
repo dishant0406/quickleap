@@ -12,6 +12,7 @@ import useForm from '@/lib/hooks/useForm';
 import { promiseToast } from '@/lib/toast';
 import useRedirectStore from '@/lib/zustand';
 
+import { Alert } from '../ui/alert';
 import { Button } from '../ui/button';
 import { Checkbox } from '../ui/custom-checkbox';
 import { Input } from '../ui/input';
@@ -209,8 +210,8 @@ export const CreateRedirectModal: React.FC<ModalProps> = ({ isOpen, setIsOpen, r
     >
       <div className="w-full flex flex-col gap-4">
         {(showPathForwardingAlert || showQueryForwardingAlert || true) && (
-          <div className="p-4 mb-2 md:text-base text-sm bg-background shadow-custom border border-input rounded-md text-text-primary">
-            <p className="font-medium">Important:</p>
+          <Alert>
+            <p className="text-text">Important:</p>
             <ul className="list-disc ml-5 mt-1">
               <li>
                 From Domain always requires a domain-only format (no paths or queries allowed).
@@ -227,7 +228,7 @@ export const CreateRedirectModal: React.FC<ModalProps> = ({ isOpen, setIsOpen, r
                 </li>
               )}
             </ul>
-          </div>
+          </Alert>
         )}
 
         <div className="flex flex-col gap-2">
@@ -263,10 +264,10 @@ export const CreateRedirectModal: React.FC<ModalProps> = ({ isOpen, setIsOpen, r
               <Checkbox
                 checked={formData.redirectType === RedirectType.Permanent}
                 id="Permanent"
-                onChange={(e) =>
+                onCheckedChange={(e) =>
                   handleChange(
                     'redirectType',
-                    e.target.checked ? RedirectType.Permanent : RedirectType.Temporary
+                    e.valueOf() ? RedirectType.Permanent : RedirectType.Temporary
                   )
                 }
               />
@@ -276,33 +277,31 @@ export const CreateRedirectModal: React.FC<ModalProps> = ({ isOpen, setIsOpen, r
               <Checkbox
                 checked={formData.redirectType === RedirectType.Temporary}
                 id="Temporary"
-                onChange={(e) =>
+                onCheckedChange={(e) =>
                   handleChange(
                     'redirectType',
-                    e.target.checked ? RedirectType.Temporary : RedirectType.Permanent
+                    e.valueOf() ? RedirectType.Temporary : RedirectType.Permanent
                   )
                 }
               />
             </div>
           </div>
         </div>
-        <div className="flex flex-col gap-2">
+        <div className="flex items-center gap-2">
           <Switch
+            checked={formData.pathForwarding || false}
             id="pathForwarding"
-            isSelected={formData.pathForwarding}
-            onChange={(e) => handleForwardingToggle('pathForwarding', e)}
-          >
-            Do you want to forward the path?
-          </Switch>
+            onCheckedChange={(e) => handleForwardingToggle('pathForwarding', e)}
+          />
+          <Label>Do you want to forward the path?</Label>
         </div>
-        <div className="flex flex-col gap-2">
+        <div className="flex items-center gap-2">
           <Switch
+            checked={formData.queryForwarding || false}
             id="queryForwarding"
-            isSelected={formData.queryForwarding}
-            onChange={(e) => handleForwardingToggle('queryForwarding', e)}
-          >
-            Do you want to forward the query?
-          </Switch>
+            onCheckedChange={(e) => handleForwardingToggle('queryForwarding', e)}
+          />
+          <Label>Do you want to forward the query?</Label>
         </div>
       </div>
     </Modal>

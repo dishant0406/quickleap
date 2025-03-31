@@ -1,23 +1,30 @@
-import type { ComponentProps, ReactNode } from 'react';
+'use client';
 
-import { Switch as AriaSwitch } from 'react-aria-components';
+import * as React from 'react';
 
-import { Label } from './label';
+import * as SwitchPrimitives from '@radix-ui/react-switch';
 
-export function Switch({
-  children,
-  ...props
-}: { children: ReactNode } & ComponentProps<typeof AriaSwitch>) {
-  return (
-    <AriaSwitch
-      {...props}
-      className="group inline-flex touch-none items-center"
-      style={{ WebkitTapHighlightColor: 'transparent' }}
-    >
-      <span className="group-data-[selected]:bg-primary group-data-[focus-visible]:ring-2 mr-4 h-6 w-9 cursor-pointer rounded-full border-2 border-transparent bg-zinc-600 ring-offset-2 ring-offset-zinc-900 transition duration-200">
-        <span className="group-data-[selected]:ml-3 group-data-[selected]:bg-background group-data-[selected]:group-data-[pressed]:ml-2 group-data-[pressed]:w-6 block h-5 w-5 origin-right rounded-full bg-white shadow transition-all duration-200" />
-      </span>
-      <Label>{children}</Label>
-    </AriaSwitch>
-  );
-}
+import { cn } from '@/lib/utils';
+
+const Switch = React.forwardRef<
+  React.ElementRef<typeof SwitchPrimitives.Root>,
+  React.ComponentPropsWithoutRef<typeof SwitchPrimitives.Root>
+>(({ className, ...props }, ref) => (
+  <SwitchPrimitives.Root
+    className={cn(
+      'peer inline-flex h-6 w-12 shrink-0 cursor-pointer items-center rounded-full border-2 border-border transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-black focus-visible:ring-offset-2 focus-visible:ring-offset-white disabled:cursor-not-allowed disabled:opacity-50 data-[state=checked]:bg-main data-[state=unchecked]:bg-bw',
+      className
+    )}
+    {...props}
+    ref={ref}
+  >
+    <SwitchPrimitives.Thumb
+      className={cn(
+        'pointer-events-none block h-4 w-4 rounded-full border-2 border-border bg-white ring-0 transition-transform data-[state=checked]:translate-x-6 data-[state=unchecked]:translate-x-1'
+      )}
+    />
+  </SwitchPrimitives.Root>
+));
+Switch.displayName = SwitchPrimitives.Root.displayName;
+
+export { Switch };

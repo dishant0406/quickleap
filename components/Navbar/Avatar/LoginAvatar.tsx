@@ -36,7 +36,7 @@ const LoginAvatar: React.FC<{
   if (user) {
     return (
       <Popover>
-        <PopoverTrigger></PopoverTrigger>
+        <PopoverTrigger>{children || <AvatarWithToolTip user={user} />}</PopoverTrigger>
         <PopoverContent className="w-80" sideOffset={5}>
           <div className="grid gap-4">
             <div className="space-y-2">
@@ -49,7 +49,7 @@ const LoginAvatar: React.FC<{
                   className="w-full"
                   tooltip="Logout"
                   tooltipDirection="bottom"
-                  variant="secondary"
+                  variant="neutral"
                   onClick={handleLogout}
                 >
                   Logout
@@ -97,7 +97,7 @@ const LoginAvatar: React.FC<{
               <Button
                 className="!w-full"
                 tooltipDirection="bottom"
-                variant="secondary"
+                variant="neutral"
                 onClick={() =>
                   initiateOAuth(
                     `${process.env.NEXT_PUBLIC_LAZYWEB_BACKEND_URL}/oauth/redirect/` +
