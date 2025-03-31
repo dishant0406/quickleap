@@ -8,6 +8,7 @@ import CreateRedirect from '@/components/Micro/CreateRedirect';
 import LottiePlayer from '@/components/Micro/LottiePlayer';
 import LoginAvatar from '@/components/Navbar/Avatar/LoginAvatar';
 import RedirectsTable from '@/components/RedirectsTable';
+import { Button } from '@/components/ui/button';
 import useIsLoggedIn from '@/lib/hooks/useIsLogedIn';
 import useRedirectStore from '@/lib/zustand';
 
@@ -49,10 +50,10 @@ const Screen = ({ redirectsServer }: Props) => {
           {isLoggedIn && <CreateRedirect />}
           {!isLoggedIn && (
             <LoginAvatar>
-              <div className="bg-primary text-background gap-2 flex items-center justify-center whitespace-nowrap border border-border font-bold rounded-lg px-4 p-2">
+              <Button>
                 <GhostIcon className="w-4 h-4" fontWeight={500} />
                 Login
-              </div>
+              </Button>
             </LoginAvatar>
           )}
         </div>
