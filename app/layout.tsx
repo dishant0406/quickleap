@@ -18,6 +18,7 @@ const geistSans = Archivo({
 
 const anton = Anton({
   variable: '--font-anton',
+  subsets: ['latin'],
   weight: ['400'],
 });
 
