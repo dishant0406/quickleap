@@ -8,13 +8,13 @@ type Props = {
   style?: React.CSSProperties;
 };
 
-const Logo = ({ width = 50, height = 50, className, onClick, style }: Props) => {
+const Logo = ({ width = 200, height = 100, className, onClick, style }: Props) => {
   return (
     <Image
       alt={'Redirect Logo'}
       className={className}
       height={height}
-      src={'/Logo.png'}
+      src={'/logo.svg'}
       style={style}
       width={width}
       onClick={onClick}

@@ -20,11 +20,17 @@ export default {
         border: 'var(--border)',
         ring: 'var(--ring)',
         ringOffset: 'var(--ring-offset)',
-
+        primaryBlack: 'var(--primary-black)',
         secondaryBlack: '#212121',
       },
       boxShadow: {
         shadow: 'var(--shadow)',
+      },
+      fontFamily: {
+        anton: 'var(--font-anton)',
+      },
+      margin: {
+        nav: 'var(--nav-height)',
       },
       translate: {
         boxShadowX: '4px',
@@ -38,22 +44,58 @@ export default {
       },
       borderRadius: {
         base: '5px',
-        lg: 'var(--radius)',
-        md: 'calc(var(--radius) - 2px)',
-        sm: 'calc(var(--radius) - 4px)',
       },
       height: {
         nav: 'var(--nav-height)',
         main: 'var(--dashboard-height)',
       },
-
       animation: {
         'smooth-shimmer': 'smooth-shimmer 2.5s infinite',
+        marquee: 'marquee 10s linear infinite',
+        marquee2: 'marquee2 10s linear infinite',
+        'accordion-down': 'accordion-down 0.2s ease-out',
+        'accordion-up': 'accordion-up 0.2s ease-out',
       },
       keyframes: {
         'smooth-shimmer': {
-          '0%': { transform: 'translateX(-100%)' },
-          '100%': { transform: 'translateX(100%)' },
+          '0%': {
+            transform: 'translateX(-100%)',
+          },
+          '100%': {
+            transform: 'translateX(100%)',
+          },
+        },
+        marquee: {
+          '0%': {
+            transform: 'translateX(0%)',
+          },
+          '100%': {
+            transform: 'translateX(-100%)',
+          },
+        },
+        marquee2: {
+          '0%': {
+            transform: 'translateX(100%)',
+          },
+          '100%': {
+            transform: 'translateX(0%)',
+          },
+        },
+        'accordion-down': {
+          from: {
+            height: '0',
+          },
+          to: {
+            height: 'var(--radix-accordion-content-height)',
+          },
+        },
+        'accordion-up': {
+          from: {
+            height: 'var(--radix-accordion-content-height)',
+          },
+          to: {
+            height: '0',
+          },
         },
       },
     },

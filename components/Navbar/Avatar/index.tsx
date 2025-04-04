@@ -24,7 +24,7 @@ const UserAvatar: React.FC<UserAvatarProps> = ({
         {/* Smooth glass-like shimmer effect overlay */}
         {showShimmer && (
           <div className="absolute inset-0 pointer-events-none overflow-hidden rounded-full">
-            <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/30 to-transparent animate-smooth-shimmer" />
+            <div className="absolute inset-0 bg-gradient-to-r from-transparent via-black/10 to-transparent animate-smooth-shimmer" />
           </div>
         )}
       </Avatar>

@@ -50,7 +50,7 @@ const Screen = ({ redirectsServer }: Props) => {
           {isLoggedIn && <CreateRedirect />}
           {!isLoggedIn && (
             <LoginAvatar>
-              <Button>
+              <Button className="font-bold">
                 <GhostIcon className="w-4 h-4" fontWeight={500} />
                 Login
               </Button>

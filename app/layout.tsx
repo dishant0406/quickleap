@@ -1,4 +1,4 @@
-import { Archivo } from 'next/font/google';
+import { Anton, Archivo } from 'next/font/google';
 import { headers } from 'next/headers';
 import Script from 'next/script';
 
@@ -16,8 +16,13 @@ const geistSans = Archivo({
   subsets: ['latin'],
 });
 
+const anton = Anton({
+  variable: '--font-anton',
+  weight: ['400'],
+});
+
 export const metadata: Metadata = {
-  title: 'Domain Redirecting Service hassle-free - redirect.lazyweb.rocks',
+  title: 'Domain Redirecting Service hassle-free - quickleap.io',
   description:
     "Get peace of mind when redirecting your domains without the burden of hosting them. We are a domain redirect service with full HTTPS support and API compatibility. Enter your domain names and we'll take care of the rest.",
 };
@@ -48,11 +53,8 @@ const RootLayout = async ({
     <html suppressHydrationWarning lang="en">
       <head>
         <meta content="website" property="og:type" />
-        <meta content="https://redirect.lazyweb.rocks/" property="og:url" />
-        <meta
-          content="Domain Redirecting Service hassle-free - redirect.lazyweb.rocks"
-          property="og:title"
-        />
+        <meta content="https://quickleap.io/" property="og:url" />
+        <meta content="Domain Redirecting Service hassle-free - quickleap.io" property="og:title" />
         <meta
           content="Get peace of mind when redirecting your domains without the burden of hosting them. We are a domain redirect service with full HTTPS support and API compatibility. Enter your domain names and we'll take care of the rest."
           property="og:description"
@@ -63,9 +65,9 @@ const RootLayout = async ({
         />
 
         <meta content="summary_large_image" property="twitter:card" />
-        <meta content="https://redirect.lazyweb.rocks/" property="twitter:url" />
+        <meta content="https://quickleap.io/" property="twitter:url" />
         <meta
-          content="Domain Redirecting Service hassle-free - redirect.lazyweb.rocks"
+          content="Domain Redirecting Service hassle-free - quickleap.io"
           property="twitter:title"
         />
         <meta
@@ -83,7 +85,7 @@ const RootLayout = async ({
         src="https://cloud.umami.is/script.js"
       />
       <body
-        className={`${geistSans.className} bg-bg antialiased`}
+        className={`${geistSans.className} text-primaryBlack ${anton.variable} bg-bg antialiased`}
         data-body={encodedUserDetailsBase64}
       >
         <ThemeProvider
