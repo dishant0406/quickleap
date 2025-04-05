@@ -52,7 +52,10 @@ const SmallBox = ({ Icon, title, description, rotate = 1 }: BoxProps) => {
 
 const Features = () => {
   return (
-    <div className="min-h-main flex flex-col items-center  py-[10vh]  md:px-[10vw] px-[5vw]">
+    <div
+      className="min-h-main flex flex-col items-center  py-[10vh]  md:px-[10vw] px-[5vw]"
+      id="features"
+    >
       <h2 className="text-[8vw] md:text-[3vw] font-anton text-primaryBlack dark:text-white">
         <span className="text-main">Features</span> of your link
       </h2>

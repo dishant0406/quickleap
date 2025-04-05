@@ -4,12 +4,10 @@ import Features from '@/components/Landing/components/Features';
 import Footer from '@/components/Landing/components/Footer';
 import HeroSection from '@/components/Landing/components/HeroSection';
 import MarqueeSection from '@/components/Landing/components/Marquee';
-import Navbar from '@/components/Navbar';
 
 const Home: React.FC = () => {
   return (
     <div className="text-primaryBlack">
-      <Navbar />
       <HeroSection />
       <MarqueeSection endText="PERFECT ROUTE" startText="EVERY CLICK DESERVES THE" />
       <Features />

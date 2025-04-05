@@ -35,7 +35,11 @@ const HeroSection = () => {
           hosting required.
         </h2>
         <div className="flex gap-4 mt-8">
-          <Button className="md:text-[1.2vw] text-[5vw] !rounded-[40px] font-bold h-14" size={'lg'}>
+          <Button
+            className="md:text-[1.2vw] text-[5vw] !rounded-[40px] font-bold h-14"
+            href="/app"
+            size={'lg'}
+          >
             Get Started
           </Button>
         </div>

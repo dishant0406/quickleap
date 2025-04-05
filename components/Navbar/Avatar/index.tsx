@@ -16,7 +16,9 @@ const UserAvatar: React.FC<UserAvatarProps> = ({
   return (
     <div className="relative">
       <Avatar className="border rounded-full border-input bg-input overflow-hidden">
-        <AvatarImage src={`https://api.dicebear.com/9.x/notionists/svg?seed=${email}`} />
+        <AvatarImage
+          src={`https://api.dicebear.com/9.x/adventurer-neutral/svg?seed=${email}&backgroundColor=ffdc58,c0aede,d1d4f9`}
+        />
         <AvatarFallback className="w-full h-full flex items-center rounded-full justify-center">
           {email?.charAt(0).toUpperCase()}
         </AvatarFallback>
@@ -38,7 +40,7 @@ const AvatarWithToolTip: React.FC<{
   const { isLoggedIn } = useIsLoggedIn();
   return (
     <Tooltip content={user?.email || 'Login'}>
-      <UserAvatar showShimmer={!isLoggedIn} />
+      <UserAvatar email={user?.email} showShimmer={!isLoggedIn} />
     </Tooltip>
   );
 };

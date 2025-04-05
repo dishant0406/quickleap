@@ -1,4 +1,5 @@
 import { cookies } from 'next/headers';
+import Link from 'next/link';
 
 import { getUserData } from '@/lib/helpers/getUserData';
 
@@ -11,9 +12,23 @@ const Navbar: React.FC = async () => {
   const { user } = await getUserData(token);
 
   return (
-    <div className="mx-auto z-50 fixed top-0 left-0 items-center border-b-4 border-border dark:border-darkNavBorder bg-white dark:bg-secondaryBlack px-5 pl-3 m500:h-16  w-full flex h-nav justify-between border-input">
+    <div className="mx-auto z-50 fixed top-0 left-0 items-center border-b-4 border-border dark:border-darkNavBorder bg-white dark:bg-secondaryBlack md:px-[10vw] px-2  w-full flex h-nav justify-between border-input">
       <NavLogo />
-      <LoginAvatar user={user || undefined} />
+      <div className="flex items-center gap-4">
+        <Link
+          className="text-primaryBlack dark:text-white font-bold text-lg hover:text-main transition-colors"
+          href="/app"
+        >
+          Dashboard
+        </Link>
+        <Link
+          className="text-primaryBlack dark:text-white font-bold text-lg hover:text-main transition-colors"
+          href="/#features"
+        >
+          Features
+        </Link>
+        <LoginAvatar user={user || undefined} />
+      </div>
     </div>
   );
 };
