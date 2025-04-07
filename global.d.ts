@@ -1,5 +1,5 @@
 type Redirect = {
-  _id: string;
+  id: string;
   fromDomain: string;
   toDomain: string;
   redirectType: RedirectType;

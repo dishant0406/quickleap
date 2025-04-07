@@ -57,7 +57,7 @@ export const CreateRedirectModal: React.FC<ModalProps> = ({ isOpen, setIsOpen, r
       if (redirect) {
         promiseToast(
           updateRedirect({
-            id: redirect._id,
+            id: redirect.id,
             pathForwarding: data.pathForwarding,
             queryForwarding: data.queryForwarding,
             redirectType: data.redirectType,

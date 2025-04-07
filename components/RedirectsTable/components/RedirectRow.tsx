@@ -48,7 +48,7 @@ export const RedirectRow: React.FC<RedirectRowProps> = ({
       label: 'Delete',
       icon: <Trash2 className="h-4 w-4" />,
       onClick: () => {
-        promiseToast(deleteRedirect(redirect._id), 'Redirect deleted successfully', {
+        promiseToast(deleteRedirect(redirect.id), 'Redirect deleted successfully', {
           errorMessage: 'Error deleting redirect',
           onSuccess: fetchRedirects,
           setLoading: setIsDeleting,
@@ -85,7 +85,7 @@ export const RedirectRow: React.FC<RedirectRowProps> = ({
         if (success) {
           setIsPolling(false);
         }
-      }, 5000); // Poll every 5 seconds
+      }, 1000); // Poll every 5 seconds
     } else if (isPolling && domainStatus?.status.success) {
       interval = setInterval(async () => {
         const success = await fetchStatus();
@@ -117,7 +117,7 @@ export const RedirectRow: React.FC<RedirectRowProps> = ({
         <TableCell className="p-4">
           <Checkbox
             checked={false}
-            onCheckedChange={(checked) => onSelect?.(checked ? [redirect._id] : [])}
+            onCheckedChange={(checked) => onSelect?.(checked ? [redirect.id] : [])}
           />
         </TableCell>
         <TableCell className="p-4">

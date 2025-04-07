@@ -62,7 +62,7 @@ const Screen = ({ redirectsServer }: Props) => {
   }
 
   return (
-    <div className="h-main overflow-y-auto p-4 md:p-8">
+    <div className="h-main mt-nav overflow-y-auto p-4 md:p-8">
       <div className="w-full flex items-center justify-between">
         <h1 className="md:text-2xl text-xl font-bold">Redirects</h1>
         <div className="flex justify-end gap-4">
