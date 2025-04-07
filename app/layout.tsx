@@ -1,6 +1,5 @@
 import { Anton, Archivo } from 'next/font/google';
 import { headers } from 'next/headers';
-import Script from 'next/script';
 
 import Navbar from '@/components/Navbar';
 import { ThemeProvider } from '@/components/ThemeProvider';
@@ -10,6 +9,7 @@ import { Toaster } from '@/lib/toast';
 
 import type { Metadata } from 'next';
 
+import Script from 'next/script';
 import './globals.css';
 
 const geistSans = Archivo({
@@ -86,9 +86,9 @@ const RootLayout = async ({
       </head>
       <Script
         defer
-        data-website-id="15e4102e-1090-4e73-951b-ae039e7cf88c"
+        data-website-id="18fa70dd-8676-4e59-acd6-a8f833f61282"
         src="https://cloud.umami.is/script.js"
-      />
+      ></Script>
       <body
         className={`${geistSans.className} text-primaryBlack ${anton.variable} bg-bg antialiased`}
         data-body={encodedUserDetailsBase64}
