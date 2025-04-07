@@ -1,5 +1,6 @@
 import { Anton, Archivo } from 'next/font/google';
 import { headers } from 'next/headers';
+import Script from 'next/script';
 
 import Navbar from '@/components/Navbar';
 import { ThemeProvider } from '@/components/ThemeProvider';
@@ -9,7 +10,6 @@ import { Toaster } from '@/lib/toast';
 
 import type { Metadata } from 'next';
 
-import Script from 'next/script';
 import './globals.css';
 
 const geistSans = Archivo({
