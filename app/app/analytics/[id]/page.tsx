@@ -1,6 +1,6 @@
 import AnalyticsDashboard from '@/components/Analytics';
 
-const RedirectAnalytics = async ({ params }: { params: { id: string } }) => {
+const RedirectAnalytics = async ({ params }: any) => {
   const searchParams = await params;
   const id = searchParams?.id;
 
