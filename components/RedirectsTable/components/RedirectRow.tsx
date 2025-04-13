@@ -1,8 +1,9 @@
 'use client';
 import React, { useEffect, useState } from 'react';
 
-import { ChevronDown, ExternalLink, Pencil, Trash2 } from 'lucide-react';
+import { ChartArea, ChevronDown, ExternalLink, Pencil, Trash2 } from 'lucide-react';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 
 import { CreateRedirectModal } from '@/components/Micro/CreateRedirect';
 import { Button } from '@/components/ui/button';
@@ -37,6 +38,7 @@ export const RedirectRow: React.FC<RedirectRowProps> = ({
   const [isOpen, setIsOpen] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
   const { fetchRedirects } = useRedirectStore();
+  const router = useRouter();
 
   const tableActions: TableAction[] = [
     {
@@ -53,6 +55,15 @@ export const RedirectRow: React.FC<RedirectRowProps> = ({
           onSuccess: fetchRedirects,
           setLoading: setIsDeleting,
         });
+      },
+      variant: 'noShadow',
+      disabled: isDeleting,
+    },
+    {
+      label: 'View Stats',
+      icon: <ChartArea className="h-4 w-4" />,
+      onClick: () => {
+        router.push(`/app/analytics/${redirect.id}`);
       },
       variant: 'noShadow',
       disabled: isDeleting,
@@ -74,10 +85,6 @@ export const RedirectRow: React.FC<RedirectRowProps> = ({
   };
 
   useEffect(() => {
-    fetchStatus();
-  }, [redirect]);
-
-  useEffect(() => {
     let interval: NodeJS.Timeout;
     if (isPolling && !domainStatus?.status.success) {
       interval = setInterval(async () => {
@@ -85,7 +92,7 @@ export const RedirectRow: React.FC<RedirectRowProps> = ({
         if (success) {
           setIsPolling(false);
         }
-      }, 1000); // Poll every 5 seconds
+      }, 5000); // Poll every 5 seconds
     } else if (isPolling && domainStatus?.status.success) {
       interval = setInterval(async () => {
         const success = await fetchStatus();

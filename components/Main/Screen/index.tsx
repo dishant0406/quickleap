@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 
 import { GhostIcon } from 'lucide-react';
 
@@ -19,12 +19,21 @@ type Props = {
 const Screen = ({ redirectsServer }: Props) => {
   const { redirects, setRedirects } = useRedirectStore();
   const { isLoggedIn } = useIsLoggedIn();
+  const [loaclRedirects, setLocalRedirects] = useState<Redirect[]>([]);
 
   useEffect(() => {
     if (redirectsServer) {
       setRedirects(redirectsServer);
     }
   }, [redirectsServer, setRedirects]);
+
+  useEffect(() => {
+    if (redirects?.length > 0) {
+      setLocalRedirects(redirects);
+    } else {
+      setLocalRedirects(redirectsServer || []);
+    }
+  }, [redirects, redirectsServer]);
 
   if (!redirects || redirects.length === 0 || !isLoggedIn) {
     return (
@@ -70,15 +79,7 @@ const Screen = ({ redirectsServer }: Props) => {
         </div>
       </div>
       <div className="w-full mt-8">
-        <RedirectsTable
-          redirects={
-            redirects && redirects.length > 0
-              ? redirects
-              : redirectsServer.length > 0
-                ? redirectsServer
-                : []
-          }
-        />
+        <RedirectsTable redirects={loaclRedirects} />
       </div>
     </div>
   );

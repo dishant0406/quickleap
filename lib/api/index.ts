@@ -84,3 +84,247 @@ export const getUserRedirects = async (): Promise<AxiosResponse> => {
 export const deleteRedirect = async (id: string): Promise<AxiosResponse> => {
   return axiosClient.delete(`/redirects/delete-redirect/${id}`);
 };
+
+/**
+ * Fetches basic statistics for a redirect.
+ *
+ * @param redirectId - The ID of the redirect.
+ * @param params - Optional query parameters (start, end).
+ * @returns A promise that resolves to an AxiosResponse containing basic statistics.
+ */
+export const getBasicStats = async (
+  redirectId: string,
+  params?: { start?: string; end?: string }
+): Promise<AxiosResponse> => {
+  return axiosClient.get(`/redirects/analytics/redirect/${redirectId}/stats/basic`, { params });
+};
+
+/**
+ * Fetches time-based analytics for a redirect.
+ *
+ * @param redirectId - The ID of the redirect.
+ * @param params - Optional query parameters (start, end, interval).
+ * @returns A promise that resolves to an AxiosResponse containing time-based analytics.
+ */
+export const getHitsOverTime = async (
+  redirectId: string,
+  params?: { start?: string; end?: string; interval?: string }
+): Promise<AxiosResponse> => {
+  return axiosClient.get(`/redirects/analytics/redirect/${redirectId}/stats/time`, { params });
+};
+
+/**
+ * Fetches geographic data for a redirect.
+ *
+ * @param redirectId - The ID of the redirect.
+ * @param params - Optional query parameters (start, end, groupBy).
+ * @returns A promise that resolves to an AxiosResponse containing geographic data.
+ */
+export const getGeographicData = async (
+  redirectId: string,
+  params?: { start?: string; end?: string; groupBy?: string }
+): Promise<AxiosResponse> => {
+  return axiosClient.get(`/redirects/analytics/redirect/${redirectId}/stats/geo`, { params });
+};
+
+/**
+ * Fetches device information for a redirect.
+ *
+ * @param redirectId - The ID of the redirect.
+ * @param params - Optional query parameters (start, end).
+ * @returns A promise that resolves to an AxiosResponse containing device information.
+ */
+export const getDeviceInfo = async (
+  redirectId: string,
+  params?: { start?: string; end?: string }
+): Promise<AxiosResponse> => {
+  return axiosClient.get(`/redirects/analytics/redirect/${redirectId}/stats/devices`, { params });
+};
+
+/**
+ * Fetches referrer data for a redirect.
+ *
+ * @param redirectId - The ID of the redirect.
+ * @param params - Optional query parameters (start, end, limit).
+ * @returns A promise that resolves to an AxiosResponse containing referrer data.
+ */
+export const getReferrerData = async (
+  redirectId: string,
+  params?: { start?: string; end?: string; limit?: number }
+): Promise<AxiosResponse> => {
+  return axiosClient.get(`/redirects/analytics/redirect/${redirectId}/stats/referrers`, { params });
+};
+
+/**
+ * Fetches language data for a redirect.
+ *
+ * @param redirectId - The ID of the redirect.
+ * @param params - Optional query parameters (start, end).
+ * @returns A promise that resolves to an AxiosResponse containing language data.
+ */
+export const getLanguageData = async (
+  redirectId: string,
+  params?: { start?: string; end?: string }
+): Promise<AxiosResponse> => {
+  return axiosClient.get(`/redirects/analytics/redirect/${redirectId}/stats/languages`, { params });
+};
+
+/**
+ * Fetches query parameter analytics for a redirect.
+ *
+ * @param redirectId - The ID of the redirect.
+ * @param params - Optional query parameters (start, end).
+ * @returns A promise that resolves to an AxiosResponse containing query parameter analytics.
+ */
+export const getQueryParamAnalytics = async (
+  redirectId: string,
+  params?: { start?: string; end?: string }
+): Promise<AxiosResponse> => {
+  return axiosClient.get(`/redirects/analytics/redirect/${redirectId}/stats/query-params`, {
+    params,
+  });
+};
+
+/**
+ * Fetches hourly traffic patterns for a redirect.
+ *
+ * @param redirectId - The ID of the redirect.
+ * @param params - Optional query parameters (start, end).
+ * @returns A promise that resolves to an AxiosResponse containing hourly traffic patterns.
+ */
+export const getHourlyTraffic = async (
+  redirectId: string,
+  params?: { start?: string; end?: string }
+): Promise<AxiosResponse> => {
+  return axiosClient.get(`/redirects/analytics/redirect/${redirectId}/stats/hourly`, { params });
+};
+
+/**
+ * Fetches path analytics for a redirect.
+ *
+ * @param redirectId - The ID of the redirect.
+ * @param params - Optional query parameters (start, end).
+ * @returns A promise that resolves to an AxiosResponse containing path analytics.
+ */
+export const getPathAnalytics = async (
+  redirectId: string,
+  params?: { start?: string; end?: string }
+): Promise<AxiosResponse> => {
+  return axiosClient.get(`/redirects/analytics/redirect/${redirectId}/stats/paths`, { params });
+};
+
+/**
+ * Fetches status code distribution for a redirect.
+ *
+ * @param redirectId - The ID of the redirect.
+ * @param params - Optional query parameters (start, end).
+ * @returns A promise that resolves to an AxiosResponse containing status code distribution.
+ */
+export const getStatusCodeAnalytics = async (
+  redirectId: string,
+  params?: { start?: string; end?: string }
+): Promise<AxiosResponse> => {
+  return axiosClient.get(`/redirects/analytics/redirect/${redirectId}/stats/status-codes`, {
+    params,
+  });
+};
+
+/**
+ * Fetches period comparison analytics for a redirect.
+ *
+ * @param redirectId - The ID of the redirect.
+ * @param params - Optional query parameters (start, end).
+ * @returns A promise that resolves to an AxiosResponse containing period comparison analytics.
+ */
+export const getComparisonAnalytics = async (
+  redirectId: string,
+  params?: { start?: string; end?: string }
+): Promise<AxiosResponse> => {
+  return axiosClient.get(`/redirects/analytics/redirect/${redirectId}/stats/comparison`, {
+    params,
+  });
+};
+
+/**
+ * Fetches raw hit data with pagination and filtering for a redirect.
+ *
+ * @param redirectId - The ID of the redirect.
+ * @param params - Optional query parameters (page, limit, country, isBot, statusCode, start, end).
+ * @returns A promise that resolves to an AxiosResponse containing raw hit data.
+ */
+export const getRawHitData = async (
+  redirectId: string,
+  params?: {
+    page?: number;
+    limit?: number;
+    country?: string;
+    isBot?: boolean;
+    statusCode?: number;
+    start?: string;
+    end?: string;
+  }
+): Promise<AxiosResponse> => {
+  return axiosClient.get(`/redirects/analytics/redirect/${redirectId}/hits`, { params });
+};
+
+/**
+ * Fetches a dashboard summary for a redirect.
+ *
+ * @param redirectId - The ID of the redirect.
+ * @param params - Optional query parameters (start, end).
+ * @returns A promise that resolves to an AxiosResponse containing the dashboard summary.
+ */
+export const getDashboardSummary = async (
+  redirectId: string,
+  params?: { start?: string; end?: string }
+): Promise<AxiosResponse> => {
+  return axiosClient.get(`/redirects/analytics/redirect/${redirectId}/dashboard`, { params });
+};
+
+/**
+ * Fetches user agent analytics for a redirect.
+ *
+ * @param redirectId - The ID of the redirect.
+ * @param params - Optional query parameters (start, end).
+ * @returns A promise that resolves to an AxiosResponse containing user agent analytics.
+ */
+export const getUserAgentAnalytics = async (
+  redirectId: string,
+  params?: { start?: string; end?: string }
+): Promise<AxiosResponse> => {
+  return axiosClient.get(`/redirects/analytics/redirect/${redirectId}/stats/user-agents`, {
+    params,
+  });
+};
+
+/**
+ * Fetches device category analytics for a redirect.
+ *
+ * @param redirectId - The ID of the redirect.
+ * @param params - Optional query parameters (start, end).
+ * @returns A promise that resolves to an AxiosResponse containing device category analytics.
+ */
+export const getDeviceCategoryAnalytics = async (
+  redirectId: string,
+  params?: { start?: string; end?: string }
+): Promise<AxiosResponse> => {
+  return axiosClient.get(`/redirects/analytics/redirect/${redirectId}/stats/device-categories`, {
+    params,
+  });
+};
+
+/**
+ * Fetches browser family analytics for a redirect.
+ *
+ * @param redirectId - The ID of the redirect.
+ * @param params - Optional query parameters (start, end).
+ * @returns A promise that resolves to an AxiosResponse containing browser family analytics.
+ */
+export const getBrowserFamilyAnalytics = async (
+  redirectId: string,
+  params?: { start?: string; end?: string }
+): Promise<AxiosResponse> => {
+  return axiosClient.get(`/redirects/analytics/redirect/${redirectId}/stats/browser-families`, {
+    params,
+  });
+};

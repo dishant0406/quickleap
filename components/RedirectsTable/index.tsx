@@ -20,7 +20,7 @@ const RedirectsTable = ({ redirects, onSelect, onRedirectClick }: RedirectsTable
           <tbody className="divide-y divide-border">
             {redirects.map((redirect) => (
               <RedirectRow
-                key={redirect.id}
+                key={redirect.fromDomain}
                 redirect={redirect}
                 onRedirectClick={(redirect) => onRedirectClick && onRedirectClick(redirect)}
                 onSelect={(ids) => onSelect && onSelect(ids)}
