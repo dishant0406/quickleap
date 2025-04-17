@@ -1,4 +1,4 @@
-# Domain Redirecting Service - redirect.lazyweb.rocks
+# Domain Redirecting Service - quickleap.io
 
 ## Overview
 
@@ -21,6 +21,6 @@ To get started with our domain redirecting service, follow these simple steps:
 
 ## Contact
 
-If you have any questions or need assistance, please contact our support team at admin@lazyweb.rocks.
+If you have any questions or need assistance, please contact our support team at admin@quickleap.io.
 
 Thank you for choosing our Domain Redirecting Service!
