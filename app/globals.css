@@ -70,3 +70,11 @@
     0px 1px 0px 0px rgba(255, 255, 255, 0.1),
     0px 0px 0px 1px rgba(255, 255, 255, 0.1);
 }
+
+.svgMap-map-wrapper {
+  background-color: transparent !important;
+}
+
+.svgMap-map-wrapper .svgMap-country {
+  stroke: #998435;
+}

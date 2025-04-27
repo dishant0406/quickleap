@@ -10,6 +10,7 @@ import { Toaster } from '@/lib/toast';
 
 import type { Metadata } from 'next';
 
+import 'svgmap/dist/svgMap.min.css';
 import './globals.css';
 
 const geistSans = Archivo({
