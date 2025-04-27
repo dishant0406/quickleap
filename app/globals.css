@@ -76,5 +76,5 @@
 }
 
 .svgMap-map-wrapper .svgMap-country {
-  stroke: #998435;
+  stroke: #998435 !important;
 }
