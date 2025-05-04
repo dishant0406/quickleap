@@ -21,12 +21,6 @@ const Navbar: React.FC = async () => {
         >
           Dashboard
         </Link>
-        <Link
-          className="text-primaryBlack dark:text-white font-bold text-lg hover:text-main transition-colors"
-          href="/#features"
-        >
-          Features
-        </Link>
         <LoginAvatar user={user || undefined} />
       </div>
     </div>
