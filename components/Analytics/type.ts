@@ -119,3 +119,111 @@ export type PeriodComparisonData = {
     dailyAverageGrowth: number;
   };
 };
+
+// New analytics types based on the documentation
+
+export type DestinationUrlAnalyticsData = {
+  total: number;
+  data: Array<{
+    destinationUrl: string;
+    count: number;
+    uniqueVisitors: number;
+    percentage: number;
+  }>;
+};
+
+export type PeakTrafficAnalyticsData = {
+  peakHour: {
+    hour: number;
+    count: number;
+  };
+  peakDay: {
+    day: string;
+    dayOfWeek: number;
+    count: number;
+  };
+  hourlyDistribution: Array<{
+    hour: number;
+    count: number;
+  }>;
+  dailyDistribution: Array<{
+    dayOfWeek: number;
+    dayName: string;
+    count: number;
+  }>;
+};
+
+export type ReturnVisitorAnalyticsData = {
+  totalUniqueVisitors: number;
+  returnVisitors: number;
+  returnRate: number;
+  newVisitors: number;
+  visitDistribution: Record<string, number>;
+  averageVisitsPerReturnVisitor: string;
+};
+
+export type ErrorAnalyticsData = {
+  total: number;
+  errorCount: number;
+  successCount: number;
+  errorRate: number;
+  statusCodeDistribution: Array<{
+    statusCode: number;
+    count: number;
+    percentage: number;
+  }>;
+};
+
+export type BotAnalyticsData = {
+  total: number;
+  botCount: number;
+  humanCount: number;
+  botPercentage: number;
+  dailyBreakdown: Array<{
+    date: string;
+    botCount: number;
+    humanCount: number;
+    totalCount: number;
+    botPercentage: number;
+  }>;
+};
+
+export type CampaignAnalyticsData = {
+  totalTraffic: number;
+  totalCampaignTraffic: number;
+  campaignTrafficPercentage: number;
+  campaigns: Array<{
+    utmSource: string;
+    utmMedium: string;
+    utmCampaign: string;
+    count: number;
+    percentage: number;
+  }>;
+};
+
+export type LanguageAnalyticsData = {
+  total: number;
+  data: Array<{
+    language: string;
+    count: number;
+    percentage: number;
+  }>;
+};
+
+export type DeviceCategoryAnalyticsData = {
+  total: number;
+  categories: Array<{
+    category: string;
+    count: number;
+    percentage: number;
+  }>;
+};
+
+export type BrowserFamilyAnalyticsData = {
+  total: number;
+  browserFamilies: Array<{
+    family: string;
+    count: number;
+    percentage: number;
+  }>;
+};

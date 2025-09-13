@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 
 import {
   ArrowDownRight,
@@ -14,13 +14,20 @@ import {
 
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import {
+  getBotAnalytics,
+  getCampaignAnalytics,
   getComparisonAnalytics,
   getDashboardSummary,
+  getDestinationUrlAnalytics,
   getDeviceInfo,
+  getErrorAnalytics,
   getGeographicData,
   getHitsOverTime,
   getHourlyTraffic,
+  getLanguageAnalytics,
+  getPeakTrafficAnalytics,
   getReferrerData,
+  getReturnVisitorAnalytics,
 } from '@/lib/api';
 import type { DateRangeType } from '@/utils/dateUtils';
 import { formatTimeForChart, getDateRange } from '@/utils/dateUtils';
@@ -29,20 +36,33 @@ import { Card } from '../ui/card';
 
 import AreaChart from './AreaChart';
 import BarChart from './BarChart';
+import BotAnalytics from './BotAnalytics';
+import CampaignAnalytics from './CampaignAnalytics';
 import DataTable from './DataTable';
 import DateRangeSelector from './DateRangeSelector';
+import DestinationUrls from './DestinationUrls';
+import ErrorAnalytics from './ErrorAnalytics';
+import PeakTraffic from './PeakTraffic';
 import PieChart from './PieChart';
+import ReturnVisitors from './ReturnVisitors';
 import StatsCard from './StatsCard';
 import WorldMap from './WorldMap';
 
 import type {
   AnalyticsBreakdown,
   AnalyticsData,
+  BotAnalyticsData,
+  CampaignAnalyticsData,
+  DestinationUrlAnalyticsData,
+  ErrorAnalyticsData,
   HourlyStatsData,
   IntervalAnalyticsData,
+  LanguageAnalyticsData,
   LocationAnalyticsData,
+  PeakTrafficAnalyticsData,
   PeriodComparisonData,
   ReferrerAnalyticsData,
+  ReturnVisitorAnalyticsData,
 } from './type';
 
 interface AnalyticsDashboardProps {
@@ -64,80 +84,107 @@ const AnalyticsDashboard: React.FC<AnalyticsDashboardProps> = ({ redirectId }) =
   const [hourlyData, setHourlyData] = useState<HourlyStatsData | null>(null);
   const [comparisonData, setComparisonData] = useState<PeriodComparisonData | null>(null);
 
+  // New analytics data states
+  const [destinationUrlData, setDestinationUrlData] = useState<DestinationUrlAnalyticsData | null>(
+    null
+  );
+  const [peakTrafficData, setPeakTrafficData] = useState<PeakTrafficAnalyticsData | null>(null);
+  const [returnVisitorData, setReturnVisitorData] = useState<ReturnVisitorAnalyticsData | null>(
+    null
+  );
+  const [errorData, setErrorData] = useState<ErrorAnalyticsData | null>(null);
+  const [botData, setBotData] = useState<BotAnalyticsData | null>(null);
+  const [campaignData, setCampaignData] = useState<CampaignAnalyticsData | null>(null);
+  const [languageData, setLanguageData] = useState<LanguageAnalyticsData | null>(null);
+
   // Handle date range changes
-  const handleDateRangeChange = (start: Date, end: Date, type: DateRangeType) => {
+  const handleDateRangeChange = (start: Date, end: Date, type: DateRangeType): void => {
     setDateRangeType(type);
     setDateRange({ start, end });
     loadData(start, end);
   };
 
   // Load dashboard data
-  const loadData = async (start: Date, end: Date) => {
-    setIsLoading(true);
-    try {
-      // Load dashboard overview data
-      const dashboard = await getDashboardSummary(redirectId + '', {
-        start: start.toISOString(),
-        end: end.toISOString(),
-      });
-      setDashboardData(dashboard.data);
+  const loadData = useCallback(
+    async (start: Date, end: Date): Promise<void> => {
+      setIsLoading(true);
+      try {
+        const params = {
+          start: start.toISOString(),
+          end: end.toISOString(),
+        };
 
-      // Load time series data
-      const timeStats = await getHitsOverTime(redirectId, {
-        start: start.toISOString(),
-        end: end.toISOString(),
-        interval: 'day',
-      });
-      setTimeData(timeStats.data || []);
+        // Load existing dashboard overview data
+        const dashboard = await getDashboardSummary(redirectId + '', params);
+        setDashboardData(dashboard.data);
 
-      // Load device data
-      const deviceStats = await getDeviceInfo(redirectId, {
-        start: start.toISOString(),
-        end: end.toISOString(),
-      });
-      setDeviceData(deviceStats.data);
+        // Load time series data
+        const timeStats = await getHitsOverTime(redirectId, {
+          ...params,
+          interval: 'day',
+        });
+        setTimeData(timeStats.data || []);
 
-      // Load geographic data
-      const geoStats = await getGeographicData(redirectId, {
-        start: start.toISOString(),
-        end: end.toISOString(),
-      });
-      setGeoData(geoStats.data);
+        // Load device data
+        const deviceStats = await getDeviceInfo(redirectId, params);
+        setDeviceData(deviceStats.data);
 
-      // Load referrer data
-      const referrerStats = await getReferrerData(redirectId, {
-        start: start.toISOString(),
-        end: end.toISOString(),
-      });
-      setReferrerData(referrerStats.data);
+        // Load geographic data
+        const geoStats = await getGeographicData(redirectId, params);
+        setGeoData(geoStats.data);
 
-      // Load hourly data
-      const hourlyStats = await getHourlyTraffic(redirectId, {
-        start: start.toISOString(),
-        end: end.toISOString(),
-      });
-      setHourlyData(hourlyStats.data);
+        // Load referrer data
+        const referrerStats = await getReferrerData(redirectId, params);
+        setReferrerData(referrerStats.data);
 
-      // Load comparison data
-      const comparisonStats = await getComparisonAnalytics(redirectId, {
-        start: start.toISOString(),
-        end: end.toISOString(),
-      });
-      setComparisonData(comparisonStats.data);
-    } catch (error) {
-      console.error('Error loading analytics data:', error);
-    } finally {
-      setIsLoading(false);
-    }
-  };
+        // Load hourly data
+        const hourlyStats = await getHourlyTraffic(redirectId, params);
+        setHourlyData(hourlyStats.data);
+
+        // Load comparison data
+        const comparisonStats = await getComparisonAnalytics(redirectId, params);
+        setComparisonData(comparisonStats.data);
+
+        // Load new analytics data
+        const destinationUrlStats = await getDestinationUrlAnalytics(redirectId, {
+          ...params,
+          limit: 10,
+        });
+        setDestinationUrlData(destinationUrlStats.data);
+
+        const peakTrafficStats = await getPeakTrafficAnalytics(redirectId, params);
+        setPeakTrafficData(peakTrafficStats.data);
+
+        const returnVisitorStats = await getReturnVisitorAnalytics(redirectId, params);
+        setReturnVisitorData(returnVisitorStats.data);
+
+        const errorStats = await getErrorAnalytics(redirectId, params);
+        setErrorData(errorStats.data);
+
+        const botStats = await getBotAnalytics(redirectId, params);
+        setBotData(botStats.data);
+
+        const campaignStats = await getCampaignAnalytics(redirectId, params);
+        setCampaignData(campaignStats.data);
+
+        const languageStats = await getLanguageAnalytics(redirectId, params);
+        setLanguageData(languageStats.data);
+      } catch (error) {
+        console.error('Error loading analytics data:', error);
+      } finally {
+        setIsLoading(false);
+      }
+    },
+    [redirectId]
+  );
 
   // Load data on component mount
   useEffect(() => {
     loadData(dateRange.start, dateRange.end);
-  }, [redirectId]);
+  }, [redirectId, dateRange.start, dateRange.end, loadData]);
 
   // Calculate period-over-period trends
-  const getTrend = (metric: string) => {
+  const getTrend = (metric: string): { value: number; isPositive: boolean } | undefined => {
     if (!comparisonData) return undefined;
 
     let comparison = 0;
@@ -160,10 +207,10 @@ const AnalyticsDashboard: React.FC<AnalyticsDashboardProps> = ({ redirectId }) =
   };
 
   // Format device data for pie chart
-  const getDevicesForPieChart = () => {
+  const getDevicesForPieChart = (): Array<{ name: string; value: number; percentage: number }> => {
     if (!deviceData || !deviceData.devices) return [];
 
-    return deviceData.devices.map((device: any) => ({
+    return deviceData.devices.map((device) => ({
       name: device.name,
       value: device.count,
       percentage: device.percentage,
@@ -171,10 +218,10 @@ const AnalyticsDashboard: React.FC<AnalyticsDashboardProps> = ({ redirectId }) =
   };
 
   // Format browser data for pie chart
-  const getBrowsersForPieChart = () => {
+  const getBrowsersForPieChart = (): Array<{ name: string; value: number; percentage: number }> => {
     if (!deviceData || !deviceData.browsers) return [];
 
-    return deviceData.browsers.map((browser: any) => ({
+    return deviceData.browsers.map((browser) => ({
       name: browser.name,
       value: browser.count,
       percentage: browser.percentage,
@@ -182,10 +229,10 @@ const AnalyticsDashboard: React.FC<AnalyticsDashboardProps> = ({ redirectId }) =
   };
 
   // Format OS data for pie chart
-  const getOsForPieChart = () => {
+  const getOsForPieChart = (): Array<{ name: string; value: number; percentage: number }> => {
     if (!deviceData || !deviceData.operatingSystems) return [];
 
-    return deviceData.operatingSystems.map((os: any) => ({
+    return deviceData.operatingSystems.map((os) => ({
       name: os.name,
       value: os.count,
       percentage: os.percentage,
@@ -200,11 +247,13 @@ const AnalyticsDashboard: React.FC<AnalyticsDashboardProps> = ({ redirectId }) =
       </div>
 
       <Tabs defaultValue="overview" value={activeTab} onValueChange={setActiveTab}>
-        <TabsList className="grid grid-cols-4 w-full lg:w-fit">
+        <TabsList className="grid grid-cols-6 w-full lg:w-fit">
           <TabsTrigger value="overview">Overview</TabsTrigger>
           <TabsTrigger value="audience">Audience</TabsTrigger>
           <TabsTrigger value="technology">Technology</TabsTrigger>
           <TabsTrigger value="timing">Timing</TabsTrigger>
+          <TabsTrigger value="advanced">Advanced</TabsTrigger>
+          <TabsTrigger value="quality">Quality</TabsTrigger>
         </TabsList>
 
         {/* OVERVIEW TAB */}
@@ -246,17 +295,19 @@ const AnalyticsDashboard: React.FC<AnalyticsDashboardProps> = ({ redirectId }) =
             />
           </div>
 
-          <div className="grid gap-4 md:grid-cols-2">
+          <div className="flex flex-col md:flex-row gap-4 items-stretch">
             <AreaChart
               areas={[
                 { key: 'count', color: '#ffdc58', name: 'Total Visits' },
                 { key: 'uniqueVisitors', color: '#e6c64f', name: 'Unique Visitors' },
               ]}
+              className="flex-1 min-w-0"
               data={timeData?.data || []}
               isLoading={isLoading}
               title="Visits Over Time"
             />
             <WorldMap
+              className="flex-1 min-w-0"
               data={geoData?.data || []}
               isLoading={isLoading}
               title="Geographic Distribution"
@@ -377,6 +428,21 @@ const AnalyticsDashboard: React.FC<AnalyticsDashboardProps> = ({ redirectId }) =
               title="Referrer Sources"
             />
           </div>
+
+          <DataTable
+            columns={[
+              { key: 'language', title: 'Language' },
+              { key: 'count', title: 'Visits' },
+              {
+                key: 'percentage',
+                title: 'Percentage',
+                render: (value) => `${value}%`,
+              },
+            ]}
+            data={(languageData?.data || []).slice(0, 10)}
+            isLoading={isLoading}
+            title="Visitor Languages"
+          />
         </TabsContent>
 
         {/* TECHNOLOGY TAB */}
@@ -591,6 +657,24 @@ const AnalyticsDashboard: React.FC<AnalyticsDashboardProps> = ({ redirectId }) =
                 </>
               )}
             </Card>
+          </div>
+        </TabsContent>
+
+        {/* ADVANCED TAB */}
+        <TabsContent className="space-y-6" value="advanced">
+          <div className="space-y-8">
+            <DestinationUrls data={destinationUrlData} isLoading={isLoading} />
+            <PeakTraffic data={peakTrafficData} isLoading={isLoading} />
+            <ReturnVisitors data={returnVisitorData} isLoading={isLoading} />
+            <CampaignAnalytics data={campaignData} isLoading={isLoading} />
+          </div>
+        </TabsContent>
+
+        {/* QUALITY TAB */}
+        <TabsContent className="space-y-6" value="quality">
+          <ErrorAnalytics data={errorData} isLoading={isLoading} />
+          <div className="mt-8">
+            <BotAnalytics data={botData} isLoading={isLoading} />
           </div>
         </TabsContent>
       </Tabs>

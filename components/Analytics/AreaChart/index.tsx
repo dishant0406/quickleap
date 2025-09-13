@@ -1,3 +1,5 @@
+import React from 'react';
+
 import {
   Area,
   CartesianGrid,
@@ -14,7 +16,11 @@ import { formatDateForChart } from '@/utils/dateUtils';
 import type { TooltipProps } from 'recharts';
 
 // Custom tooltip component
-const CustomTooltip = ({ active, payload, label }: TooltipProps<number, string>) => {
+const CustomTooltip = ({
+  active,
+  payload,
+  label,
+}: TooltipProps<number, string>): React.ReactElement | null => {
   if (active && payload && payload.length) {
     return (
       <div className="bg-background border border-border rounded-md p-3 shadow-md">
@@ -38,22 +44,28 @@ const CustomTooltip = ({ active, payload, label }: TooltipProps<number, string>)
 
 interface DataPoint {
   date: string;
-  [key: string]: any;
+  [key: string]: string | number;
 }
 
 interface AreaChartProps {
   data: DataPoint[];
   title: string;
-  height?: number;
   areas: {
     key: string;
     color: string;
     name: string;
   }[];
   isLoading?: boolean;
+  className?: string;
 }
 
-const AreaChart = ({ data, title, height = 300, areas, isLoading = false }: AreaChartProps) => {
+const AreaChart = ({
+  data,
+  title,
+  areas,
+  isLoading = false,
+  className,
+}: AreaChartProps): React.ReactElement => {
   // For skeleton loading
   const loadingData = Array.from({ length: 10 }, (_, i) => ({
     date: new Date(Date.now() - i * 24 * 60 * 60 * 1000).toISOString(),
@@ -61,16 +73,16 @@ const AreaChart = ({ data, title, height = 300, areas, isLoading = false }: Area
   }));
 
   return (
-    <Card>
+    <Card className={className}>
       <CardHeader>
         <CardTitle>{title}</CardTitle>
       </CardHeader>
       <CardContent>
-        <div className="h-[300px] w-full">
+        <div className="min-h-96 w-full">
           {isLoading ? (
-            <div className="h-full w-full bg-muted/20 rounded-md animate-pulse" />
+            <div className="h-96 w-full bg-muted/20 rounded-md animate-pulse" />
           ) : (
-            <ResponsiveContainer height={height} width="100%">
+            <ResponsiveContainer height="100%" minHeight={384} width="100%">
               <RechartsAreaChart
                 data={data.length > 0 ? data : loadingData}
                 margin={{ top: 10, right: 10, left: 0, bottom: 0 }}
