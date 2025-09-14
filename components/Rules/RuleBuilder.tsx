@@ -2,15 +2,12 @@
 
 import React, { useCallback, useEffect, useState } from 'react';
 
-import { format } from 'date-fns';
-import { Calendar, ChevronLeft, Info, LucideHandMetal, Plus, X } from 'lucide-react';
+import { ChevronLeft, Info, LucideHandMetal, Plus, X } from 'lucide-react';
 
 import { Button } from '@/components/ui/button';
-import { Calendar as CalendarComponent } from '@/components/ui/calendar';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import {
   Select,
   SelectContent,
@@ -19,7 +16,6 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { Slider } from '@/components/ui/slider';
-import { Switch } from '@/components/ui/switch';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Textarea } from '@/components/ui/textarea';
 import { createRule, getAttributesAndOperators, updateRule } from '@/lib/api';
@@ -325,7 +321,7 @@ const RuleBuilder: React.FC<RuleBuilderProps> = ({
           <TabsTrigger value="basic">Basic Info</TabsTrigger>
           <TabsTrigger value="conditions">Conditions</TabsTrigger>
           <TabsTrigger value="actions">Actions</TabsTrigger>
-          <TabsTrigger value="schedule">Schedule</TabsTrigger>
+          {/* <TabsTrigger value="schedule">Schedule</TabsTrigger> */}
         </TabsList>
 
         <TabsContent className="space-y-4" value="basic">
@@ -661,7 +657,7 @@ const RuleBuilder: React.FC<RuleBuilderProps> = ({
           </Card>
         </TabsContent>
 
-        <TabsContent className="space-y-4" value="schedule">
+        {/* <TabsContent className="space-y-4" value="schedule">
           <Card>
             <CardHeader>
               <CardTitle>Schedule</CardTitle>
@@ -720,7 +716,7 @@ const RuleBuilder: React.FC<RuleBuilderProps> = ({
               )}
             </CardContent>
           </Card>
-        </TabsContent>
+        </TabsContent> */}
       </Tabs>
     </div>
   );
