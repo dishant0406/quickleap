@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 
 import { format } from 'date-fns';
 import { Calendar, ChevronLeft, Info, LucideHandMetal, Plus, X } from 'lucide-react';
@@ -18,12 +18,14 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
+import { Slider } from '@/components/ui/slider';
 import { Switch } from '@/components/ui/switch';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Textarea } from '@/components/ui/textarea';
 import { createRule, getAttributesAndOperators, updateRule } from '@/lib/api';
 import { promiseToast } from '@/lib/toast';
 import type {
+  ABTestVariant,
   AttributesByCategory,
   ConditionLogic,
   Rule,
@@ -40,10 +42,25 @@ interface RuleBuilderProps {
   redirectId: string;
   rule?: Rule | null;
   onClose: () => void;
-  onSave: () => void;
+  onSave?: () => void;
+  isModal?: boolean;
+  onFormValidityChange?: (isValid: boolean) => void;
+  onSavingChange?: (saving: boolean) => void;
+  onFormDataChange?: (formData: RuleFormData) => void;
+  onScheduleChange?: (hasSchedule: boolean) => void;
 }
 
-const RuleBuilder: React.FC<RuleBuilderProps> = ({ redirectId, rule, onClose, onSave }) => {
+const RuleBuilder: React.FC<RuleBuilderProps> = ({
+  redirectId,
+  rule,
+  onClose,
+  onSave,
+  isModal = false,
+  onFormValidityChange,
+  onSavingChange,
+  onFormDataChange,
+  onScheduleChange,
+}) => {
   const [formData, setFormData] = useState<RuleFormData>({
     name: '',
     description: '',
@@ -58,6 +75,91 @@ const RuleBuilder: React.FC<RuleBuilderProps> = ({ redirectId, rule, onClose, on
   const [saving, setSaving] = useState(false);
   const [activeTab, setActiveTab] = useState('basic');
   const [hasSchedule, setHasSchedule] = useState(false);
+
+  // Helper function to balance AB test variant percentages
+  const balanceVariantPercentages = (
+    variants: ABTestVariant[],
+    changedIndex: number,
+    newValue: number
+  ): ABTestVariant[] => {
+    const newVariants = [...variants];
+    const oldValue = newVariants[changedIndex].percentage;
+    let remainingDifference = newValue - oldValue;
+
+    // Update the changed variant
+    newVariants[changedIndex] = { ...newVariants[changedIndex], percentage: newValue };
+
+    if (remainingDifference === 0 || newVariants.length <= 1) {
+      return newVariants;
+    }
+
+    // We need to decrease other variants by the amount we increased this one
+    // Start from the next variant and go round-robin
+    let currentIndex = (changedIndex + 1) % newVariants.length;
+    let attempts = 0;
+    const maxAttempts = newVariants.length; // Prevent infinite loop
+
+    while (Math.abs(remainingDifference) > 0 && attempts < maxAttempts) {
+      // Skip the variant we're changing
+      if (currentIndex === changedIndex) {
+        currentIndex = (currentIndex + 1) % newVariants.length;
+        attempts++;
+        continue;
+      }
+
+      const currentVariant = newVariants[currentIndex];
+      const currentPercentage = currentVariant.percentage;
+
+      if (remainingDifference > 0) {
+        // We increased the main variant, need to decrease others
+        const maxDecrease = currentPercentage; // Can't go below 0
+        const actualDecrease = Math.min(remainingDifference, maxDecrease);
+
+        newVariants[currentIndex] = {
+          ...currentVariant,
+          percentage: currentPercentage - actualDecrease,
+        };
+
+        remainingDifference -= actualDecrease;
+      } else {
+        // We decreased the main variant, need to increase others
+        const maxIncrease = 100 - currentPercentage; // Can't go above 100
+        const actualIncrease = Math.min(Math.abs(remainingDifference), maxIncrease);
+
+        newVariants[currentIndex] = {
+          ...currentVariant,
+          percentage: currentPercentage + actualIncrease,
+        };
+
+        remainingDifference += actualIncrease;
+      }
+
+      // Move to next variant in round-robin fashion
+      currentIndex = (currentIndex + 1) % newVariants.length;
+      attempts++;
+    }
+
+    // Ensure the total is exactly 100% by adjusting the last modified variant if needed
+    const total = newVariants.reduce((sum, v) => sum + v.percentage, 0);
+    if (total !== 100 && remainingDifference !== 0) {
+      // Find the first variant (other than changed one) that can absorb the difference
+      for (let i = 0; i < newVariants.length; i++) {
+        const adjustIndex = (changedIndex + 1 + i) % newVariants.length;
+        if (adjustIndex === changedIndex) continue;
+
+        const variant = newVariants[adjustIndex];
+        const adjustment = 100 - total;
+        const newPercentage = variant.percentage + adjustment;
+
+        if (newPercentage >= 0 && newPercentage <= 100) {
+          newVariants[adjustIndex] = { ...variant, percentage: newPercentage };
+          break;
+        }
+      }
+    }
+
+    return newVariants;
+  };
 
   useEffect(() => {
     // Load attributes and operators
@@ -91,7 +193,41 @@ const RuleBuilder: React.FC<RuleBuilderProps> = ({ redirectId, rule, onClose, on
     }
   }, [rule]);
 
-  const handleSave = async (): Promise<void> => {
+  const isFormValid = useCallback((): boolean => {
+    const hasName = formData.name.trim() !== '';
+
+    // Check action validity based on type
+    let actionValid = false;
+    if (formData.action.type === 'redirect') {
+      actionValid = !!formData.action.url;
+    } else if (formData.action.type === 'percentage_redirect') {
+      actionValid = !!(
+        formData.action.url &&
+        formData.action.percentage > 0 &&
+        formData.action.percentage <= 100
+      );
+    } else if (formData.action.type === 'ab_test') {
+      actionValid = formData.action.variants.length > 0;
+    }
+
+    return hasName && actionValid;
+  }, [formData]);
+
+  // Effect to notify parent about form validity changes
+  useEffect(() => {
+    if (onFormValidityChange) {
+      onFormValidityChange(isFormValid());
+    }
+  }, [formData, isFormValid, onFormValidityChange]);
+
+  // Effect to notify parent about saving state changes
+  useEffect(() => {
+    if (onSavingChange) {
+      onSavingChange(saving);
+    }
+  }, [saving, onSavingChange]);
+
+  const handleSave = useCallback(async (): Promise<void> => {
     try {
       setSaving(true);
 
@@ -120,33 +256,29 @@ const RuleBuilder: React.FC<RuleBuilderProps> = ({ redirectId, rule, onClose, on
         });
       }
 
-      onSave();
+      if (onSave) {
+        onSave();
+      }
     } catch (error) {
       console.error('Error saving rule:', error);
     } finally {
       setSaving(false);
     }
-  };
+  }, [formData, hasSchedule, rule, redirectId, onSave]);
 
-  const isFormValid = (): boolean => {
-    const hasName = formData.name.trim() !== '';
-
-    // Check action validity based on type
-    let actionValid = false;
-    if (formData.action.type === 'redirect') {
-      actionValid = !!formData.action.url;
-    } else if (formData.action.type === 'percentage_redirect') {
-      actionValid = !!(
-        formData.action.url &&
-        formData.action.percentage > 0 &&
-        formData.action.percentage <= 100
-      );
-    } else if (formData.action.type === 'ab_test') {
-      actionValid = formData.action.variants.length > 0;
+  // Share form data with modal when it changes
+  useEffect(() => {
+    if (onFormDataChange && isModal) {
+      onFormDataChange(formData);
     }
+  }, [onFormDataChange, isModal, formData]);
 
-    return hasName && actionValid;
-  };
+  // Share schedule state with modal
+  useEffect(() => {
+    if (onScheduleChange && isModal) {
+      onScheduleChange(hasSchedule);
+    }
+  }, [onScheduleChange, isModal, hasSchedule]);
 
   const updateConditions = (newConditions: RuleCondition[]): void => {
     setFormData((prev) => ({ ...prev, conditions: newConditions }));
@@ -161,30 +293,32 @@ const RuleBuilder: React.FC<RuleBuilderProps> = ({ redirectId, rule, onClose, on
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between">
-        <div className="flex items-center gap-4">
-          <Button
-            className="h-8 w-8 flex items-center justify-center gap-2 px-2 text-sm"
-            onClick={onClose}
-          >
-            <ChevronLeft className="h-4 w-4" />
-          </Button>
-          <div>
-            <h1 className="text-3xl font-bold tracking-tight">
-              {rule ? 'Edit Rule' : 'Create Rule'}
-            </h1>
-            <p className="text-mutedSecondayBlack">
-              {rule
-                ? 'Modify an existing redirect rule'
-                : 'Create a new redirect rule with conditions and actions'}
-            </p>
+      {!isModal && (
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-4">
+            <Button
+              className="h-8 w-8 flex items-center justify-center gap-2 px-2 text-sm"
+              onClick={onClose}
+            >
+              <ChevronLeft className="h-4 w-4" />
+            </Button>
+            <div>
+              <h1 className="text-3xl font-bold tracking-tight">
+                {rule ? 'Edit Rule' : 'Create Rule'}
+              </h1>
+              <p className="text-mutedSecondayBlack">
+                {rule
+                  ? 'Modify an existing redirect rule'
+                  : 'Create a new redirect rule with conditions and actions'}
+              </p>
+            </div>
           </div>
+          <Button className="gap-2" disabled={!isFormValid() || saving} onClick={handleSave}>
+            <LucideHandMetal className="h-4 w-4" />
+            {saving ? 'Saving...' : rule ? 'Update Rule' : 'Create Rule'}
+          </Button>
         </div>
-        <Button className="gap-2" disabled={!isFormValid() || saving} onClick={handleSave}>
-          <LucideHandMetal className="h-4 w-4" />
-          {saving ? 'Saving...' : rule ? 'Update Rule' : 'Create Rule'}
-        </Button>
-      </div>
+      )}
 
       <Tabs className="space-y-4" value={activeTab} onValueChange={setActiveTab}>
         <TabsList>
@@ -237,7 +371,13 @@ const RuleBuilder: React.FC<RuleBuilderProps> = ({ redirectId, rule, onClose, on
                           ? { type: 'redirect', url: '' }
                           : value === 'percentage'
                             ? { type: 'percentage_redirect', url: '', percentage: 50 }
-                            : { type: 'ab_test', variants: [] },
+                            : {
+                                type: 'ab_test',
+                                variants: [
+                                  { name: 'Variant A', percentage: 50, url: '' },
+                                  { name: 'Variant B', percentage: 50, url: '' },
+                                ],
+                              },
                     }));
                   }}
                 >
@@ -326,18 +466,23 @@ const RuleBuilder: React.FC<RuleBuilderProps> = ({ redirectId, rule, onClose, on
                   </div>
                   <div className="space-y-2">
                     <Label htmlFor="percentage">Percentage (%) *</Label>
-                    <Input
-                      id="percentage"
-                      max="100"
-                      min="1"
-                      type="number"
-                      value={'percentage' in formData.action ? formData.action.percentage : 50}
-                      onChange={(e) =>
-                        updateAction({
-                          percentage: parseInt(e.target.value) || 50,
-                        })
-                      }
-                    />
+                    <div className="space-y-3">
+                      <Slider
+                        className="w-full"
+                        max={100}
+                        min={1}
+                        step={1}
+                        value={['percentage' in formData.action ? formData.action.percentage : 50]}
+                        onValueChange={([value]) => updateAction({ percentage: value })}
+                      />
+                      <div className="flex justify-between text-sm text-muted-foreground">
+                        <span>1%</span>
+                        <span className="font-medium">
+                          {'percentage' in formData.action ? formData.action.percentage : 50}%
+                        </span>
+                        <span>100%</span>
+                      </div>
+                    </div>
                     <p className="text-sm text-muted-foreground">
                       Percentage of matching visitors to redirect
                     </p>
@@ -355,15 +500,26 @@ const RuleBuilder: React.FC<RuleBuilderProps> = ({ redirectId, rule, onClose, on
                       variant="neutral"
                       onClick={() => {
                         if ('variants' in formData.action) {
-                          const newVariants = [
-                            ...formData.action.variants,
-                            {
-                              name: `Variant ${formData.action.variants.length + 1}`,
-                              percentage: 0,
-                              url: '',
-                            },
-                          ];
-                          updateAction({ variants: newVariants });
+                          const currentVariants = formData.action.variants;
+                          const totalVariants = currentVariants.length + 1;
+                          const equalPercentage = Math.floor(100 / totalVariants);
+                          const remainder = 100 - equalPercentage * totalVariants;
+
+                          // Distribute existing variants equally
+                          const updatedVariants = currentVariants.map((variant, i) => ({
+                            ...variant,
+                            percentage: equalPercentage + (i < remainder ? 1 : 0),
+                          }));
+
+                          // Add new variant
+                          const newVariant = {
+                            name: `Variant ${totalVariants}`,
+                            percentage:
+                              equalPercentage + (currentVariants.length < remainder ? 1 : 0),
+                            url: '',
+                          };
+
+                          updateAction({ variants: [...updatedVariants, newVariant] });
                         }
                       }}
                     >
@@ -382,10 +538,29 @@ const RuleBuilder: React.FC<RuleBuilderProps> = ({ redirectId, rule, onClose, on
                             variant="neutral"
                             onClick={() => {
                               if ('variants' in formData.action) {
-                                const newVariants = formData.action.variants.filter(
+                                const remainingVariants = formData.action.variants.filter(
                                   (_, i) => i !== index
                                 );
-                                updateAction({ variants: newVariants });
+
+                                // Redistribute percentages equally among remaining variants
+                                if (remainingVariants.length > 0) {
+                                  const equalPercentage = Math.floor(
+                                    100 / remainingVariants.length
+                                  );
+                                  const remainder =
+                                    100 - equalPercentage * remainingVariants.length;
+
+                                  const redistributedVariants = remainingVariants.map(
+                                    (variant, i) => ({
+                                      ...variant,
+                                      percentage: equalPercentage + (i < remainder ? 1 : 0),
+                                    })
+                                  );
+
+                                  updateAction({ variants: redistributedVariants });
+                                } else {
+                                  updateAction({ variants: [] });
+                                }
                               }
                             }}
                           >
@@ -409,22 +584,28 @@ const RuleBuilder: React.FC<RuleBuilderProps> = ({ redirectId, rule, onClose, on
                           </div>
                           <div className="space-y-2">
                             <Label>Percentage</Label>
-                            <Input
-                              max="100"
-                              min="0"
-                              type="number"
-                              value={variant.percentage}
-                              onChange={(e) => {
-                                if ('variants' in formData.action) {
-                                  const newVariants = [...formData.action.variants];
-                                  newVariants[index] = {
-                                    ...variant,
-                                    percentage: parseInt(e.target.value) || 0,
-                                  };
-                                  updateAction({ variants: newVariants });
-                                }
-                              }}
-                            />
+                            <div className="space-y-2">
+                              <Slider
+                                className="w-full"
+                                max={100}
+                                min={0}
+                                step={1}
+                                value={[variant.percentage]}
+                                onValueChange={([value]) => {
+                                  if ('variants' in formData.action) {
+                                    const balancedVariants = balanceVariantPercentages(
+                                      formData.action.variants,
+                                      index,
+                                      value
+                                    );
+                                    updateAction({ variants: balancedVariants });
+                                  }
+                                }}
+                              />
+                              <div className="text-center text-sm font-medium">
+                                {variant.percentage}%
+                              </div>
+                            </div>
                           </div>
                           <div className="space-y-2">
                             <Label>URL</Label>
@@ -445,13 +626,33 @@ const RuleBuilder: React.FC<RuleBuilderProps> = ({ redirectId, rule, onClose, on
                     ))}
 
                   {'variants' in formData.action && (
-                    <div className="flex items-center gap-2 p-3 bg-muted rounded-md">
-                      <Info className="h-4 w-4 text-muted-foreground" />
-                      <span className="text-sm text-muted-foreground">
-                        Total percentage:{' '}
-                        {formData.action.variants.reduce((sum, v) => sum + v.percentage, 0)}%
-                        (should equal 100%)
-                      </span>
+                    <div className="space-y-2">
+                      <div className="flex items-center gap-2 p-3 bg-muted rounded-md">
+                        <Info className="h-4 w-4 text-muted-foreground" />
+                        <span className="text-sm text-muted-foreground">
+                          Total percentage:{' '}
+                          <span
+                            className={`font-medium ${
+                              formData.action.variants.reduce((sum, v) => sum + v.percentage, 0) ===
+                              100
+                                ? 'text-green-600'
+                                : 'text-orange-600'
+                            }`}
+                          >
+                            {formData.action.variants.reduce((sum, v) => sum + v.percentage, 0)}%
+                          </span>
+                          {formData.action.variants.reduce((sum, v) => sum + v.percentage, 0) ===
+                          100
+                            ? ' ✓'
+                            : ' (should equal 100%)'}
+                        </span>
+                      </div>
+                      {formData.action.variants.length >= 2 && (
+                        <p className="text-xs text-muted-foreground">
+                          💡 Tip: Adjusting one slider will automatically balance the others to
+                          maintain 100%
+                        </p>
+                      )}
                     </div>
                   )}
                 </div>
