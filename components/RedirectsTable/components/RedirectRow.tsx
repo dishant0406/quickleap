@@ -1,7 +1,7 @@
 'use client';
 import React, { useEffect, useState } from 'react';
 
-import { ChartArea, ChevronDown, ExternalLink, Pencil, Trash2 } from 'lucide-react';
+import { ChartArea, ChevronDown, ExternalLink, Pencil, Settings2, Trash2 } from 'lucide-react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 
@@ -64,6 +64,15 @@ export const RedirectRow: React.FC<RedirectRowProps> = ({
       icon: <ChartArea className="h-4 w-4" />,
       onClick: () => {
         router.push(`/app/analytics/${redirect.id}`);
+      },
+      variant: 'noShadow',
+      disabled: isDeleting,
+    },
+    {
+      label: 'Manage Rules',
+      icon: <Settings2 className="h-4 w-4" />,
+      onClick: () => {
+        router.push(`/app/rules/${redirect.id}`);
       },
       variant: 'noShadow',
       disabled: isDeleting,

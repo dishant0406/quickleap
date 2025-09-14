@@ -9,6 +9,9 @@ import {
   Clock,
   Globe,
   MonitorSmartphone,
+  Settings,
+  Shield,
+  Target,
   Users,
 } from 'lucide-react';
 
@@ -32,6 +35,7 @@ import {
 import type { DateRangeType } from '@/utils/dateUtils';
 import { formatTimeForChart, getDateRange } from '@/utils/dateUtils';
 
+import RulesManager from '../Rules';
 import { Card } from '../ui/card';
 
 import AreaChart from './AreaChart';
@@ -47,6 +51,8 @@ import PieChart from './PieChart';
 import ReturnVisitors from './ReturnVisitors';
 import StatsCard from './StatsCard';
 import WorldMap from './WorldMap';
+
+// Import Rules components for the Rules tab
 
 import type {
   AnalyticsBreakdown,
@@ -247,13 +253,35 @@ const AnalyticsDashboard: React.FC<AnalyticsDashboardProps> = ({ redirectId }) =
       </div>
 
       <Tabs defaultValue="overview" value={activeTab} onValueChange={setActiveTab}>
-        <TabsList className="grid grid-cols-6 w-full lg:w-fit">
-          <TabsTrigger value="overview">Overview</TabsTrigger>
-          <TabsTrigger value="audience">Audience</TabsTrigger>
-          <TabsTrigger value="technology">Technology</TabsTrigger>
-          <TabsTrigger value="timing">Timing</TabsTrigger>
-          <TabsTrigger value="advanced">Advanced</TabsTrigger>
-          <TabsTrigger value="quality">Quality</TabsTrigger>
+        <TabsList className="flex-wrap sm:flex-nowrap lg:w-fit">
+          <TabsTrigger className="flex items-center gap-1 px-2 sm:gap-2 sm:px-3" value="overview">
+            <BarChart3 className="h-4 w-4" />
+            <span className="hidden sm:inline">Overview</span>
+          </TabsTrigger>
+          <TabsTrigger className="flex items-center gap-1 px-2 sm:gap-2 sm:px-3" value="audience">
+            <Users className="h-4 w-4" />
+            <span className="hidden sm:inline">Audience</span>
+          </TabsTrigger>
+          <TabsTrigger className="flex items-center gap-1 px-2 sm:gap-2 sm:px-3" value="technology">
+            <MonitorSmartphone className="h-4 w-4" />
+            <span className="hidden sm:inline">Technology</span>
+          </TabsTrigger>
+          <TabsTrigger className="flex items-center gap-1 px-2 sm:gap-2 sm:px-3" value="timing">
+            <Clock className="h-4 w-4" />
+            <span className="hidden sm:inline">Timing</span>
+          </TabsTrigger>
+          <TabsTrigger className="flex items-center gap-1 px-2 sm:gap-2 sm:px-3" value="advanced">
+            <Settings className="h-4 w-4" />
+            <span className="hidden sm:inline">Advanced</span>
+          </TabsTrigger>
+          <TabsTrigger className="flex items-center gap-1 px-2 sm:gap-2 sm:px-3" value="quality">
+            <Shield className="h-4 w-4" />
+            <span className="hidden sm:inline">Quality</span>
+          </TabsTrigger>
+          <TabsTrigger className="flex items-center gap-1 px-2 sm:gap-2 sm:px-3" value="rules">
+            <Target className="h-4 w-4" />
+            <span className="hidden sm:inline">Rules</span>
+          </TabsTrigger>
         </TabsList>
 
         {/* OVERVIEW TAB */}
@@ -676,6 +704,11 @@ const AnalyticsDashboard: React.FC<AnalyticsDashboardProps> = ({ redirectId }) =
           <div className="mt-8">
             <BotAnalytics data={botData} isLoading={isLoading} />
           </div>
+        </TabsContent>
+
+        {/* RULES TAB */}
+        <TabsContent className="space-y-6" value="rules">
+          <RulesManager redirectId={redirectId} />
         </TabsContent>
       </Tabs>
     </div>

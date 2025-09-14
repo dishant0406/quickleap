@@ -22,6 +22,7 @@ export default {
         ringOffset: 'var(--ring-offset)',
         primaryBlack: 'var(--primary-black)',
         secondaryBlack: '#212121',
+        mutedSecondayBlack: '#646464',
       },
       boxShadow: {
         shadow: 'var(--shadow)',

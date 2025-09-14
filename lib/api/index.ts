@@ -1,5 +1,12 @@
 import type { RedirectType } from '../constants';
 import axiosClient from '../helpers/axios/client';
+import type {
+  CreateRuleData,
+  ReorderRulesRequest,
+  RuleTestRequest,
+  ToggleRuleStatusRequest,
+  UpdateRuleData,
+} from '../types/rules';
 
 import type { AxiosResponse } from 'axios';
 
@@ -439,4 +446,176 @@ export const getLanguageAnalytics = async (
   return axiosClient.get(`/redirects/analytics/redirect/${redirectId}/stats/languages`, {
     params,
   });
+};
+
+// ===============================
+// RULES API METHODS
+// ===============================
+
+/**
+ * Get all rules for a redirect
+ *
+ * @param redirectId - The ID of the redirect
+ * @returns A promise that resolves to an AxiosResponse containing the rules
+ *
+ * @route GET /rules/redirect/:redirectId
+ */
+export const getRulesForRedirect = async (redirectId: string): Promise<AxiosResponse> => {
+  return axiosClient.get(`/redirects/rules/redirect/${redirectId}`);
+};
+
+/**
+ * Get a specific rule by ID
+ *
+ * @param ruleId - The ID of the rule
+ * @returns A promise that resolves to an AxiosResponse containing the rule
+ *
+ * @route GET /rules/:ruleId
+ */
+export const getRuleById = async (ruleId: string): Promise<AxiosResponse> => {
+  return axiosClient.get(`/redirects/rules/${ruleId}`);
+};
+
+/**
+ * Create a new rule for a redirect
+ *
+ * @param redirectId - The ID of the redirect
+ * @param data - The rule data to create
+ * @returns A promise that resolves to an AxiosResponse containing the created rule
+ *
+ * @route POST /rules/redirect/:redirectId
+ */
+export const createRule = async (
+  redirectId: string,
+  data: CreateRuleData
+): Promise<AxiosResponse> => {
+  return axiosClient.post(`/redirects/rules/redirect/${redirectId}`, data);
+};
+
+/**
+ * Update an existing rule
+ *
+ * @param ruleId - The ID of the rule to update
+ * @param data - The updated rule data
+ * @returns A promise that resolves to an AxiosResponse containing the updated rule
+ *
+ * @route PUT /rules/:ruleId
+ */
+export const updateRule = async (ruleId: string, data: UpdateRuleData): Promise<AxiosResponse> => {
+  return axiosClient.put(`/redirects/rules/${ruleId}`, data);
+};
+
+/**
+ * Delete a rule
+ *
+ * @param ruleId - The ID of the rule to delete
+ * @returns A promise that resolves to an AxiosResponse confirming deletion
+ *
+ * @route DELETE /rules/:ruleId
+ */
+export const deleteRule = async (ruleId: string): Promise<AxiosResponse> => {
+  return axiosClient.delete(`/redirects/rules/${ruleId}`);
+};
+
+/**
+ * Reorder rules by changing their priorities
+ *
+ * @param redirectId - The ID of the redirect
+ * @param data - Array of rule IDs in desired order
+ * @returns A promise that resolves to an AxiosResponse containing reordered rules
+ *
+ * @route PUT /rules/redirect/:redirectId/reorder
+ */
+export const reorderRules = async (
+  redirectId: string,
+  data: ReorderRulesRequest
+): Promise<AxiosResponse> => {
+  return axiosClient.put(`/redirects/rules/redirect/${redirectId}/reorder`, data);
+};
+
+/**
+ * Toggle rule status (active/inactive/draft)
+ *
+ * @param ruleId - The ID of the rule
+ * @param data - The new status
+ * @returns A promise that resolves to an AxiosResponse containing the updated rule
+ *
+ * @route PUT /rules/:ruleId/status
+ */
+export const toggleRuleStatus = async (
+  ruleId: string,
+  data: ToggleRuleStatusRequest
+): Promise<AxiosResponse> => {
+  return axiosClient.put(`/redirects/rules/${ruleId}/status`, data);
+};
+
+/**
+ * Duplicate a rule
+ *
+ * @param ruleId - The ID of the rule to duplicate
+ * @returns A promise that resolves to an AxiosResponse containing the duplicated rule
+ *
+ * @route POST /rules/:ruleId/duplicate
+ */
+export const duplicateRule = async (ruleId: string): Promise<AxiosResponse> => {
+  return axiosClient.post(`/redirects/rules/${ruleId}/duplicate`);
+};
+
+/**
+ * Get available attributes and operators for rule creation
+ *
+ * @param redirectId - Optional redirect ID to enhance attributes with analytics data
+ * @returns A promise that resolves to an AxiosResponse containing attributes and operators
+ *
+ * @route GET /rules/attributes
+ */
+export const getAttributesAndOperators = async (redirectId?: string): Promise<AxiosResponse> => {
+  const url = redirectId
+    ? `/redirects/rules/attributes?redirectId=${redirectId}`
+    : '/redirects/rules/attributes';
+  return axiosClient.get(url);
+};
+
+/**
+ * Get possible values for an attribute based on analytics data
+ *
+ * @param redirectId - The ID of the redirect
+ * @param attribute - The attribute name
+ * @returns A promise that resolves to an AxiosResponse containing attribute values
+ *
+ * @route GET /rules/redirect/:redirectId/attributes/:attribute/values
+ */
+export const getAttributeValues = async (
+  redirectId: string,
+  attribute: string
+): Promise<AxiosResponse> => {
+  return axiosClient.get(`/redirects/rules/redirect/${redirectId}/attributes/${attribute}/values`);
+};
+
+/**
+ * Test rule evaluation with given user attributes
+ *
+ * @param redirectId - The ID of the redirect
+ * @param data - The user attributes to test against rules
+ * @returns A promise that resolves to an AxiosResponse containing test results
+ *
+ * @route POST /rules/redirect/:redirectId/test
+ */
+export const testRuleEvaluation = async (
+  redirectId: string,
+  data: RuleTestRequest
+): Promise<AxiosResponse> => {
+  return axiosClient.post(`/redirects/rules/redirect/${redirectId}/test`, data);
+};
+
+/**
+ * Get rule analytics and statistics
+ *
+ * @param redirectId - The ID of the redirect
+ * @returns A promise that resolves to an AxiosResponse containing rule analytics
+ *
+ * @route GET /rules/redirect/:redirectId/analytics
+ */
+export const getRuleAnalytics = async (redirectId: string): Promise<AxiosResponse> => {
+  return axiosClient.get(`/redirects/rules/redirect/${redirectId}/analytics`);
 };
