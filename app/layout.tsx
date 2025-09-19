@@ -66,7 +66,7 @@ const RootLayout = async ({
           property="og:description"
         />
         <meta
-          content="https://cdn.jsdelivr.net/gh/dishant0406/images-repo@master/redirect.png"
+          content="https://cdn.jsdelivr.net/gh/dishant0406/images-repo@master/og.png"
           property="og:image"
         />
 
@@ -81,13 +81,13 @@ const RootLayout = async ({
           property="twitter:description"
         />
         <meta
-          content="https://cdn.jsdelivr.net/gh/dishant0406/images-repo@master/redirect.png"
+          content="https://cdn.jsdelivr.net/gh/dishant0406/images-repo@master/og.png"
           property="twitter:image"
         />
       </head>
       <Script
         defer
-        data-website-id="18fa70dd-8676-4e59-acd6-a8f833f61282"
+        data-website-id="485db16a-1058-49de-b9b8-adb7e2bf2ff0"
         src="https://cloud.umami.is/script.js"
       ></Script>
       <body
