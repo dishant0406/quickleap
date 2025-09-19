@@ -219,7 +219,7 @@ const UrlInput = forwardRef<HTMLInputElement, UrlInputProps>(
         if (processedUrl.match(/^https?:\/\/$/) || processedUrl.match(/^https?:\/\/\s*$/)) {
           return {
             isValid: false,
-            error: 'Please enter a valid domain'
+            error: 'Please enter a valid domain',
           };
         }
 
