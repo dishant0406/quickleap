@@ -18,6 +18,7 @@ import {
 import { Slider } from '@/components/ui/slider';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Textarea } from '@/components/ui/textarea';
+import { UrlInput } from '@/components/ui/url-input';
 import { createRule, getAttributesAndOperators, updateRule } from '@/lib/api';
 import { promiseToast } from '@/lib/toast';
 import type {
@@ -429,17 +430,22 @@ const RuleBuilder: React.FC<RuleBuilderProps> = ({
             <CardContent className="space-y-4">
               {formData.type === 'force' && (
                 <div className="space-y-2">
-                  <Label htmlFor="redirectUrl">Redirect URL *</Label>
-                  <Input
+                  <UrlInput
+                    acceptPath={true}
+                    acceptQuery={true}
+                    allowDomainOnly={false}
+                    autoProcess={false}
                     id="redirectUrl"
+                    label="Redirect URL *"
                     placeholder="https://example.com/destination"
+                    showValidationIcon={true}
                     value={
                       formData.action.type === 'redirect' ||
                       formData.action.type === 'percentage_redirect'
                         ? formData.action.url || ''
                         : ''
                     }
-                    onChange={(e) => updateAction({ url: e.target.value })}
+                    onChange={(value) => updateAction({ url: value })}
                   />
                 </div>
               )}
@@ -447,17 +453,22 @@ const RuleBuilder: React.FC<RuleBuilderProps> = ({
               {formData.type === 'percentage' && (
                 <div className="space-y-4">
                   <div className="space-y-2">
-                    <Label htmlFor="percentageUrl">Redirect URL *</Label>
-                    <Input
+                    <UrlInput
+                      acceptPath={true}
+                      acceptQuery={true}
+                      allowDomainOnly={false}
+                      autoProcess={false}
                       id="percentageUrl"
+                      label="Redirect URL *"
                       placeholder="https://example.com/destination"
+                      showValidationIcon={true}
                       value={
                         formData.action.type === 'redirect' ||
                         formData.action.type === 'percentage_redirect'
                           ? formData.action.url || ''
                           : ''
                       }
-                      onChange={(e) => updateAction({ url: e.target.value })}
+                      onChange={(value) => updateAction({ url: value })}
                     />
                   </div>
                   <div className="space-y-2">
@@ -604,14 +615,19 @@ const RuleBuilder: React.FC<RuleBuilderProps> = ({
                             </div>
                           </div>
                           <div className="space-y-2">
-                            <Label>URL</Label>
-                            <Input
+                            <UrlInput
+                              acceptPath={true}
+                              acceptQuery={true}
+                              allowDomainOnly={false}
+                              autoProcess={false}
+                              label="URL"
                               placeholder="https://example.com"
+                              showValidationIcon={true}
                               value={variant.url}
-                              onChange={(e) => {
+                              onChange={(value) => {
                                 if ('variants' in formData.action) {
                                   const newVariants = [...formData.action.variants];
-                                  newVariants[index] = { ...variant, url: e.target.value };
+                                  newVariants[index] = { ...variant, url: value };
                                   updateAction({ variants: newVariants });
                                 }
                               }}

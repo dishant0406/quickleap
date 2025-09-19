@@ -15,9 +15,9 @@ import useRedirectStore from '@/lib/zustand';
 import { Alert } from '../ui/alert';
 import { Button } from '../ui/button';
 import { Checkbox } from '../ui/custom-checkbox';
-import { Input } from '../ui/input';
 import { Label } from '../ui/label';
 import { Switch } from '../ui/switch';
+import { UrlInput } from '../ui/url-input';
 
 import Modal, { ModalFooter } from './Modal';
 
@@ -101,30 +101,6 @@ export const CreateRedirectModal: React.FC<ModalProps> = ({ isOpen, setIsOpen, r
     }
   }, [redirect]);
 
-  // Process URL based on forwarding settings
-  const processUrl = (url: string, removePath = false, removeQuery = false) => {
-    try {
-      const parsed = formatUrl(url);
-
-      if (!parsed.formattedUrl) return url;
-
-      // Create a new URL to modify
-      const urlObj = new URL(parsed.formattedUrl);
-
-      if (removePath) {
-        urlObj.pathname = '/';
-      }
-
-      if (removeQuery) {
-        urlObj.search = '';
-      }
-
-      return urlObj.toString();
-    } catch {
-      return url;
-    }
-  };
-
   // Process fromDomain to always remove path and query
   const processFromDomain = (url: string) => {
     try {
@@ -140,14 +116,11 @@ export const CreateRedirectModal: React.FC<ModalProps> = ({ isOpen, setIsOpen, r
   const handleDomainBlur = (field: string, value: string) => {
     let processedValue = value;
 
-    // Only process URLs when the input loses focus
+    // Only process fromDomain to ensure it's domain-only
     if (field === 'fromDomain') {
       processedValue = processFromDomain(value);
-    } else if (field === 'toDomain') {
-      if (formData.pathForwarding || formData.queryForwarding) {
-        processedValue = processUrl(value, formData.pathForwarding, formData.queryForwarding);
-      }
     }
+    // For toDomain, let UrlInput handle the processing based on its configuration
 
     handleChange(
       field as 'fromDomain' | 'toDomain' | 'redirectType' | 'pathForwarding' | 'queryForwarding',
@@ -160,24 +133,11 @@ export const CreateRedirectModal: React.FC<ModalProps> = ({ isOpen, setIsOpen, r
     field: 'fromDomain' | 'toDomain' | 'redirectType' | 'pathForwarding' | 'queryForwarding',
     value: boolean
   ) => {
-    const newFormData = {
+    // Simply update the form data - UrlInput will handle processing automatically
+    setFormData({
       ...formData,
       [field]: value,
-    };
-
-    // First, update the domain values if needed
-    if (field === 'pathForwarding' && value === true) {
-      const newToDomain = processUrl(formData.toDomain, true, formData.queryForwarding);
-      newFormData.toDomain = newToDomain;
-    }
-
-    if (field === 'queryForwarding' && value === true) {
-      const newToDomain = processUrl(formData.toDomain, formData.pathForwarding, true);
-      newFormData.toDomain = newToDomain;
-    }
-
-    // Update all form values at once to avoid react issues with the Switch component
-    setFormData(newFormData);
+    });
   };
 
   const activeError = Object.values(errors)
@@ -218,13 +178,15 @@ export const CreateRedirectModal: React.FC<ModalProps> = ({ isOpen, setIsOpen, r
               </li>
               {showPathForwardingAlert && (
                 <li>
-                  Path forwarding is enabled. Paths in To Domain will be automatically removed.
+                  Path forwarding is enabled. Paths from From Domain will be automatically appended
+                  to To Domain, so To Domain should not include paths.
                 </li>
               )}
               {showQueryForwardingAlert && (
                 <li>
-                  Query forwarding is enabled. Query parameters in To Domain will be automatically
-                  removed.
+                  Query forwarding is enabled. Query parameters from From Domain will be
+                  automatically appended to To Domain, so To Domain should not include query
+                  parameters.
                 </li>
               )}
             </ul>
@@ -232,28 +194,43 @@ export const CreateRedirectModal: React.FC<ModalProps> = ({ isOpen, setIsOpen, r
         )}
 
         <div className="flex flex-col gap-2">
-          <Label className="md:text-base text-xs" htmlFor="fromDomain">
-            From Domain
-          </Label>
-          <Input
+          <UrlInput
+            acceptPath={false}
+            acceptQuery={false}
+            allowDomainOnly={true}
+            autoProcess={true}
             disabled={!!redirect?.fromDomain}
             id="fromDomain"
+            label="From Domain"
             placeholder="From Domain (e.g., example.com)"
+            processing={{
+              removePath: true,
+              removeQuery: true,
+              addProtocol: 'https',
+            }}
+            showValidationIcon={true}
             value={formData.fromDomain}
-            onBlur={(e) => handleDomainBlur('fromDomain', e.target.value)}
-            onChange={(e) => handleChange('fromDomain', e.target.value)}
+            onBlur={(value) => handleDomainBlur('fromDomain', value)}
+            onChange={(value) => handleChange('fromDomain', value)}
           />
         </div>
         <div className="flex flex-col gap-2">
-          <Label className="md:text-base text-xs" htmlFor="toDomain">
-            To Domain
-          </Label>
-          <Input
+          <UrlInput
+            acceptPath={!formData.pathForwarding}
+            acceptQuery={!formData.queryForwarding}
+            allowDomainOnly={false}
+            autoProcess={true}
             id="toDomain"
+            label="To Domain"
             placeholder="To Domain"
+            processing={{
+              removePath: formData.pathForwarding,
+              removeQuery: formData.queryForwarding,
+            }}
+            showValidationIcon={true}
             value={formData.toDomain}
-            onBlur={(e) => handleDomainBlur('toDomain', e.target.value)}
-            onChange={(e) => handleChange('toDomain', e.target.value)}
+            onBlur={(value) => handleDomainBlur('toDomain', value)}
+            onChange={(value) => handleChange('toDomain', value)}
           />
         </div>
         <div className="flex flex-col gap-2">

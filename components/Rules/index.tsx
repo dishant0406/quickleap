@@ -1,45 +1,20 @@
 'use client';
 
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useState } from 'react';
 
-import {
-  ChevronLeft,
-  Copy,
-  Edit,
-  GripVertical,
-  Pause,
-  Play,
-  Plus,
-  Search,
-  Settings,
-  Trash2,
-} from 'lucide-react';
+import { ChevronLeft, Plus, Search } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 
-import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu';
 import { Input } from '@/components/ui/input';
-import { arrayMove, List } from '@/components/ui/Movable';
+import { List } from '@/components/ui/Movable';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import {
-  deleteRule,
-  duplicateRule,
-  getRulesForRedirect,
-  reorderRules,
-  toggleRuleStatus,
-} from '@/lib/api';
-import { promiseToast } from '@/lib/toast';
-import type { AttributeKey, OperatorKey, Rule, RuleCondition, RuleStatus } from '@/lib/types/rules';
+import { useRules } from '@/lib/hooks/useRules';
+import type { Rule } from '@/lib/types/rules';
+import { filterRules } from '@/utils/ruleFormatters';
 
+import { RuleRow, RuleTableHeader } from './components';
 import RuleAnalytics from './RuleAnalytics';
 import RuleBuilderModal from './RuleBuilderModal';
 import RuleTester from './RuleTester';
@@ -49,295 +24,37 @@ interface RulesManagerProps {
 }
 
 const RulesManager: React.FC<RulesManagerProps> = ({ redirectId }) => {
-  const [rules, setRules] = useState<Rule[]>([]);
-  const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedTab, setSelectedTab] = useState('rules');
-  const [showRuleBuilder, setShowRuleBuilder] = useState(false);
-  const [editingRule, setEditingRule] = useState<Rule | null>(null);
   const router = useRouter();
-  // Remove unused variables
-  // const [reordering, setReordering] = useState(false);
-  // const router = useRouter();
 
-  // Helper function to format attribute names in human-readable format
-  const formatAttributeName = (attribute: AttributeKey): string => {
-    const attributeNames: Record<AttributeKey, string> = {
-      country: 'Country',
-      region: 'Region',
-      city: 'City',
-      device_type: 'Device Type',
-      device_brand: 'Device Brand',
-      device_model: 'Device Model',
-      browser_name: 'Browser',
-      browser_version: 'Browser Version',
-      os_name: 'Operating System',
-      os_version: 'OS Version',
-      referrer: 'Referrer',
-      referrer_domain: 'Referrer Domain',
-      hour_of_day: 'Hour of Day',
-      day_of_week: 'Day of Week',
-      language: 'Language',
-      url_path: 'URL Path',
-      query_param: 'Query Parameter',
-      user_agent: 'User Agent',
-      ip_address: 'IP Address',
-    };
-    return attributeNames[attribute] || attribute;
-  };
+  const {
+    rules,
+    loading,
+    fetchRules,
+    handleCreateRule,
+    handleEditRule,
+    handleDeleteRule,
+    handleDuplicateRule,
+    handleToggleStatus,
+    handleReorderRules,
+    showRuleBuilder,
+    editingRule,
+    setShowRuleBuilder,
+    setEditingRule,
+  } = useRules({ redirectId });
 
-  // Helper function to format operator names in human-readable format
-  const formatOperatorName = (operator: OperatorKey): string => {
-    const operatorNames: Record<OperatorKey, string> = {
-      equals: 'equals',
-      not_equals: 'does not equal',
-      contains: 'contains',
-      not_contains: 'does not contain',
-      starts_with: 'starts with',
-      ends_with: 'ends with',
-      in: 'is one of',
-      not_in: 'is not one of',
-      greater_than: 'is greater than',
-      less_than: 'is less than',
-      greater_equal: 'is greater than or equal to',
-      less_equal: 'is less than or equal to',
-      between: 'is between',
-      exists: 'exists',
-      not_exists: 'does not exist',
-      regex: 'matches regex',
-      ip_range: 'is in IP range',
-    };
-    return operatorNames[operator] || operator;
-  };
+  const filteredRules = filterRules(rules, searchTerm);
 
-  // Helper function to format condition values
-  const formatConditionValue = (condition: RuleCondition, operator: OperatorKey): string => {
-    if (!condition.value && operator !== 'exists' && operator !== 'not_exists') {
-      return '';
-    }
-
-    if (operator === 'exists' || operator === 'not_exists') {
-      return '';
-    }
-
-    if (operator === 'between' && Array.isArray(condition.value) && condition.value.length === 2) {
-      return `${condition.value[0]} and ${condition.value[1]}`;
-    }
-
-    // Format day of week values
-    if (condition.attribute === 'day_of_week') {
-      const dayNames = [
-        'Sunday',
-        'Monday',
-        'Tuesday',
-        'Wednesday',
-        'Thursday',
-        'Friday',
-        'Saturday',
-      ];
-      if (Array.isArray(condition.value)) {
-        const dayLabels = condition.value.map((day) => dayNames[Number(day)] || String(day));
-        if (dayLabels.length <= 3) {
-          return dayLabels.join(', ');
-        }
-        return `${dayLabels.slice(0, 2).join(', ')} and ${dayLabels.length - 2} more`;
-      }
-      return dayNames[Number(condition.value)] || String(condition.value);
-    }
-
-    // Format hour of day values
-    if (condition.attribute === 'hour_of_day') {
-      if (Array.isArray(condition.value)) {
-        const hourLabels = condition.value.map((hour) => `${hour}:00`);
-        if (hourLabels.length <= 3) {
-          return hourLabels.join(', ');
-        }
-        return `${hourLabels.slice(0, 2).join(', ')} and ${hourLabels.length - 2} more`;
-      }
-      return `${condition.value}:00`;
-    }
-
-    if (Array.isArray(condition.value)) {
-      if (condition.value.length <= 3) {
-        return condition.value.join(', ');
-      }
-      return `${condition.value.slice(0, 2).join(', ')} and ${condition.value.length - 2} more`;
-    }
-
-    return String(condition.value);
-  };
-
-  // Helper function to format a single condition
-  const formatCondition = (condition: RuleCondition): string => {
-    const attribute = formatAttributeName(condition.attribute);
-    const operator = formatOperatorName(condition.operator);
-    const value = formatConditionValue(condition, condition.operator);
-
-    let conditionText = `${attribute} ${operator}`;
-
-    if (value) {
-      conditionText += ` "${value}"`;
-    }
-
-    if (condition.param && condition.attribute === 'query_param') {
-      conditionText = `Query param "${condition.param}" ${operator}`;
-      if (value) {
-        conditionText += ` "${value}"`;
-      }
-    }
-
-    return conditionText;
-  };
-
-  // Helper function to format all conditions for a rule in a human-readable sentence
-  const formatRuleConditions = (rule: Rule): React.ReactElement => {
-    if (rule.conditions.length === 0) {
-      return <span className="text-muted-foreground italic">No conditions</span>;
-    }
-
-    if (rule.conditions.length === 1) {
-      return (
-        <div className="text-xs">
-          <span className="font-medium text-foreground">{formatCondition(rule.conditions[0])}</span>
-        </div>
-      );
-    }
-
-    // Format multiple conditions as a natural sentence
-    const conditionTexts = rule.conditions.map((condition) => formatCondition(condition));
-    const logic = rule.conditionLogic.toLowerCase();
-
-    return (
-      <div className="text-xs leading-relaxed">
-        <span className="font-medium text-foreground">
-          {conditionTexts.map((conditionText, index) => (
-            <span key={index}>
-              {conditionText}
-              {index < conditionTexts.length - 1 && (
-                <>
-                  {conditionTexts.length > 2 && index < conditionTexts.length - 2 && (
-                    <span className="text-muted-foreground">, </span>
-                  )}
-                  {(index === conditionTexts.length - 2 || conditionTexts.length === 2) && (
-                    <span className="text-blue-600 font-semibold mx-1 bg-blue-50 px-1 py-0.5 rounded text-[10px]">
-                      {logic.toUpperCase()}
-                    </span>
-                  )}
-                </>
-              )}
-            </span>
-          ))}
-        </span>
-      </div>
-    );
-  };
-
-  const fetchRules = useCallback(async () => {
-    try {
-      setLoading(true);
-      const response = await getRulesForRedirect(redirectId);
-      setRules(response.data.rules || []);
-    } catch (error) {
-      console.error('Error fetching rules:', error);
-    } finally {
-      setLoading(false);
-    }
-  }, [redirectId]);
-
-  useEffect(() => {
-    fetchRules();
-  }, [fetchRules]);
-
-  const handleCreateRule = (): void => {
+  const handleCloseRuleBuilder = (): void => {
+    setShowRuleBuilder(false);
     setEditingRule(null);
-    setShowRuleBuilder(true);
   };
 
-  const handleEditRule = (rule: Rule): void => {
-    setEditingRule(rule);
-    setShowRuleBuilder(true);
-  };
-
-  const handleDeleteRule = async (ruleId: number): Promise<void> => {
-    promiseToast(deleteRule(ruleId.toString()), 'Rule deleted successfully', {
-      errorMessage: 'Error deleting rule',
-      onSuccess: fetchRules,
-    });
-  };
-
-  const handleDuplicateRule = async (ruleId: number): Promise<void> => {
-    promiseToast(duplicateRule(ruleId.toString()), 'Rule duplicated successfully', {
-      errorMessage: 'Error duplicating rule',
-      onSuccess: fetchRules,
-    });
-  };
-
-  const handleToggleStatus = async (ruleId: number, newStatus: RuleStatus): Promise<void> => {
-    promiseToast(
-      toggleRuleStatus(ruleId.toString(), { status: newStatus }),
-      'Rule status updated successfully',
-      {
-        errorMessage: 'Error updating rule status',
-        onSuccess: fetchRules,
-      }
-    );
-  };
-
-  const handleReorderRules = async (oldIndex: number, newIndex: number): Promise<void> => {
-    const originalRules = [...rules];
-    const newRules = arrayMove(rules, oldIndex, newIndex);
-    setRules(newRules);
-
-    // Extract rule IDs in the new order
-    const ruleIds = newRules.map((rule) => rule.id);
-
-    promiseToast(reorderRules(redirectId, { ruleIds }), 'Rules reordered successfully', {
-      errorMessage: 'Error reordering rules',
-      onSuccess: fetchRules,
-      final: () => {
-        // Revert the optimistic update on error if the promise failed
-        // The promiseToast will handle this through its error handling
-      },
-    }).catch(() => {
-      // Revert the optimistic update on error
-      setRules(originalRules);
-    });
-  };
-
-  // Removed unused handleReorderRules function
-
-  const filteredRules = rules.filter(
-    (rule) =>
-      rule.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      rule.description?.toLowerCase().includes(searchTerm.toLowerCase())
-  );
-
-  const getStatusBadge = (status: RuleStatus): React.ReactElement => {
-    const variants = {
-      active: 'default',
-      inactive: 'neutral',
-      draft: 'neutral',
-    } as const;
-
-    return (
-      <Badge className="capitalize" variant={variants[status]}>
-        {status}
-      </Badge>
-    );
-  };
-
-  const getTypeBadge = (type: string): React.ReactElement => {
-    const colors = {
-      force: 'bg-blue-100 text-blue-800',
-      percentage: 'bg-purple-100 text-purple-800',
-      ab_experiment: 'bg-green-100 text-green-800',
-    } as const;
-
-    return (
-      <Badge className={colors[type as keyof typeof colors] || 'bg-gray-100 text-gray-800'}>
-        {type === 'ab_experiment' ? 'A/B Test' : type.charAt(0).toUpperCase() + type.slice(1)}
-      </Badge>
-    );
+  const handleSaveRule = (): void => {
+    setShowRuleBuilder(false);
+    setEditingRule(null);
+    fetchRules();
   };
 
   return (
@@ -413,127 +130,35 @@ const RulesManager: React.FC<RulesManagerProps> = ({ redirectId }) => {
                 </div>
               ) : (
                 <div className="space-y-4">
-                  {/* Header row to show column labels */}
-                  <div className="flex items-center gap-4 px-4 py-2 border-b  text-sm font-medium text-secondaryBlack">
-                    <div className="flex items-center mr-2 gap-3">
-                      <div className="w-5 h-5"></div> {/* Space for grip handle */}
-                      <div className="w-8 text-center">Priority</div>
-                    </div>
-                    <div className="flex-1 grid grid-cols-6 gap-4">
-                      <div>Name</div>
-                      <div>Type</div>
-                      <div>Status</div>
-                      <div className="col-span-2">Conditions</div>
-                      <div>Hit Count</div>
-                    </div>
-                    <div className="w-8">Actions</div>
-                  </div>
+                  <div className="overflow-x-auto">
+                    <RuleTableHeader />
 
-                  <List<Rule>
-                    lockVertically
-                    renderItem={({ value: rule, props }) => (
-                      <div
-                        {...props}
-                        key={rule.id}
-                        className={` rounded-lg p-4 transition-shadow `}
-                      >
-                        <div className="flex items-center gap-4">
-                          <div className="flex mr-2 items-center gap-3">
-                            <GripVertical
-                              data-movable-handle
-                              className="h-5 w-5 text-muted-foreground cursor-grab"
-                              style={{ cursor: 'grab' }}
-                            />
-                            <div className="flex items-center justify-center w-8 h-8  rounded text-sm font-mono">
-                              {rule.priority}
-                            </div>
-                          </div>
-
-                          <div className="flex-1 grid grid-cols-6 gap-4 items-center">
-                            <div>
-                              <div className="font-medium">{rule.name}</div>
-                              {rule.description && rule.name !== rule.description && (
-                                <div className="text-xs text-mutedSecondayBlack truncate max-w-64">
-                                  {rule.description}
-                                </div>
-                              )}
-                            </div>
-
-                            <div>{getTypeBadge(rule.type)}</div>
-
-                            <div>{getStatusBadge(rule.status)}</div>
-
-                            <div className="col-span-2">{formatRuleConditions(rule)}</div>
-
-                            <div className="font-mono text-sm">
-                              {rule.hitCount.toLocaleString()}
-                            </div>
-                          </div>
-
-                          <div>
-                            <DropdownMenu>
-                              <DropdownMenuTrigger asChild>
-                                <Button className="h-8 w-8 p-0" size="sm" variant="neutral">
-                                  <Settings className="h-4 w-4" />
-                                </Button>
-                              </DropdownMenuTrigger>
-                              <DropdownMenuContent align="end">
-                                <DropdownMenuLabel>Actions</DropdownMenuLabel>
-                                <DropdownMenuItem onClick={() => handleEditRule(rule)}>
-                                  <Edit className="mr-2 h-4 w-4" />
-                                  Edit
-                                </DropdownMenuItem>
-                                <DropdownMenuItem onClick={() => handleDuplicateRule(rule.id)}>
-                                  <Copy className="mr-2 h-4 w-4" />
-                                  Duplicate
-                                </DropdownMenuItem>
-                                <DropdownMenuSeparator />
-                                <DropdownMenuItem
-                                  onClick={() =>
-                                    handleToggleStatus(
-                                      rule.id,
-                                      rule.status === 'active' ? 'inactive' : 'active'
-                                    )
-                                  }
-                                >
-                                  {rule.status === 'active' ? (
-                                    <>
-                                      <Pause className="mr-2 h-4 w-4" />
-                                      Deactivate
-                                    </>
-                                  ) : (
-                                    <>
-                                      <Play className="mr-2 h-4 w-4" />
-                                      Activate
-                                    </>
-                                  )}
-                                </DropdownMenuItem>
-                                <DropdownMenuSeparator />
-                                <DropdownMenuItem
-                                  className="text-destructive"
-                                  onClick={() => handleDeleteRule(rule.id)}
-                                >
-                                  <Trash2 className="mr-2 h-4 w-4" />
-                                  Delete
-                                </DropdownMenuItem>
-                              </DropdownMenuContent>
-                            </DropdownMenu>
-                          </div>
+                    <List<Rule>
+                      lockVertically
+                      renderItem={({ value: rule, props }) => (
+                        <RuleRow
+                          {...props}
+                          key={rule.id}
+                          rule={rule}
+                          onDelete={handleDeleteRule}
+                          onDuplicate={handleDuplicateRule}
+                          onEdit={handleEditRule}
+                          onToggleStatus={handleToggleStatus}
+                        />
+                      )}
+                      renderList={({ children, props, isDragged }) => (
+                        <div
+                          {...props}
+                          className="space-y-3"
+                          style={{ cursor: isDragged ? 'grabbing' : undefined }}
+                        >
+                          {children}
                         </div>
-                      </div>
-                    )}
-                    renderList={({ children, props, isDragged }) => (
-                      <div
-                        {...props}
-                        className="space-y-2"
-                        style={{ cursor: isDragged ? 'grabbing' : undefined }}
-                      >
-                        {children}
-                      </div>
-                    )}
-                    values={filteredRules}
-                    onChange={({ oldIndex, newIndex }) => handleReorderRules(oldIndex, newIndex)}
-                  />
+                      )}
+                      values={filteredRules}
+                      onChange={({ oldIndex, newIndex }) => handleReorderRules(oldIndex, newIndex)}
+                    />
+                  </div>
                 </div>
               )}
             </CardContent>
@@ -553,15 +178,8 @@ const RulesManager: React.FC<RulesManagerProps> = ({ redirectId }) => {
         isOpen={showRuleBuilder}
         redirectId={redirectId}
         rule={editingRule}
-        onClose={() => {
-          setShowRuleBuilder(false);
-          setEditingRule(null);
-        }}
-        onSave={() => {
-          setShowRuleBuilder(false);
-          setEditingRule(null);
-          fetchRules();
-        }}
+        onClose={handleCloseRuleBuilder}
+        onSave={handleSaveRule}
       />
     </div>
   );
