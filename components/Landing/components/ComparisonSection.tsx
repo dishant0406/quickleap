@@ -65,28 +65,30 @@ const StatusIcon = ({ status }: { status: 'yes' | 'no' | 'limited' }) => {
 
 const ComparisonSection: React.FC = () => {
   return (
-    <div className="min-h-main flex flex-col px-[5vw] items-center  py-[10vh] ">
+    <div className="min-h-main flex flex-col px-[5vw] items-center py-[10vh]">
       <h2 className="text-[8vw] md:text-[3vw] text-center font-anton text-primaryBlack dark:text-white">
         Why choose <span className="text-main">QuickLeap</span> over traditional hosting?
       </h2>
-      <h3 className="text-[4vw] md:w-[70vw] text-center  md:text-[1vw] mt-2 font-medium text-primaryBlack dark:text-white">
+      <h3 className="text-[4vw] md:w-[70vw] text-center md:text-[1vw] mt-2 font-medium text-primaryBlack dark:text-white">
         See how we stack up against traditional hosting and other redirect services. QuickLeap
         offers a seamless and efficient solution for all your redirect needs, making it the best
         choice for your domain management.
       </h3>
-      <div className="rounded-2xl mt-8 w-full  overflow-hidden border-4 border-primaryBlack shadow-shadow">
+
+      {/* Desktop Table View */}
+      <div className="hidden md:block rounded-2xl mt-8 w-full overflow-hidden border-4 border-primaryBlack shadow-shadow">
         {/* Header Row */}
-        <div className="grid grid-cols-4 bg-cream-50 font-bold text-sm sm:text-base md:text-xl">
-          <div className="p-3 sm:p-4 md:p-6 border-b-4 border-r-4 border-primaryBlack flex items-center justify-center">
+        <div className="grid grid-cols-4 bg-cream-50 font-bold text-base lg:text-xl">
+          <div className="p-4 lg:p-6 border-b-4 border-r-4 border-primaryBlack flex items-center justify-center">
             <h3 className="text-center">Features</h3>
           </div>
-          <div className="p-3 sm:p-4 md:p-6 border-b-4 border-r-4 border-primaryBlack flex items-center justify-center">
-            <Logo className="w-24 md:w-32 lg:w-40" />
+          <div className="p-4 lg:p-6 border-b-4 border-r-4 border-primaryBlack flex items-center justify-center">
+            <Logo className="w-24 lg:w-32 xl:w-40" />
           </div>
-          <div className="p-3 sm:p-4 md:p-6 border-b-4 border-r-4 border-primaryBlack flex items-center justify-center">
+          <div className="p-4 lg:p-6 border-b-4 border-r-4 border-primaryBlack flex items-center justify-center">
             <h3 className="text-center">Traditional Hosting</h3>
           </div>
-          <div className="p-3 sm:p-4 md:p-6 border-b-4 border-primaryBlack flex items-center justify-center">
+          <div className="p-4 lg:p-6 border-b-4 border-primaryBlack flex items-center justify-center">
             <h3 className="text-center">Other Redirect Services</h3>
           </div>
         </div>
@@ -95,37 +97,35 @@ const ComparisonSection: React.FC = () => {
         {comparisonData.map((row, index) => (
           <div key={index} className="grid grid-cols-4 bg-white">
             <div
-              className={`p-3 sm:p-4 md:p-6 border-r-4 border-primaryBlack flex items-center ${
+              className={`p-4 lg:p-6 border-r-4 border-primaryBlack flex items-center ${
                 index === comparisonData.length - 1 ? '' : 'border-b-4'
               }`}
             >
-              <span className="font-medium text-sm px-2 truncate sm:text-base md:text-lg">
-                {row.feature}
-              </span>
+              <span className="font-medium text-base lg:text-lg leading-tight">{row.feature}</span>
             </div>
             <div
-              className={`p-3 sm:p-4 md:p-6 border-r-4 border-primaryBlack flex items-center justify-center ${
+              className={`p-4 lg:p-6 border-r-4 border-primaryBlack flex items-center justify-center ${
                 index === comparisonData.length - 1 ? '' : 'border-b-4'
               }`}
             >
               <StatusIcon status={row.quickleap} />
             </div>
             <div
-              className={`p-3 sm:p-4 md:p-6 border-r-4 border-primaryBlack flex items-center justify-center ${
+              className={`p-4 lg:p-6 border-r-4 border-primaryBlack flex items-center justify-center ${
                 index === comparisonData.length - 1 ? '' : 'border-b-4'
               }`}
             >
               {row.traditionalHosting === 'limited' ? (
                 <div className="flex flex-col items-center">
                   <StatusIcon status={row.traditionalHosting} />
-                  <span className="text-xs text-amber-700 mt-1">Complex Setup</span>
+                  <span className="text-xs text-amber-700 mt-1 text-center">Complex Setup</span>
                 </div>
               ) : (
                 <StatusIcon status={row.traditionalHosting} />
               )}
             </div>
             <div
-              className={`p-3 sm:p-4 md:p-6 border-primaryBlack flex items-center justify-center ${
+              className={`p-4 lg:p-6 border-primaryBlack flex items-center justify-center ${
                 index === comparisonData.length - 1 ? '' : 'border-b-4'
               }`}
             >
@@ -140,8 +140,63 @@ const ComparisonSection: React.FC = () => {
             </div>
           </div>
         ))}
+      </div>
 
-        {/* Bottom Row */}
+      {/* Mobile Card View */}
+      <div className="md:hidden mt-8 w-full grid gap-4">
+        {comparisonData.map((row, index) => (
+          <div
+            key={index}
+            className="bg-white rounded-xl border-4 border-primaryBlack shadow-shadow p-4"
+          >
+            <div className="flex flex-col gap-4">
+              {/* Feature Name */}
+              <div>
+                <h4 className="text-lg font-bold text-primaryBlack text-center">{row.feature}</h4>
+              </div>
+
+              {/* Comparison Grid */}
+              <div className="grid grid-cols-3 gap-3">
+                {/* QuickLeap */}
+                <div className="flex flex-col items-center bg-green-50 rounded-lg p-3 border-2 border-green-200">
+                  <Logo className="w-10 mb-2" />
+                  <StatusIcon status={row.quickleap} />
+                  <span className="text-xs font-semibold text-green-700 mt-1 text-center">
+                    QuickLeap
+                  </span>
+                </div>
+
+                {/* Traditional Hosting */}
+                <div className="flex flex-col items-center bg-red-50 rounded-lg p-3 border-2 border-red-200">
+                  <h5 className="text-xs font-semibold text-center mb-2 text-red-700">
+                    Traditional
+                  </h5>
+                  {row.traditionalHosting === 'limited' ? (
+                    <div className="flex flex-col items-center">
+                      <StatusIcon status={row.traditionalHosting} />
+                      <span className="text-xs text-amber-700 mt-1 text-center">Complex</span>
+                    </div>
+                  ) : (
+                    <StatusIcon status={row.traditionalHosting} />
+                  )}
+                </div>
+
+                {/* Other Services */}
+                <div className="flex flex-col items-center bg-amber-50 rounded-lg p-3 border-2 border-amber-200">
+                  <h5 className="text-xs font-semibold text-center mb-2 text-amber-700">Others</h5>
+                  {row.otherRedirectServices === 'limited' ? (
+                    <div className="flex flex-col items-center">
+                      <StatusIcon status={row.otherRedirectServices} />
+                      <span className="text-xs text-amber-700 mt-1 text-center">Limited</span>
+                    </div>
+                  ) : (
+                    <StatusIcon status={row.otherRedirectServices} />
+                  )}
+                </div>
+              </div>
+            </div>
+          </div>
+        ))}
       </div>
     </div>
   );
