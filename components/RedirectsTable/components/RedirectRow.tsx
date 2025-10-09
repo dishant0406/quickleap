@@ -8,14 +8,19 @@ import { useRouter } from 'next/navigation';
 import { CreateRedirectModal } from '@/components/Micro/CreateRedirect';
 import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/custom-checkbox';
+import { Progress } from '@/components/ui/progress';
 import { TableCell, TableRow } from '@/components/ui/table';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { deleteRedirect, verifyStatus } from '@/lib/api';
 import { formatUrl } from '@/lib/helpers';
 import { promiseToast } from '@/lib/toast';
+import { cn } from '@/lib/utils';
 import useRedirectStore from '@/lib/zustand';
 
 import { DnsInstructions } from './DnsInstructions';
 import { DomainStatusBadge } from './DomainStatusBadge';
+import { LimitStatusBadge } from './LimitStatusBadge';
+import { RedirectDetails } from './RedirectDetails';
 import { TableActions } from './TableActions';
 
 import type { TableAction } from './TableActions';
@@ -159,6 +164,40 @@ export const RedirectRow: React.FC<RedirectRowProps> = ({
           </div>
         </TableCell>
         <TableCell className="p-4">
+          {redirect.analyticsUsage ? (
+            <div className="flex flex-col items-center gap-1.5 min-w-[140px]">
+              <div className="w-full flex items-center justify-center gap-2">
+                <span className="text-xs font-bold font-medium text-foreground">
+                  {redirect.analyticsUsage.estimatedTotalHits.toLocaleString()}
+                </span>
+                <span className="text-xs font-bold text-muted-foreground">/</span>
+                <span className="text-xs font-bold text-muted-foreground">
+                  {redirect.analyticsUsage.planLimit.toLocaleString()}
+                </span>
+              </div>
+              <Progress
+                className={cn(
+                  'h-2',
+                  redirect.analyticsUsage.limitStatus === 'limit_reached'
+                    ? '[&>[data-slot=progress-indicator]]:bg-red-500 [&>[data-slot=progress-indicator]]:border-red-600'
+                    : redirect.analyticsUsage.limitStatus === 'approaching_limit'
+                      ? '[&>[data-slot=progress-indicator]]:bg-yellow-500 [&>[data-slot=progress-indicator]]:border-yellow-600'
+                      : '[&>[data-slot=progress-indicator]]:bg-green-500 [&>[data-slot=progress-indicator]]:border-green-600'
+                )}
+                value={Math.min(redirect.analyticsUsage.usagePercentage, 100)}
+              />
+              <div className="w-full flex items-center justify-between gap-2">
+                <LimitStatusBadge compact limitStatus={redirect.analyticsUsage.limitStatus} />
+                <span className="text-[10px] font-medium text-muted-foreground">
+                  {redirect.analyticsUsage.usagePercentage.toFixed(1)}%
+                </span>
+              </div>
+            </div>
+          ) : (
+            <div className="text-xs text-muted-foreground text-center">—</div>
+          )}
+        </TableCell>
+        <TableCell className="p-4">
           <div className=" flex justify-end">
             <DomainStatusBadge isLoading={isLoading} status={domainStatus} />
           </div>
@@ -178,10 +217,25 @@ export const RedirectRow: React.FC<RedirectRowProps> = ({
           </div>
         </TableCell>
       </TableRow>
-      {isExpanded && domainStatus && (
+      {isExpanded && (
         <TableRow className="bg-bg table-row">
-          <TableCell className="p-6" colSpan={4}>
-            <DnsInstructions isPolling={isPolling} status={domainStatus} />
+          <TableCell colSpan={5}>
+            <Tabs defaultValue="dns">
+              <TabsList>
+                <TabsTrigger value="dns">DNS Setup</TabsTrigger>
+                <TabsTrigger value="details">Details</TabsTrigger>
+              </TabsList>
+              <TabsContent className="p-4 py-2" value="details">
+                <RedirectDetails redirect={redirect} />
+              </TabsContent>
+              <TabsContent className="p-4 py-2" value="dns">
+                {domainStatus ? (
+                  <DnsInstructions isPolling={isPolling} status={domainStatus} />
+                ) : (
+                  <div className="text-sm text-muted-foreground">Loading DNS status...</div>
+                )}
+              </TabsContent>
+            </Tabs>
           </TableCell>
         </TableRow>
       )}

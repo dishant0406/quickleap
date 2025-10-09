@@ -28,6 +28,7 @@ class ApiClient {
       headers: {
         'Content-Type': 'application/json',
       },
+      withCredentials: true,
     });
 
     this.setupInterceptors();
@@ -45,7 +46,7 @@ class ApiClient {
       }
 
       // Get fresh token from cookie on every request
-      const token = (await cookies()).get('token')?.value;
+      const token = (await cookies()).get('sAccessToken')?.value;
       if (token) {
         config.headers.Authorization = `Bearer ${token}`;
       }

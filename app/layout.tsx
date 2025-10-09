@@ -1,10 +1,9 @@
 import { Anton, Archivo } from 'next/font/google';
-import { headers } from 'next/headers';
 import Script from 'next/script';
 
 import Navbar from '@/components/Navbar';
+import { SuperTokensInit } from '@/components/Supertoken/Init';
 import { ThemeProvider } from '@/components/ThemeProvider';
-import { LOGOUT_ENDPOINT } from '@/lib/constants';
 import axiosClientServer from '@/lib/helpers/axios/server';
 import { Toaster } from '@/lib/toast';
 
@@ -35,25 +34,7 @@ const RootLayout = async ({
 }: Readonly<{
   children: React.ReactNode;
 }>) => {
-  const { data, error } = await axiosClientServer.get<UserResponse>('/api/auth/me');
-
-  const BASE_URL = (await headers()).get('host');
-  const PROTOCOL = (await headers()).get('x-forwarded-proto');
-
-  const URL = `${PROTOCOL}://${BASE_URL}`;
-
-  if (error) {
-    const LOGOUT_URL = `${URL}${LOGOUT_ENDPOINT}`;
-    await fetch(LOGOUT_URL, { method: 'GET' });
-  }
-
-  const userDetails = {
-    email: data?.email,
-    id: data?._id,
-  };
-
-  const encodedUserDetails = JSON.stringify(userDetails);
-  const encodedUserDetailsBase64 = Buffer.from(encodedUserDetails).toString('base64');
+  const { data } = await axiosClientServer.get<UserResponse>('/auth/user');
 
   return (
     <html suppressHydrationWarning lang="en">
@@ -90,21 +71,22 @@ const RootLayout = async ({
         data-website-id="485db16a-1058-49de-b9b8-adb7e2bf2ff0"
         src="https://cloud.umami.is/script.js"
       ></Script>
-      <body
-        className={`${geistSans.className} text-primaryBlack ${anton.variable} bg-bg antialiased`}
-        data-body={encodedUserDetailsBase64}
-      >
-        <ThemeProvider
-          disableTransitionOnChange
-          enableSystem
-          attribute="class"
-          defaultTheme="light"
+      <SuperTokensInit>
+        <body
+          className={`${geistSans.className} text-primaryBlack ${anton.variable} bg-bg antialiased`}
         >
-          <Navbar />
-          {children}
-        </ThemeProvider>
-        <Toaster />
-      </body>
+          <ThemeProvider
+            disableTransitionOnChange
+            enableSystem
+            attribute="class"
+            defaultTheme="light"
+          >
+            <Navbar user={data || undefined} />
+            {children}
+          </ThemeProvider>
+          <Toaster />
+        </body>
+      </SuperTokensInit>
     </html>
   );
 };

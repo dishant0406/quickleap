@@ -2,7 +2,7 @@
 
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import Tooltip from '@/components/ui/tooltip';
-import useIsLoggedIn from '@/lib/hooks/useIsLogedIn';
+import useUserStore from '@/lib/zustand/user';
 
 type UserAvatarProps = {
   email?: string;
@@ -37,7 +37,7 @@ const UserAvatar: React.FC<UserAvatarProps> = ({
 const AvatarWithToolTip: React.FC<{
   user?: User;
 }> = ({ user }) => {
-  const { isLoggedIn } = useIsLoggedIn();
+  const { isLoggedIn } = useUserStore();
   return (
     <Tooltip content={user?.email || 'Login'}>
       <UserAvatar email={user?.email} showShimmer={!isLoggedIn} />

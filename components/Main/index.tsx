@@ -4,7 +4,7 @@ import Screen from './Screen';
 
 const Main: React.FC = async () => {
   const response = await axiosClientServer.get<{ redirects: Redirect[] | null }>(
-    '/redirects/get-redirects/me'
+    '/get-redirects/me'
   );
 
   const data = response.data ?? { redirects: [] };

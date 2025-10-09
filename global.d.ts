@@ -1,3 +1,16 @@
+type LimitStatus = 'within_limit' | 'approaching_limit' | 'limit_reached';
+
+type AnalyticsUsage = {
+  recordedHits: number;
+  estimatedTotalHits: number;
+  samplingRate: number;
+  month: string;
+  planLimit: number;
+  usagePercentage: number;
+  limitStatus: LimitStatus;
+  canRecordMore: boolean;
+};
+
 type Redirect = {
   id: string;
   fromDomain: string;
@@ -7,6 +20,14 @@ type Redirect = {
   queryForwarding: boolean;
   isVerified: boolean;
   userID: string;
+  status?: string;
+  isSealed?: boolean;
+  sealedAt?: string | null;
+  sealReason?: string | null;
+  samplingRate?: number;
+  createdAt?: string;
+  updatedAt?: string;
+  analyticsUsage?: AnalyticsUsage;
   __v: number;
 };
 
@@ -58,18 +79,81 @@ type RedirectResponse = {
 };
 
 type User = {
-  email: string;
-  expirationDate: string;
-  isAdmin: boolean;
   id: string;
-  iat: number;
+  email: string;
+  username: string;
+  profile: UserProfile;
+  isEmailVerified: boolean;
+  lastLoginAt: string;
+  preferences: UserPreferences;
+};
+
+type UserProfile = {
+  bio: string;
+  company: string;
+  website: string;
+  lastName: string;
+  location: string;
+  avatarUrl: string;
+  firstName: string;
+};
+
+type UserPreferences = {
+  timezone: string;
+  dateFormat: string;
+  marketingEmails: boolean;
+  emailNotifications: boolean;
+};
+
+type PlanLimits = {
+  perRedirect: {
+    maxAnalyticsEvents: number;
+    maxRulesPerRedirect: number;
+    analyticsRetentionDays: number;
+  };
+  maxRedirects: number;
+};
+
+type PlanFeatures = {
+  apiAccess: boolean;
+  whiteLabel: boolean;
+  prioritySupport: boolean;
+  coldStorageAccess: boolean;
+  customIntegrations: boolean;
+  customDomainBranding: boolean;
+};
+
+type PlanPricing = {
+  amount: number;
+  currency: string;
+  interval: string;
+  trialDays: number;
+};
+
+type Plan = {
+  id: string;
+  name: string;
+  description: string;
+  limits: PlanLimits;
+  features: PlanFeatures;
+  pricing: PlanPricing;
+  tier: number;
+};
+
+type Usage = {
+  redirectsUsed: number;
+  maxRedirects: number;
+  canCreateRedirect: boolean;
+  isOnTrial: boolean | null;
+  trialEndsAt: string | null;
+  isInGracePeriod: boolean;
+  gracePeriod: string | null;
 };
 
 type UserResponse = {
-  _id: string;
-  email: string;
-  isAdmin: boolean;
-  __v: number;
+  user: User;
+  plan: Plan;
+  usage: Usage;
 };
 
 type RedirectAPIResponse = {

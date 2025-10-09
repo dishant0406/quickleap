@@ -32,17 +32,17 @@ type AddRedirectProps = {
  */
 
 export const addRedirect = async (data: AddRedirectProps): Promise<AxiosResponse> => {
-  return axiosClient.post('/redirects/add-redirect', data);
+  return axiosClient.post('/add-redirect', data);
 };
 
 /**
- * Verifies the status of a given domain by making a POST request to the `/redirects/verify-domain` endpoint.
+ * Verifies the status of a given domain by making a POST request to the `/verify-domain` endpoint.
  *
  * @param domain - The domain to be verified.
  * @returns A promise that resolves to an AxiosResponse containing the verification status.
  */
 export const verifyStatus = async (domain: string): Promise<AxiosResponse> => {
-  return axiosClient.post(`/redirects/verify-domain`, { domain });
+  return axiosClient.post(`/verify-domain`, { domain });
 };
 
 type UpdateRedirectProps = {
@@ -66,7 +66,7 @@ type UpdateRedirectProps = {
  * @route /update-redirect
  */
 export const updateRedirect = async (data: UpdateRedirectProps): Promise<AxiosResponse> => {
-  return axiosClient.put(`/redirects/update/${data.id}`, data);
+  return axiosClient.put(`/update/${data.id}`, data);
 };
 
 /**
@@ -77,7 +77,7 @@ export const updateRedirect = async (data: UpdateRedirectProps): Promise<AxiosRe
  * @route /redirects/get-redirects/me
  */
 export const getUserRedirects = async (): Promise<AxiosResponse> => {
-  return axiosClient.get('/redirects/get-redirects/me');
+  return axiosClient.get('/get-redirects/me');
 };
 
 /**
@@ -89,7 +89,7 @@ export const getUserRedirects = async (): Promise<AxiosResponse> => {
  * @route /delete-redirect/:id
  */
 export const deleteRedirect = async (id: string): Promise<AxiosResponse> => {
-  return axiosClient.delete(`/redirects/delete-redirect/${id}`);
+  return axiosClient.delete(`/delete-redirect/${id}`);
 };
 
 /**
@@ -103,7 +103,7 @@ export const getBasicStats = async (
   redirectId: string,
   params?: { start?: string; end?: string }
 ): Promise<AxiosResponse> => {
-  return axiosClient.get(`/redirects/analytics/redirect/${redirectId}/stats/basic`, { params });
+  return axiosClient.get(`/analytics/redirect/${redirectId}/stats/basic`, { params });
 };
 
 /**
@@ -117,7 +117,7 @@ export const getHitsOverTime = async (
   redirectId: string,
   params?: { start?: string; end?: string; interval?: string }
 ): Promise<AxiosResponse> => {
-  return axiosClient.get(`/redirects/analytics/redirect/${redirectId}/stats/time`, { params });
+  return axiosClient.get(`/analytics/redirect/${redirectId}/stats/time`, { params });
 };
 
 /**
@@ -131,7 +131,7 @@ export const getGeographicData = async (
   redirectId: string,
   params?: { start?: string; end?: string; groupBy?: string }
 ): Promise<AxiosResponse> => {
-  return axiosClient.get(`/redirects/analytics/redirect/${redirectId}/stats/geo`, { params });
+  return axiosClient.get(`/analytics/redirect/${redirectId}/stats/geo`, { params });
 };
 
 /**
@@ -145,7 +145,7 @@ export const getDeviceInfo = async (
   redirectId: string,
   params?: { start?: string; end?: string }
 ): Promise<AxiosResponse> => {
-  return axiosClient.get(`/redirects/analytics/redirect/${redirectId}/stats/devices`, { params });
+  return axiosClient.get(`/analytics/redirect/${redirectId}/stats/devices`, { params });
 };
 
 /**
@@ -159,7 +159,7 @@ export const getReferrerData = async (
   redirectId: string,
   params?: { start?: string; end?: string; limit?: number }
 ): Promise<AxiosResponse> => {
-  return axiosClient.get(`/redirects/analytics/redirect/${redirectId}/stats/referrers`, { params });
+  return axiosClient.get(`/analytics/redirect/${redirectId}/stats/referrers`, { params });
 };
 
 /**
@@ -173,7 +173,7 @@ export const getLanguageData = async (
   redirectId: string,
   params?: { start?: string; end?: string }
 ): Promise<AxiosResponse> => {
-  return axiosClient.get(`/redirects/analytics/redirect/${redirectId}/stats/languages`, { params });
+  return axiosClient.get(`/analytics/redirect/${redirectId}/stats/languages`, { params });
 };
 
 /**
@@ -187,7 +187,7 @@ export const getQueryParamAnalytics = async (
   redirectId: string,
   params?: { start?: string; end?: string }
 ): Promise<AxiosResponse> => {
-  return axiosClient.get(`/redirects/analytics/redirect/${redirectId}/stats/query-params`, {
+  return axiosClient.get(`/analytics/redirect/${redirectId}/stats/query-params`, {
     params,
   });
 };
@@ -203,7 +203,7 @@ export const getHourlyTraffic = async (
   redirectId: string,
   params?: { start?: string; end?: string }
 ): Promise<AxiosResponse> => {
-  return axiosClient.get(`/redirects/analytics/redirect/${redirectId}/stats/hourly`, { params });
+  return axiosClient.get(`/analytics/redirect/${redirectId}/stats/hourly`, { params });
 };
 
 /**
@@ -217,7 +217,7 @@ export const getPathAnalytics = async (
   redirectId: string,
   params?: { start?: string; end?: string }
 ): Promise<AxiosResponse> => {
-  return axiosClient.get(`/redirects/analytics/redirect/${redirectId}/stats/paths`, { params });
+  return axiosClient.get(`/analytics/redirect/${redirectId}/stats/paths`, { params });
 };
 
 /**
@@ -231,7 +231,7 @@ export const getStatusCodeAnalytics = async (
   redirectId: string,
   params?: { start?: string; end?: string }
 ): Promise<AxiosResponse> => {
-  return axiosClient.get(`/redirects/analytics/redirect/${redirectId}/stats/status-codes`, {
+  return axiosClient.get(`/analytics/redirect/${redirectId}/stats/status-codes`, {
     params,
   });
 };
@@ -247,7 +247,7 @@ export const getComparisonAnalytics = async (
   redirectId: string,
   params?: { start?: string; end?: string }
 ): Promise<AxiosResponse> => {
-  return axiosClient.get(`/redirects/analytics/redirect/${redirectId}/stats/comparison`, {
+  return axiosClient.get(`/analytics/redirect/${redirectId}/stats/comparison`, {
     params,
   });
 };
@@ -271,7 +271,7 @@ export const getRawHitData = async (
     end?: string;
   }
 ): Promise<AxiosResponse> => {
-  return axiosClient.get(`/redirects/analytics/redirect/${redirectId}/hits`, { params });
+  return axiosClient.get(`/analytics/redirect/${redirectId}/hits`, { params });
 };
 
 /**
@@ -285,7 +285,7 @@ export const getDashboardSummary = async (
   redirectId: string,
   params?: { start?: string; end?: string }
 ): Promise<AxiosResponse> => {
-  return axiosClient.get(`/redirects/analytics/redirect/${redirectId}/dashboard`, { params });
+  return axiosClient.get(`/analytics/redirect/${redirectId}/dashboard`, { params });
 };
 
 /**
@@ -299,7 +299,7 @@ export const getUserAgentAnalytics = async (
   redirectId: string,
   params?: { start?: string; end?: string }
 ): Promise<AxiosResponse> => {
-  return axiosClient.get(`/redirects/analytics/redirect/${redirectId}/stats/user-agents`, {
+  return axiosClient.get(`/analytics/redirect/${redirectId}/stats/user-agents`, {
     params,
   });
 };
@@ -315,7 +315,7 @@ export const getDeviceCategoryAnalytics = async (
   redirectId: string,
   params?: { start?: string; end?: string }
 ): Promise<AxiosResponse> => {
-  return axiosClient.get(`/redirects/analytics/redirect/${redirectId}/stats/device-categories`, {
+  return axiosClient.get(`/analytics/redirect/${redirectId}/stats/device-categories`, {
     params,
   });
 };
@@ -331,7 +331,7 @@ export const getBrowserFamilyAnalytics = async (
   redirectId: string,
   params?: { start?: string; end?: string }
 ): Promise<AxiosResponse> => {
-  return axiosClient.get(`/redirects/analytics/redirect/${redirectId}/stats/browser-families`, {
+  return axiosClient.get(`/analytics/redirect/${redirectId}/stats/browser-families`, {
     params,
   });
 };
@@ -347,7 +347,7 @@ export const getDestinationUrlAnalytics = async (
   redirectId: string,
   params?: { start?: string; end?: string; limit?: number }
 ): Promise<AxiosResponse> => {
-  return axiosClient.get(`/redirects/analytics/redirect/${redirectId}/stats/destination-urls`, {
+  return axiosClient.get(`/analytics/redirect/${redirectId}/stats/destination-urls`, {
     params,
   });
 };
@@ -363,7 +363,7 @@ export const getPeakTrafficAnalytics = async (
   redirectId: string,
   params?: { start?: string; end?: string }
 ): Promise<AxiosResponse> => {
-  return axiosClient.get(`/redirects/analytics/redirect/${redirectId}/stats/peak-traffic`, {
+  return axiosClient.get(`/analytics/redirect/${redirectId}/stats/peak-traffic`, {
     params,
   });
 };
@@ -379,7 +379,7 @@ export const getReturnVisitorAnalytics = async (
   redirectId: string,
   params?: { start?: string; end?: string }
 ): Promise<AxiosResponse> => {
-  return axiosClient.get(`/redirects/analytics/redirect/${redirectId}/stats/return-visitors`, {
+  return axiosClient.get(`/analytics/redirect/${redirectId}/stats/return-visitors`, {
     params,
   });
 };
@@ -395,7 +395,7 @@ export const getErrorAnalytics = async (
   redirectId: string,
   params?: { start?: string; end?: string }
 ): Promise<AxiosResponse> => {
-  return axiosClient.get(`/redirects/analytics/redirect/${redirectId}/stats/errors`, {
+  return axiosClient.get(`/analytics/redirect/${redirectId}/stats/errors`, {
     params,
   });
 };
@@ -411,7 +411,7 @@ export const getBotAnalytics = async (
   redirectId: string,
   params?: { start?: string; end?: string }
 ): Promise<AxiosResponse> => {
-  return axiosClient.get(`/redirects/analytics/redirect/${redirectId}/stats/bots`, {
+  return axiosClient.get(`/analytics/redirect/${redirectId}/stats/bots`, {
     params,
   });
 };
@@ -427,7 +427,7 @@ export const getCampaignAnalytics = async (
   redirectId: string,
   params?: { start?: string; end?: string }
 ): Promise<AxiosResponse> => {
-  return axiosClient.get(`/redirects/analytics/redirect/${redirectId}/stats/campaigns`, {
+  return axiosClient.get(`/analytics/redirect/${redirectId}/stats/campaigns`, {
     params,
   });
 };
@@ -443,7 +443,7 @@ export const getLanguageAnalytics = async (
   redirectId: string,
   params?: { start?: string; end?: string }
 ): Promise<AxiosResponse> => {
-  return axiosClient.get(`/redirects/analytics/redirect/${redirectId}/stats/languages`, {
+  return axiosClient.get(`/analytics/redirect/${redirectId}/stats/languages`, {
     params,
   });
 };
@@ -461,7 +461,7 @@ export const getLanguageAnalytics = async (
  * @route GET /rules/redirect/:redirectId
  */
 export const getRulesForRedirect = async (redirectId: string): Promise<AxiosResponse> => {
-  return axiosClient.get(`/redirects/rules/redirect/${redirectId}`);
+  return axiosClient.get(`/rules/redirect/${redirectId}`);
 };
 
 /**
@@ -473,7 +473,7 @@ export const getRulesForRedirect = async (redirectId: string): Promise<AxiosResp
  * @route GET /rules/:ruleId
  */
 export const getRuleById = async (ruleId: string): Promise<AxiosResponse> => {
-  return axiosClient.get(`/redirects/rules/${ruleId}`);
+  return axiosClient.get(`/rules/${ruleId}`);
 };
 
 /**
@@ -489,7 +489,7 @@ export const createRule = async (
   redirectId: string,
   data: CreateRuleData
 ): Promise<AxiosResponse> => {
-  return axiosClient.post(`/redirects/rules/redirect/${redirectId}`, data);
+  return axiosClient.post(`/rules/redirect/${redirectId}`, data);
 };
 
 /**
@@ -502,7 +502,7 @@ export const createRule = async (
  * @route PUT /rules/:ruleId
  */
 export const updateRule = async (ruleId: string, data: UpdateRuleData): Promise<AxiosResponse> => {
-  return axiosClient.put(`/redirects/rules/${ruleId}`, data);
+  return axiosClient.put(`/rules/${ruleId}`, data);
 };
 
 /**
@@ -514,7 +514,7 @@ export const updateRule = async (ruleId: string, data: UpdateRuleData): Promise<
  * @route DELETE /rules/:ruleId
  */
 export const deleteRule = async (ruleId: string): Promise<AxiosResponse> => {
-  return axiosClient.delete(`/redirects/rules/${ruleId}`);
+  return axiosClient.delete(`/rules/${ruleId}`);
 };
 
 /**
@@ -530,7 +530,7 @@ export const reorderRules = async (
   redirectId: string,
   data: ReorderRulesRequest
 ): Promise<AxiosResponse> => {
-  return axiosClient.put(`/redirects/rules/redirect/${redirectId}/reorder`, data);
+  return axiosClient.put(`/rules/redirect/${redirectId}/reorder`, data);
 };
 
 /**
@@ -546,7 +546,7 @@ export const toggleRuleStatus = async (
   ruleId: string,
   data: ToggleRuleStatusRequest
 ): Promise<AxiosResponse> => {
-  return axiosClient.put(`/redirects/rules/${ruleId}/status`, data);
+  return axiosClient.put(`/rules/${ruleId}/status`, data);
 };
 
 /**
@@ -558,7 +558,7 @@ export const toggleRuleStatus = async (
  * @route POST /rules/:ruleId/duplicate
  */
 export const duplicateRule = async (ruleId: string): Promise<AxiosResponse> => {
-  return axiosClient.post(`/redirects/rules/${ruleId}/duplicate`);
+  return axiosClient.post(`/rules/${ruleId}/duplicate`);
 };
 
 /**
@@ -570,9 +570,7 @@ export const duplicateRule = async (ruleId: string): Promise<AxiosResponse> => {
  * @route GET /rules/attributes
  */
 export const getAttributesAndOperators = async (redirectId?: string): Promise<AxiosResponse> => {
-  const url = redirectId
-    ? `/redirects/rules/attributes?redirectId=${redirectId}`
-    : '/redirects/rules/attributes';
+  const url = redirectId ? `/rules/attributes?redirectId=${redirectId}` : '/rules/attributes';
   return axiosClient.get(url);
 };
 
@@ -589,7 +587,7 @@ export const getAttributeValues = async (
   redirectId: string,
   attribute: string
 ): Promise<AxiosResponse> => {
-  return axiosClient.get(`/redirects/rules/redirect/${redirectId}/attributes/${attribute}/values`);
+  return axiosClient.get(`/rules/redirect/${redirectId}/attributes/${attribute}/values`);
 };
 
 /**
@@ -605,7 +603,7 @@ export const testRuleEvaluation = async (
   redirectId: string,
   data: RuleTestRequest
 ): Promise<AxiosResponse> => {
-  return axiosClient.post(`/redirects/rules/redirect/${redirectId}/test`, data);
+  return axiosClient.post(`/rules/redirect/${redirectId}/test`, data);
 };
 
 /**
@@ -617,5 +615,5 @@ export const testRuleEvaluation = async (
  * @route GET /rules/redirect/:redirectId/analytics
  */
 export const getRuleAnalytics = async (redirectId: string): Promise<AxiosResponse> => {
-  return axiosClient.get(`/redirects/rules/redirect/${redirectId}/analytics`);
+  return axiosClient.get(`/rules/redirect/${redirectId}/analytics`);
 };

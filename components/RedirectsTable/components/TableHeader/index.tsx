@@ -17,6 +17,9 @@ export const Theader: React.FC<TableHeaderProps> = ({ onSelectAll }) => {
         <TableHead className="text-left p-4 text-text font-medium text-muted-foreground">
           Domain
         </TableHead>
+        <TableHead className="text-center p-4 text-text font-medium text-muted-foreground">
+          Usage
+        </TableHead>
         <TableHead className="text-right p-4 text-text font-medium text-muted-foreground">
           Status
         </TableHead>

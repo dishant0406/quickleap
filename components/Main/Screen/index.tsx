@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 
 import { GhostIcon } from 'lucide-react';
 
@@ -9,33 +9,50 @@ import LottiePlayer from '@/components/Micro/LottiePlayer';
 import LoginAvatar from '@/components/Navbar/Avatar/LoginAvatar';
 import RedirectsTable from '@/components/RedirectsTable';
 import { Button } from '@/components/ui/button';
-import useIsLoggedIn from '@/lib/hooks/useIsLogedIn';
 import useRedirectStore from '@/lib/zustand';
+import useUserStore from '@/lib/zustand/user';
 
 type Props = {
   redirectsServer: Redirect[];
 };
 
 const Screen = ({ redirectsServer }: Props) => {
-  const { redirects, setRedirects } = useRedirectStore();
-  const { isLoggedIn } = useIsLoggedIn();
-  const [loaclRedirects, setLocalRedirects] = useState<Redirect[]>([]);
+  const { redirects, fetchRedirects, fetching } = useRedirectStore();
+  const { isLoggedIn } = useUserStore();
 
   useEffect(() => {
-    if (redirectsServer) {
-      setRedirects(redirectsServer);
+    if (isLoggedIn) {
+      fetchRedirects();
     }
-  }, [redirectsServer, setRedirects]);
+  }, [isLoggedIn, fetchRedirects]);
 
-  useEffect(() => {
-    if (redirects?.length > 0) {
-      setLocalRedirects(redirects);
-    } else {
-      setLocalRedirects(redirectsServer || []);
-    }
-  }, [redirects, redirectsServer]);
+  // Determine which data source to use
+  const displayRedirects = redirects && redirects.length > 0 ? redirects : redirectsServer;
+  const hasRedirects = displayRedirects && displayRedirects.length > 0;
 
-  if (!redirects || redirects.length === 0 || !isLoggedIn) {
+  // Show loading only when fetching and no data available
+  if (fetching && !hasRedirects) {
+    return (
+      <div className="h-main flex flex-col items-center justify-center">
+        <LottiePlayer
+          autoplay
+          loop
+          className="-mt-[10vh] h-[200px] w-[200px]"
+          height={200}
+          speed={1}
+          src="/Loader.lottie"
+          width={200}
+        />
+        <div className="text-center mt-4">
+          <h2 className="text-xl font-bold">Loading Redirects...</h2>
+          <p className="text-gray-400 mb-4 mt-2">Please wait while we fetch your redirects</p>
+        </div>
+      </div>
+    );
+  }
+
+  // Show empty state
+  if (!hasRedirects) {
     return (
       <div className="h-main flex flex-col items-center justify-center">
         <LottiePlayer
@@ -70,6 +87,7 @@ const Screen = ({ redirectsServer }: Props) => {
     );
   }
 
+  // Show redirects table
   return (
     <div className="h-main mt-nav overflow-y-auto p-4 md:p-8">
       <div className="w-full flex items-center justify-between">
@@ -79,7 +97,7 @@ const Screen = ({ redirectsServer }: Props) => {
         </div>
       </div>
       <div className="w-full mt-8">
-        <RedirectsTable redirects={loaclRedirects} />
+        <RedirectsTable redirects={displayRedirects} />
       </div>
     </div>
   );
