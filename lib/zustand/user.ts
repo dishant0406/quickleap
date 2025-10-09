@@ -7,7 +7,7 @@ const useUserStore = create<{
   setUser: (user: UserResponse | null) => void;
   fetchUser: () => Promise<void>;
   isLoggedIn: boolean;
-}>((set, get) => ({
+}>((set) => ({
   user: null,
   setUser: (user) =>
     set({
