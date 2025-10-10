@@ -1,10 +1,12 @@
 import axios from 'axios';
 import Cookies from 'js-cookie';
 
+import { env } from '@/lib/env';
+
 import { trimStringValues } from '..';
 
 const axiosClient = axios.create({
-  baseURL: process.env.NEXT_PUBLIC_LAZYWEB_BACKEND_URL,
+  baseURL: env.NEXT_PUBLIC_LAZYWEB_BACKEND_URL,
   headers: {
     'Content-Type': 'application/json',
   },

@@ -1,6 +1,8 @@
 import axios from 'axios';
 import { cookies } from 'next/headers';
 
+import { env } from '@/lib/env';
+
 import { trimStringValues } from '..';
 
 import type { AxiosError, AxiosInstance, AxiosRequestConfig } from 'axios';
@@ -24,7 +26,7 @@ class ApiClient {
 
   constructor() {
     this.instance = axios.create({
-      baseURL: process.env.NEXT_PUBLIC_LAZYWEB_BACKEND_URL,
+      baseURL: env.NEXT_PUBLIC_LAZYWEB_BACKEND_URL,
       headers: {
         'Content-Type': 'application/json',
       },
