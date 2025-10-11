@@ -1,7 +1,6 @@
 'use client';
 
 import { GithubIcon } from 'lucide-react';
-import { useRouter } from 'next/navigation';
 import Session from 'supertokens-web-js/recipe/session';
 
 import { Button } from '@/components/ui/button';
@@ -14,21 +13,20 @@ import AvatarWithToolTip from '.';
 const LoginAvatar: React.FC<{
   user?: User;
   children?: React.ReactNode;
-}> = ({ user, children }) => {
-  const router = useRouter();
-  const { fetchUser, isLoggedIn } = useUserStore();
+}> = ({ children }) => {
+  const { fetchUser, isLoggedIn, user } = useUserStore();
 
   const handleLogout = async () => {
     await Session.signOut();
 
     await fetchUser();
-    router.replace('/app');
+    window?.location?.reload();
   };
 
   if (isLoggedIn) {
     return (
       <Popover>
-        <PopoverTrigger>{children || <AvatarWithToolTip user={user} />}</PopoverTrigger>
+        <PopoverTrigger>{children || <AvatarWithToolTip user={user?.user} />}</PopoverTrigger>
         <PopoverContent className="w-80" sideOffset={5}>
           <div className="grid gap-4">
             <div className="space-y-2">
