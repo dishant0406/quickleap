@@ -1,27 +1,40 @@
 'use client';
 
-import type { JSX } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 
-import { ArrowDownRight, ArrowUpRight, BarChart3, Clock, Globe, Users } from 'lucide-react';
+import {
+  ArrowDownRight,
+  ArrowUpRight,
+  BarChart3,
+  Clock,
+  Globe,
+  MonitorSmartphone,
+  Settings,
+  Shield,
+  Target,
+  Users,
+} from 'lucide-react';
 
 import Loader from '@/components/Micro/Loader';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import {
-  ANALYTICS_TABS,
-  DAILY_TRAFFIC_AREAS,
-  HOURLY_TRAFFIC_BARS,
-  PIE_CHART_COLORS,
-  TABLE_COLUMNS,
-  VISITS_OVER_TIME_AREAS,
-} from '@/lib/constants/analytics';
-import {
-  getBrowsersForPieChart,
-  getDevicesForPieChart,
-  getOsForPieChart,
-  getTrend,
-} from '@/lib/helpers/analytics';
-import { useAnalytics } from '@/lib/hooks/useAnalytics';
-import { formatTimeForChart } from '@/utils/dateUtils';
+  getBotAnalytics,
+  getCampaignAnalytics,
+  getComparisonAnalytics,
+  getDashboardSummary,
+  getDestinationUrlAnalytics,
+  getDeviceInfo,
+  getErrorAnalytics,
+  getGeographicData,
+  getHitsOverTime,
+  getHourlyTraffic,
+  getLanguageAnalytics,
+  getPeakTrafficAnalytics,
+  getReferrerData,
+  getReturnVisitorAnalytics,
+} from '@/lib/api';
+import type { DateRangeType } from '@/utils/dateUtils';
+import { formatTimeForChart, getDateRange } from '@/utils/dateUtils';
 
 import RulesManager from '../Rules';
 import { Card } from '../ui/card';
@@ -40,30 +53,198 @@ import ReturnVisitors from './ReturnVisitors';
 import StatsCard from './StatsCard';
 import WorldMap from './WorldMap';
 
-import type { AnalyticsDashboardProps } from './type';
+// Import Rules components for the Rules tab
 
-const AnalyticsDashboard = ({ redirectId }: AnalyticsDashboardProps): JSX.Element => {
-  const {
-    dateRangeType,
-    isLoading,
-    activeTab,
-    setActiveTab,
-    dashboardData,
-    timeData,
-    deviceData,
-    geoData,
-    referrerData,
-    hourlyData,
-    comparisonData,
-    destinationUrlData,
-    peakTrafficData,
-    returnVisitorData,
-    errorData,
-    botData,
-    campaignData,
-    languageData,
-    handleDateRangeChange,
-  } = useAnalytics(redirectId);
+import type {
+  AnalyticsBreakdown,
+  AnalyticsData,
+  BotAnalyticsData,
+  CampaignAnalyticsData,
+  DestinationUrlAnalyticsData,
+  ErrorAnalyticsData,
+  HourlyStatsData,
+  IntervalAnalyticsData,
+  LanguageAnalyticsData,
+  LocationAnalyticsData,
+  PeakTrafficAnalyticsData,
+  PeriodComparisonData,
+  ReferrerAnalyticsData,
+  ReturnVisitorAnalyticsData,
+} from './type';
+
+interface AnalyticsDashboardProps {
+  redirectId: string;
+}
+
+const AnalyticsDashboard: React.FC<AnalyticsDashboardProps> = ({ redirectId }) => {
+  const [dateRangeType, setDateRangeType] = useState<DateRangeType>('last30Days');
+  const [dateRange, setDateRange] = useState(() => getDateRange(dateRangeType));
+  const [isLoading, setIsLoading] = useState(true);
+  const [activeTab, setActiveTab] = useState('overview');
+
+  // Analytics data states
+  const [dashboardData, setDashboardData] = useState<AnalyticsData | null>(null);
+  const [timeData, setTimeData] = useState<IntervalAnalyticsData | null>(null);
+  const [deviceData, setDeviceData] = useState<AnalyticsBreakdown | null>(null);
+  const [geoData, setGeoData] = useState<LocationAnalyticsData | null>(null);
+  const [referrerData, setReferrerData] = useState<ReferrerAnalyticsData | null>(null);
+  const [hourlyData, setHourlyData] = useState<HourlyStatsData | null>(null);
+  const [comparisonData, setComparisonData] = useState<PeriodComparisonData | null>(null);
+
+  // New analytics data states
+  const [destinationUrlData, setDestinationUrlData] = useState<DestinationUrlAnalyticsData | null>(
+    null
+  );
+  const [peakTrafficData, setPeakTrafficData] = useState<PeakTrafficAnalyticsData | null>(null);
+  const [returnVisitorData, setReturnVisitorData] = useState<ReturnVisitorAnalyticsData | null>(
+    null
+  );
+  const [errorData, setErrorData] = useState<ErrorAnalyticsData | null>(null);
+  const [botData, setBotData] = useState<BotAnalyticsData | null>(null);
+  const [campaignData, setCampaignData] = useState<CampaignAnalyticsData | null>(null);
+  const [languageData, setLanguageData] = useState<LanguageAnalyticsData | null>(null);
+
+  // Handle date range changes
+  const handleDateRangeChange = (start: Date, end: Date, type: DateRangeType): void => {
+    setDateRangeType(type);
+    setDateRange({ start, end });
+    loadData(start, end);
+  };
+
+  // Load dashboard data
+  const loadData = useCallback(
+    async (start: Date, end: Date): Promise<void> => {
+      setIsLoading(true);
+      try {
+        const params = {
+          start: start.toISOString(),
+          end: end.toISOString(),
+        };
+
+        // Load existing dashboard overview data
+        const dashboard = await getDashboardSummary(redirectId + '', params);
+        setDashboardData(dashboard.data);
+
+        // Load time series data
+        const timeStats = await getHitsOverTime(redirectId, {
+          ...params,
+          interval: 'day',
+        });
+        setTimeData(timeStats.data || []);
+
+        // Load device data
+        const deviceStats = await getDeviceInfo(redirectId, params);
+        setDeviceData(deviceStats.data);
+
+        // Load geographic data
+        const geoStats = await getGeographicData(redirectId, params);
+        setGeoData(geoStats.data);
+
+        // Load referrer data
+        const referrerStats = await getReferrerData(redirectId, params);
+        setReferrerData(referrerStats.data);
+
+        // Load hourly data
+        const hourlyStats = await getHourlyTraffic(redirectId, params);
+        setHourlyData(hourlyStats.data);
+
+        // Load comparison data
+        const comparisonStats = await getComparisonAnalytics(redirectId, params);
+        setComparisonData(comparisonStats.data);
+
+        // Load new analytics data
+        const destinationUrlStats = await getDestinationUrlAnalytics(redirectId, {
+          ...params,
+          limit: 10,
+        });
+        setDestinationUrlData(destinationUrlStats.data);
+
+        const peakTrafficStats = await getPeakTrafficAnalytics(redirectId, params);
+        setPeakTrafficData(peakTrafficStats.data);
+
+        const returnVisitorStats = await getReturnVisitorAnalytics(redirectId, params);
+        setReturnVisitorData(returnVisitorStats.data);
+
+        const errorStats = await getErrorAnalytics(redirectId, params);
+        setErrorData(errorStats.data);
+
+        const botStats = await getBotAnalytics(redirectId, params);
+        setBotData(botStats.data);
+
+        const campaignStats = await getCampaignAnalytics(redirectId, params);
+        setCampaignData(campaignStats.data);
+
+        const languageStats = await getLanguageAnalytics(redirectId, params);
+        setLanguageData(languageStats.data);
+      } catch (error) {
+        console.error('Error loading analytics data:', error);
+      } finally {
+        setIsLoading(false);
+      }
+    },
+    [redirectId]
+  );
+
+  // Load data on component mount
+  useEffect(() => {
+    loadData(dateRange.start, dateRange.end);
+  }, [redirectId, dateRange.start, dateRange.end, loadData]);
+
+  // Calculate period-over-period trends
+  const getTrend = (metric: string): { value: number; isPositive: boolean } | undefined => {
+    if (!comparisonData) return undefined;
+
+    let comparison = 0;
+
+    switch (metric) {
+      case 'totalHits':
+        comparison = comparisonData.comparison.hitGrowth;
+        break;
+      case 'dailyAverage':
+        comparison = comparisonData.comparison.dailyAverageGrowth;
+        break;
+      default:
+        return undefined;
+    }
+
+    return {
+      value: Math.abs(parseFloat(comparison.toFixed(1))),
+      isPositive: comparison > 0,
+    };
+  };
+
+  // Format device data for pie chart
+  const getDevicesForPieChart = (): Array<{ name: string; value: number; percentage: number }> => {
+    if (!deviceData || !deviceData.devices) return [];
+
+    return deviceData.devices.map((device) => ({
+      name: device.name,
+      value: device.count,
+      percentage: device.percentage,
+    }));
+  };
+
+  // Format browser data for pie chart
+  const getBrowsersForPieChart = (): Array<{ name: string; value: number; percentage: number }> => {
+    if (!deviceData || !deviceData.browsers) return [];
+
+    return deviceData.browsers.map((browser) => ({
+      name: browser.name,
+      value: browser.count,
+      percentage: browser.percentage,
+    }));
+  };
+
+  // Format OS data for pie chart
+  const getOsForPieChart = (): Array<{ name: string; value: number; percentage: number }> => {
+    if (!deviceData || !deviceData.operatingSystems) return [];
+
+    return deviceData.operatingSystems.map((os) => ({
+      name: os.name,
+      value: os.count,
+      percentage: os.percentage,
+    }));
+  };
 
   // Show loader while initial data is loading
   if (isLoading && !dashboardData) {
@@ -86,16 +267,34 @@ const AnalyticsDashboard = ({ redirectId }: AnalyticsDashboardProps): JSX.Elemen
 
       <Tabs defaultValue="overview" value={activeTab} onValueChange={setActiveTab}>
         <TabsList className="flex-wrap sm:flex-nowrap lg:w-fit">
-          {ANALYTICS_TABS.map((tab) => (
-            <TabsTrigger
-              key={tab.value}
-              className="flex items-center gap-1 px-2 sm:gap-2 sm:px-3"
-              value={tab.value}
-            >
-              {tab.icon}
-              <span className="hidden sm:inline">{tab.label}</span>
-            </TabsTrigger>
-          ))}
+          <TabsTrigger className="flex items-center gap-1 px-2 sm:gap-2 sm:px-3" value="overview">
+            <BarChart3 className="h-4 w-4" />
+            <span className="hidden sm:inline">Overview</span>
+          </TabsTrigger>
+          <TabsTrigger className="flex items-center gap-1 px-2 sm:gap-2 sm:px-3" value="audience">
+            <Users className="h-4 w-4" />
+            <span className="hidden sm:inline">Audience</span>
+          </TabsTrigger>
+          <TabsTrigger className="flex items-center gap-1 px-2 sm:gap-2 sm:px-3" value="technology">
+            <MonitorSmartphone className="h-4 w-4" />
+            <span className="hidden sm:inline">Technology</span>
+          </TabsTrigger>
+          <TabsTrigger className="flex items-center gap-1 px-2 sm:gap-2 sm:px-3" value="timing">
+            <Clock className="h-4 w-4" />
+            <span className="hidden sm:inline">Timing</span>
+          </TabsTrigger>
+          <TabsTrigger className="flex items-center gap-1 px-2 sm:gap-2 sm:px-3" value="advanced">
+            <Settings className="h-4 w-4" />
+            <span className="hidden sm:inline">Advanced</span>
+          </TabsTrigger>
+          <TabsTrigger className="flex items-center gap-1 px-2 sm:gap-2 sm:px-3" value="quality">
+            <Shield className="h-4 w-4" />
+            <span className="hidden sm:inline">Quality</span>
+          </TabsTrigger>
+          <TabsTrigger className="flex items-center gap-1 px-2 sm:gap-2 sm:px-3" value="rules">
+            <Target className="h-4 w-4" />
+            <span className="hidden sm:inline">Rules</span>
+          </TabsTrigger>
         </TabsList>
 
         {/* OVERVIEW TAB */}
@@ -107,7 +306,7 @@ const AnalyticsDashboard = ({ redirectId }: AnalyticsDashboardProps): JSX.Elemen
               isLoading={isLoading}
               title="Total Visits"
               tooltipContent="Total number of times your redirect link was accessed"
-              trend={getTrend('totalHits', comparisonData)}
+              trend={getTrend('totalHits')}
               value={dashboardData?.overview?.totalHits || 0}
             />
             <StatsCard
@@ -120,7 +319,7 @@ const AnalyticsDashboard = ({ redirectId }: AnalyticsDashboardProps): JSX.Elemen
             />
             <StatsCard
               description="Automated traffic"
-              icon={<BarChart3 className="h-4 w-4" />}
+              icon={<MonitorSmartphone className="h-4 w-4" />}
               isLoading={isLoading}
               title="Bot Percentage"
               tooltipContent="Percentage of visits from known bots and crawlers"
@@ -132,14 +331,17 @@ const AnalyticsDashboard = ({ redirectId }: AnalyticsDashboardProps): JSX.Elemen
               isLoading={isLoading}
               title="Avg. Daily Visits"
               tooltipContent="Average number of daily visits during the selected period"
-              trend={getTrend('dailyAverage', comparisonData)}
+              trend={getTrend('dailyAverage')}
               value={Math.round(comparisonData?.currentPeriod?.dailyAverage || 0)}
             />
           </div>
 
           <div className="flex flex-col md:flex-row gap-4 items-stretch">
             <AreaChart
-              areas={VISITS_OVER_TIME_AREAS}
+              areas={[
+                { key: 'count', color: '#ffdc58', name: 'Total Visits' },
+                { key: 'uniqueVisitors', color: '#e6c64f', name: 'Unique Visitors' },
+              ]}
               className="flex-1 min-w-0"
               data={timeData?.data || []}
               isLoading={isLoading}
@@ -155,19 +357,43 @@ const AnalyticsDashboard = ({ redirectId }: AnalyticsDashboardProps): JSX.Elemen
 
           <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
             <DataTable
-              columns={TABLE_COLUMNS.countries}
+              columns={[
+                { key: 'location', title: 'Country' },
+                { key: 'count', title: 'Visits' },
+                {
+                  key: 'percentage',
+                  title: 'Percentage',
+                  render: (value) => `${value}%`,
+                },
+              ]}
               data={(geoData?.data || []).slice(0, 6)}
               isLoading={isLoading}
               title="Top Countries"
             />
             <DataTable
-              columns={TABLE_COLUMNS.referrers}
+              columns={[
+                { key: 'referrer', title: 'Source' },
+                { key: 'count', title: 'Visits' },
+                {
+                  key: 'percentage',
+                  title: 'Percentage',
+                  render: (value) => `${value}%`,
+                },
+              ]}
               data={(referrerData?.data || []).slice(0, 6)}
               isLoading={isLoading}
               title="Top Referrers"
             />
             <DataTable
-              columns={TABLE_COLUMNS.devices}
+              columns={[
+                { key: 'name', title: 'Device' },
+                { key: 'count', title: 'Visits' },
+                {
+                  key: 'percentage',
+                  title: 'Percentage',
+                  render: (value) => `${value}%`,
+                },
+              ]}
               data={deviceData?.devices?.slice(0, 6) || []}
               isLoading={isLoading}
               title="Top Devices"
@@ -213,14 +439,31 @@ const AnalyticsDashboard = ({ redirectId }: AnalyticsDashboardProps): JSX.Elemen
             />
 
             <DataTable
-              columns={TABLE_COLUMNS.countriesDetailed}
+              columns={[
+                { key: 'location', title: 'Country' },
+                { key: 'count', title: 'Visits' },
+                { key: 'uniqueVisitors', title: 'Unique Visitors' },
+                {
+                  key: 'percentage',
+                  title: 'Percentage',
+                  render: (value) => `${value}%`,
+                },
+              ]}
               data={(geoData?.data || []).slice(0, 10)}
               isLoading={isLoading}
               title="Countries Breakdown"
             />
 
             <DataTable
-              columns={TABLE_COLUMNS.referrers}
+              columns={[
+                { key: 'referrer', title: 'Source' },
+                { key: 'count', title: 'Visits' },
+                {
+                  key: 'percentage',
+                  title: 'Percentage',
+                  render: (value) => `${value}%`,
+                },
+              ]}
               data={referrerData?.data || []}
               isLoading={isLoading}
               title="Referrer Sources"
@@ -228,7 +471,15 @@ const AnalyticsDashboard = ({ redirectId }: AnalyticsDashboardProps): JSX.Elemen
           </div>
 
           <DataTable
-            columns={TABLE_COLUMNS.languages}
+            columns={[
+              { key: 'language', title: 'Language' },
+              { key: 'count', title: 'Visits' },
+              {
+                key: 'percentage',
+                title: 'Percentage',
+                render: (value) => `${value}%`,
+              },
+            ]}
             data={(languageData?.data || []).slice(0, 10)}
             isLoading={isLoading}
             title="Visitor Languages"
@@ -239,21 +490,21 @@ const AnalyticsDashboard = ({ redirectId }: AnalyticsDashboardProps): JSX.Elemen
         <TabsContent className="space-y-6" value="technology">
           <div className="grid gap-4 md:grid-cols-3">
             <PieChart
-              data={getDevicesForPieChart(deviceData)}
+              data={getDevicesForPieChart()}
               isLoading={isLoading}
               title="Device Distribution"
             />
 
             <PieChart
-              colors={PIE_CHART_COLORS.browser}
-              data={getBrowsersForPieChart(deviceData)}
+              colors={['#33C3F0', '#F97316', '#10B981', '#9b87f5', '#F59E0B']}
+              data={getBrowsersForPieChart()}
               isLoading={isLoading}
               title="Browser Distribution"
             />
 
             <PieChart
-              colors={PIE_CHART_COLORS.os}
-              data={getOsForPieChart(deviceData)}
+              colors={['#10B981', '#33C3F0', '#F97316', '#9b87f5', '#F59E0B']}
+              data={getOsForPieChart()}
               isLoading={isLoading}
               title="OS Distribution"
             />
@@ -261,14 +512,30 @@ const AnalyticsDashboard = ({ redirectId }: AnalyticsDashboardProps): JSX.Elemen
 
           <div className="grid gap-4 md:grid-cols-2">
             <DataTable
-              columns={TABLE_COLUMNS.browsers}
+              columns={[
+                { key: 'name', title: 'Browser' },
+                { key: 'count', title: 'Visits' },
+                {
+                  key: 'percentage',
+                  title: 'Percentage',
+                  render: (value) => `${value}%`,
+                },
+              ]}
               data={deviceData?.browsers || []}
               isLoading={isLoading}
               title="Browsers Breakdown"
             />
 
             <DataTable
-              columns={TABLE_COLUMNS.operatingSystems}
+              columns={[
+                { key: 'name', title: 'OS' },
+                { key: 'count', title: 'Visits' },
+                {
+                  key: 'percentage',
+                  title: 'Percentage',
+                  render: (value) => `${value}%`,
+                },
+              ]}
               data={deviceData?.operatingSystems || []}
               isLoading={isLoading}
               title="Operating Systems"
@@ -300,7 +567,7 @@ const AnalyticsDashboard = ({ redirectId }: AnalyticsDashboardProps): JSX.Elemen
               description="Per day in selected period"
               isLoading={isLoading}
               title="Average Daily Visits"
-              trend={getTrend('dailyAverage', comparisonData)}
+              trend={getTrend('dailyAverage')}
               value={Math.round(comparisonData?.currentPeriod?.dailyAverage || 0)}
             />
 
@@ -308,21 +575,21 @@ const AnalyticsDashboard = ({ redirectId }: AnalyticsDashboardProps): JSX.Elemen
               description={`Total for ${comparisonData?.currentPeriod?.label || 'selected period'}`}
               isLoading={isLoading}
               title="Period Total"
-              trend={getTrend('totalHits', comparisonData)}
+              trend={getTrend('totalHits')}
               value={comparisonData?.currentPeriod?.totalHits || 0}
             />
           </div>
 
           <div className="grid gap-4">
             <AreaChart
-              areas={DAILY_TRAFFIC_AREAS}
+              areas={[{ key: 'count', color: '#e6c64f', name: 'Total Visits' }]}
               data={timeData?.data || []}
               isLoading={isLoading}
               title="Daily Traffic"
             />
 
             <BarChart
-              bars={HOURLY_TRAFFIC_BARS}
+              bars={[{ key: 'count', color: '#ffebc0', name: 'Visits' }]}
               data={hourlyData?.hourlyStats || []}
               isLoading={isLoading}
               title="Hourly Traffic Distribution"

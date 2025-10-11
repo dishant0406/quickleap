@@ -3,6 +3,9 @@ export function isValidEmail(email: string): boolean {
   return emailRegex.test(email);
 }
 
+// Export analytics helpers
+export * from './analytics';
+
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export const trimStringValues = (data: any): any => {
   if (typeof data === 'string') return data.trim();

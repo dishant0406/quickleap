@@ -227,3 +227,30 @@ export type BrowserFamilyAnalyticsData = {
     percentage: number;
   }>;
 };
+
+/**
+ * Component props
+ */
+export interface AnalyticsDashboardProps {
+  redirectId: string;
+}
+
+/**
+ * Analytics state interface for managing all analytics data
+ */
+export interface AnalyticsState {
+  dashboardData: AnalyticsData | null;
+  timeData: IntervalAnalyticsData | null;
+  deviceData: AnalyticsBreakdown | null;
+  geoData: LocationAnalyticsData | null;
+  referrerData: ReferrerAnalyticsData | null;
+  hourlyData: HourlyStatsData | null;
+  comparisonData: PeriodComparisonData | null;
+  destinationUrlData: DestinationUrlAnalyticsData | null;
+  peakTrafficData: PeakTrafficAnalyticsData | null;
+  returnVisitorData: ReturnVisitorAnalyticsData | null;
+  errorData: ErrorAnalyticsData | null;
+  botData: BotAnalyticsData | null;
+  campaignData: CampaignAnalyticsData | null;
+  languageData: LanguageAnalyticsData | null;
+}

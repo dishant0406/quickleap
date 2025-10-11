@@ -1,11 +1,12 @@
 'use client';
 
+import type { JSX } from 'react';
 import { useEffect } from 'react';
 
 import { GhostIcon } from 'lucide-react';
 
 import CreateRedirect from '@/components/Micro/CreateRedirect';
-import LottiePlayer from '@/components/Micro/LottiePlayer';
+import Loader from '@/components/Micro/Loader';
 import LoginAvatar from '@/components/Navbar/Avatar/LoginAvatar';
 import RedirectsTable from '@/components/RedirectsTable';
 import { Button } from '@/components/ui/button';
@@ -16,7 +17,7 @@ type Props = {
   redirectsServer: Redirect[];
 };
 
-const Screen = ({ redirectsServer }: Props) => {
+const Screen = ({ redirectsServer }: Props): JSX.Element => {
   const { redirects, fetchRedirects, fetching } = useRedirectStore();
   const { isLoggedIn } = useUserStore();
 
@@ -33,37 +34,18 @@ const Screen = ({ redirectsServer }: Props) => {
   // Show loading only when fetching and no data available
   if (fetching && !hasRedirects) {
     return (
-      <div className="h-main flex flex-col items-center justify-center">
-        <LottiePlayer
-          autoplay
-          loop
-          className="-mt-[10vh] h-[200px] w-[200px]"
-          height={200}
-          speed={1}
-          src="/Loader.lottie"
-          width={200}
-        />
-        <div className="text-center mt-4">
-          <h2 className="text-xl font-bold">Loading Redirects...</h2>
-          <p className="text-gray-400 mb-4 mt-2">Please wait while we fetch your redirects</p>
-        </div>
-      </div>
+      <Loader
+        description="Please wait while we fetch your redirects"
+        size={200}
+        title="Loading Redirects..."
+      />
     );
   }
 
   // Show empty state
   if (!hasRedirects) {
     return (
-      <div className="h-main flex flex-col items-center justify-center">
-        <LottiePlayer
-          autoplay
-          loop
-          className="-mt-[10vh] h-[400px] w-[400px]"
-          height={200}
-          speed={1}
-          src="/no-data.lottie"
-          width={200}
-        />
+      <Loader lottieClassName="h-[400px] w-[400px]" lottiePath="/no-data.lottie" size={200}>
         <div className="text-center mt-4">
           <h2 className="text-xl font-bold">
             {isLoggedIn ? 'No Redirects Found' : 'Sign in to get started'}
@@ -83,7 +65,7 @@ const Screen = ({ redirectsServer }: Props) => {
             </LoginAvatar>
           )}
         </div>
-      </div>
+      </Loader>
     );
   }
 

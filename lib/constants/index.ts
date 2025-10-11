@@ -4,3 +4,6 @@ export enum RedirectType {
   Permanent = 'permanent',
   Temporary = 'temporary',
 }
+
+// Export analytics constants
+export * from './analytics';
