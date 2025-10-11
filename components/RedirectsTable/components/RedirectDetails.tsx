@@ -114,7 +114,7 @@ export const RedirectDetails: React.FC<RedirectDetailsProps> = ({ redirect }) =>
               <div className="flex items-center justify-between">
                 <span className="text-sm text-muted-foreground">Estimated Total</span>
                 <Badge variant="neutral">
-                  {redirect.analyticsUsage.estimatedTotalHits.toLocaleString()}
+                  {redirect.analyticsUsage.recordedHits.toLocaleString()}
                 </Badge>
               </div>
             </div>

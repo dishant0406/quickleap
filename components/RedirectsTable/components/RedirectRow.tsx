@@ -168,7 +168,7 @@ export const RedirectRow: React.FC<RedirectRowProps> = ({
             <div className="flex flex-col items-center gap-1.5 min-w-[140px]">
               <div className="w-full flex items-center justify-center gap-2">
                 <span className="text-xs font-bold font-medium text-foreground">
-                  {redirect.analyticsUsage.estimatedTotalHits.toLocaleString()}
+                  {redirect.analyticsUsage.recordedHits.toLocaleString()}
                 </span>
                 <span className="text-xs font-bold text-muted-foreground">/</span>
                 <span className="text-xs font-bold text-muted-foreground">
