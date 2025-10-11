@@ -108,12 +108,15 @@ export const CreateRedirectModal: React.FC<ModalProps> = ({ isOpen, setIsOpen, r
     if (redirect) {
       setFormData({
         fromDomain: formatUrl(redirect.fromDomain)?.formattedUrl || '',
-        toDomain: formatUrl(redirect.toDomain)?.formattedUrl,
+        toDomain: formatUrl(redirect.toDomain)?.formattedUrl || '',
         redirectType: redirect.redirectType,
         pathForwarding: redirect.pathForwarding,
         queryForwarding: redirect.queryForwarding,
         samplingRate: redirect.samplingRate ?? 1,
       });
+    } else {
+      // Reset to initial state when creating a new redirect
+      setFormData(initialState);
     }
   }, [redirect, setFormData]);
 
@@ -298,14 +301,14 @@ export const CreateRedirectModal: React.FC<ModalProps> = ({ isOpen, setIsOpen, r
         </div>
         <div className="flex flex-col gap-2">
           <Label htmlFor="samplingRate">
-            Sampling Rate: {(formData.samplingRate * 100).toFixed(0)}%
+            Sampling Rate: {((formData.samplingRate ?? 1) * 100).toFixed(0)}%
           </Label>
           <Slider
             id="samplingRate"
             max={1}
             min={0}
             step={0.01}
-            value={[formData.samplingRate]}
+            value={[formData.samplingRate ?? 1]}
             onValueChange={(value) => handleChange('samplingRate', value[0])}
           />
           <p className="text-sm text-muted-foreground">
