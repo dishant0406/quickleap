@@ -54,7 +54,7 @@ export const handleGithubCallback = async (
         // sign in successful
       }
       await fetchUser();
-      router.push('/app');
+      router.replace('/app');
     } else if (response.status === 'SIGN_IN_UP_NOT_ALLOWED') {
       // the reason string is a user friendly message
       // about what went wrong. It can also contain a support code which users
