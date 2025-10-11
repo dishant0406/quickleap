@@ -1,15 +1,17 @@
+import { env } from '@/lib/env';
+
 import type { MetadataRoute } from 'next';
 
 export default function sitemap(): MetadataRoute.Sitemap {
   return [
     {
-      url: 'https://quickleap.io',
+      url: env.NEXT_PUBLIC_SITE_URL,
       lastModified: new Date(),
       changeFrequency: 'daily',
       priority: 1,
     },
     {
-      url: 'https://quickleap.io/app',
+      url: `${env.NEXT_PUBLIC_SITE_URL}/app`,
       lastModified: new Date(),
       changeFrequency: 'daily',
       priority: 0.8,

@@ -2,6 +2,7 @@
 
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import Tooltip from '@/components/ui/tooltip';
+import { env } from '@/lib/env';
 import useUserStore from '@/lib/zustand/user';
 
 type UserAvatarProps = {
@@ -17,7 +18,7 @@ const UserAvatar: React.FC<UserAvatarProps> = ({
     <div className="relative">
       <Avatar className="border rounded-full border-input bg-input overflow-hidden">
         <AvatarImage
-          src={`https://api.dicebear.com/9.x/adventurer-neutral/svg?seed=${email}&backgroundColor=ffdc58,c0aede,d1d4f9`}
+          src={`${env.NEXT_PUBLIC_DICEBEAR_API_URL}/svg?seed=${email}&backgroundColor=ffdc58,c0aede,d1d4f9`}
         />
         <AvatarFallback className="w-full h-full flex items-center rounded-full justify-center">
           {email?.charAt(0).toUpperCase()}

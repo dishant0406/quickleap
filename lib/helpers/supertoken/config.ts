@@ -6,6 +6,7 @@ import ThirdParty, {
 } from 'supertokens-web-js/recipe/thirdparty';
 
 import { appInfo } from '@/lib/constants/appInfo';
+import { env } from '@/lib/env';
 
 import type { AppRouterInstance } from 'next/dist/shared/lib/app-router-context.shared-runtime';
 import type { SuperTokensConfig } from 'supertokens-web-js/types';
@@ -24,7 +25,7 @@ export const githubSignInClicked = async () => {
 
       // This is where GitHub should redirect the user back after login or error.
       // This URL goes on the GitHub's dashboard as well.
-      frontendRedirectURI: 'https://local.quickleap.io/auth/callback/github',
+      frontendRedirectURI: env.NEXT_PUBLIC_GITHUB_CALLBACK_URI,
     });
 
     // we redirect the user to github for auth.

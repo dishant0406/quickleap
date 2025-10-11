@@ -1,5 +1,7 @@
 import React, { useEffect, useRef } from 'react';
 
+import { env } from '@/lib/env';
+
 type CountryValue = {
   [key: string]: number | string | undefined;
   link?: string;
@@ -66,7 +68,7 @@ const SVGMap: React.FC<SVGMapProps> = ({
   colorMin = '#FFE5D9',
   colorNoData = '#E2E2E2',
   flagType = 'image',
-  flagURL = 'https://cdn.jsdelivr.net/gh/hjnilsson/country-flags@latest/svg/{0}.svg',
+  flagURL = `${env.NEXT_PUBLIC_COUNTRY_FLAGS_CDN}/{0}.svg`,
   hideFlag = false,
   noDataText = 'No data available',
   touchLink = false,
