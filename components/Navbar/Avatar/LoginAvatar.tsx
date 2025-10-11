@@ -7,6 +7,7 @@ import Session from 'supertokens-web-js/recipe/session';
 import { Button } from '@/components/ui/button';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { githubSignInClicked } from '@/lib/helpers/supertoken/config';
+import useUserStore from '@/lib/zustand/user';
 
 import AvatarWithToolTip from '.';
 
@@ -15,14 +16,16 @@ const LoginAvatar: React.FC<{
   children?: React.ReactNode;
 }> = ({ user, children }) => {
   const router = useRouter();
+  const { fetchUser, isLoggedIn } = useUserStore();
 
   const handleLogout = async () => {
     await Session.signOut();
 
+    await fetchUser();
     router.replace('/app');
   };
 
-  if (user) {
+  if (isLoggedIn) {
     return (
       <Popover>
         <PopoverTrigger>{children || <AvatarWithToolTip user={user} />}</PopoverTrigger>

@@ -23,6 +23,7 @@ const useUserStore = create<{
       });
     } catch (error) {
       console.error('Error fetching user:', error);
+      set({ user: null, isLoggedIn: false });
     }
   },
   isLoggedIn: false,
