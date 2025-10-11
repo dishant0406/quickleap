@@ -6,11 +6,13 @@ import { GithubIcon } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 
 import { handleGithubCallback } from '@/lib/helpers/supertoken/config';
+import useUserStore from '@/lib/zustand/user';
 
 const Github = () => {
   const router = useRouter();
+  const { fetchUser } = useUserStore();
   useEffect(() => {
-    handleGithubCallback(router);
+    handleGithubCallback(router, fetchUser);
   }, []);
 
   return (

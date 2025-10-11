@@ -40,7 +40,10 @@ export const githubSignInClicked = async () => {
   }
 };
 
-export const handleGithubCallback = async (router: AppRouterInstance) => {
+export const handleGithubCallback = async (
+  router: AppRouterInstance,
+  fetchUser: () => Promise<void>
+) => {
   try {
     const response = await signInAndUp();
 
@@ -50,6 +53,7 @@ export const handleGithubCallback = async (router: AppRouterInstance) => {
       } else {
         // sign in successful
       }
+      await fetchUser();
       router.push('/app');
     } else if (response.status === 'SIGN_IN_UP_NOT_ALLOWED') {
       // the reason string is a user friendly message

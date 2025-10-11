@@ -1,6 +1,8 @@
 'use client';
 
 import { GithubIcon } from 'lucide-react';
+import { useRouter } from 'next/navigation';
+import Session from 'supertokens-web-js/recipe/session';
 
 import { Button } from '@/components/ui/button';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
@@ -12,7 +14,13 @@ const LoginAvatar: React.FC<{
   user?: User;
   children?: React.ReactNode;
 }> = ({ user, children }) => {
-  const handleLogout = async () => {};
+  const router = useRouter();
+
+  const handleLogout = async () => {
+    await Session.signOut();
+
+    router.replace('/app');
+  };
 
   if (user) {
     return (
