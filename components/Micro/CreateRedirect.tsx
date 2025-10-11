@@ -118,7 +118,8 @@ export const CreateRedirectModal: React.FC<ModalProps> = ({ isOpen, setIsOpen, r
       // Reset to initial state when creating a new redirect
       setFormData(initialState);
     }
-  }, [redirect, setFormData]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [redirect]);
 
   // Process fromDomain to always remove path and query
   const processFromDomain = (url: string) => {
