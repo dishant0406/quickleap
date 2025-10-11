@@ -16,6 +16,7 @@ import { Alert } from '../ui/alert';
 import { Button } from '../ui/button';
 import { Checkbox } from '../ui/custom-checkbox';
 import { Label } from '../ui/label';
+import { Slider } from '../ui/slider';
 import { Switch } from '../ui/switch';
 import { UrlInput } from '../ui/url-input';
 
@@ -27,6 +28,7 @@ const redirectSchema = z.object({
   redirectType: z.enum([RedirectType.Permanent, RedirectType.Temporary]),
   pathForwarding: z.boolean(),
   queryForwarding: z.boolean(),
+  samplingRate: z.number().min(0).max(1),
 });
 
 // Initial state matching your example
@@ -36,6 +38,7 @@ const initialState = {
   redirectType: RedirectType.Permanent,
   pathForwarding: false,
   queryForwarding: false,
+  samplingRate: 1,
 };
 
 type Props = {
@@ -62,6 +65,7 @@ export const CreateRedirectModal: React.FC<ModalProps> = ({ isOpen, setIsOpen, r
             queryForwarding: data.queryForwarding,
             redirectType: data.redirectType,
             toDomain: data.toDomain,
+            samplingRate: data.samplingRate,
           }),
           'Redirect updated successfully',
           {
@@ -77,15 +81,26 @@ export const CreateRedirectModal: React.FC<ModalProps> = ({ isOpen, setIsOpen, r
         return;
       }
 
-      promiseToast(addRedirect(data), 'Redirect created successfully', {
-        errorMessage: 'Failed to create redirect',
-        final: () => {
-          setIsOpen(false);
-          fetchRedirects();
-        },
-        loadingText: 'Creating redirect...',
-        setLoading,
-      });
+      promiseToast(
+        addRedirect({
+          fromDomain: data.fromDomain,
+          toDomain: data.toDomain,
+          redirectType: data.redirectType,
+          pathForwarding: data.pathForwarding,
+          queryForwarding: data.queryForwarding,
+          samplingRate: data.samplingRate,
+        }),
+        'Redirect created successfully',
+        {
+          errorMessage: 'Failed to create redirect',
+          final: () => {
+            setIsOpen(false);
+            fetchRedirects();
+          },
+          loadingText: 'Creating redirect...',
+          setLoading,
+        }
+      );
     }
   );
 
@@ -97,9 +112,10 @@ export const CreateRedirectModal: React.FC<ModalProps> = ({ isOpen, setIsOpen, r
         redirectType: redirect.redirectType,
         pathForwarding: redirect.pathForwarding,
         queryForwarding: redirect.queryForwarding,
+        samplingRate: redirect.samplingRate ?? 1,
       });
     }
-  }, [redirect]);
+  }, [redirect, setFormData]);
 
   // Process fromDomain to always remove path and query
   const processFromDomain = (url: string) => {
@@ -279,6 +295,23 @@ export const CreateRedirectModal: React.FC<ModalProps> = ({ isOpen, setIsOpen, r
             onCheckedChange={(e) => handleForwardingToggle('queryForwarding', e)}
           />
           <Label>Do you want to forward the query?</Label>
+        </div>
+        <div className="flex flex-col gap-2">
+          <Label htmlFor="samplingRate">
+            Sampling Rate: {(formData.samplingRate * 100).toFixed(0)}%
+          </Label>
+          <Slider
+            id="samplingRate"
+            max={1}
+            min={0}
+            step={0.01}
+            value={[formData.samplingRate]}
+            onValueChange={(value) => handleChange('samplingRate', value[0])}
+          />
+          <p className="text-sm text-muted-foreground">
+            Controls the percentage of traffic to track for analytics (0% = no tracking, 100% =
+            track all)
+          </p>
         </div>
       </div>
     </Modal>

@@ -16,6 +16,7 @@ type AddRedirectProps = {
   redirectType: RedirectType;
   pathForwarding: boolean;
   queryForwarding: boolean;
+  samplingRate: number;
 };
 
 /**
@@ -27,6 +28,7 @@ type AddRedirectProps = {
  * @param data.redirectType - The type of redirect, either 'permanent' or 'temporary'.
  * @param data.pathForwarding - Indicates whether the path should be forwarded.
  * @param data.queryForwarding - Indicates whether the query parameters should be forwarded.
+ * @param data.samplingRate - The sampling rate for analytics (0 to 1).
  *
  * @route /add-redirect
  */
@@ -51,6 +53,7 @@ type UpdateRedirectProps = {
   redirectType: RedirectType;
   pathForwarding: boolean;
   queryForwarding: boolean;
+  samplingRate: number;
 };
 
 /**
@@ -62,6 +65,7 @@ type UpdateRedirectProps = {
  * @param data.redirectType - The type of redirect, either 'permanent' or 'temporary'.
  * @param data.pathForwarding - Indicates whether the path should be forwarded.
  * @param data.queryForwarding - Indicates whether the query parameters should be forwarded.
+ * @param data.samplingRate - The sampling rate for analytics (0 to 1).
  *
  * @route /update-redirect
  */
