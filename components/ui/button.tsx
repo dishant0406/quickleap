@@ -45,17 +45,40 @@ export interface ButtonProps
 }
 
 const Button = React.forwardRef<HTMLButtonElement | HTMLAnchorElement, ButtonProps>(
-  ({ className, variant, size, asChild = false, href, ...props }, ref) => {
-    const Comp = asChild ? Slot : href ? Link : 'button';
+  ({ className, variant, size, asChild = false, href, disabled, onClick, ...props }, ref) => {
+    // Determine the component to render
+    // When disabled with href, render as span to prevent navigation
+    const Comp = asChild ? Slot : href && !disabled ? Link : href && disabled ? 'span' : 'button';
 
-    const buttonProps = href ? { href, ...props } : props;
+    // Check if it's a Link component
+    const isLink = href && !disabled;
+
+    // Build props conditionally based on component type
+    const hrefProps = isLink ? { href } : {};
+
+    // Don't pass onClick when href is present (Link or disabled span)
+    const clickProps = !href && onClick ? { onClick } : {};
+
+    // Don't pass disabled/aria-disabled to Link components as they don't support them
+    const accessibilityProps = !isLink
+      ? {
+          disabled,
+          'aria-disabled': disabled,
+        }
+      : {};
 
     const buttonElement = (
       <Comp
         // @ts-expect-error ts doesn't like this
         ref={ref}
-        className={cn(buttonVariants({ variant, size, className }))}
-        {...buttonProps}
+        className={cn(
+          buttonVariants({ variant, size, className }),
+          disabled && 'pointer-events-none opacity-50'
+        )}
+        {...accessibilityProps}
+        {...hrefProps}
+        {...clickProps}
+        {...props}
       />
     );
 

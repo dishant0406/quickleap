@@ -4,6 +4,7 @@ import Features from '@/components/Landing/components/Features';
 import Footer from '@/components/Landing/components/Footer';
 import HeroSection from '@/components/Landing/components/HeroSection';
 import MarqueeSection from '@/components/Landing/components/Marquee';
+import PlansSection from '@/components/Landing/components/PlansSection';
 
 const Home: React.FC = () => {
   return (
@@ -14,6 +15,8 @@ const Home: React.FC = () => {
       <MarqueeSection endText="GROW FASTER" startText="NAVIGATE BETTER, " />
       <ComparisonSection />
       <MarqueeSection endText="OUR TRAIL" startText="YOUR TRAFFIC, " />
+      <PlansSection />
+      <MarqueeSection endText="YOUR SUCCESS" startText="INVEST IN " />
       <FAQSection />
       <Footer />
       {/* <Main /> */}

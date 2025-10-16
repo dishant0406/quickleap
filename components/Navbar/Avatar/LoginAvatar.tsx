@@ -1,6 +1,7 @@
 'use client';
 
-import { GithubIcon } from 'lucide-react';
+import { CreditCard, GithubIcon, LogOut } from 'lucide-react';
+import { useRouter } from 'next/navigation';
 import Session from 'supertokens-web-js/recipe/session';
 
 import { Button } from '@/components/ui/button';
@@ -15,8 +16,9 @@ const LoginAvatar: React.FC<{
   children?: React.ReactNode;
 }> = ({ children }) => {
   const { fetchUser, isLoggedIn, user } = useUserStore();
+  const router = useRouter();
 
-  const handleLogout = async () => {
+  const handleLogout = async (): Promise<void> => {
     await Session.signOut();
 
     await fetchUser();
@@ -30,21 +32,30 @@ const LoginAvatar: React.FC<{
         <PopoverContent className="w-80" sideOffset={5}>
           <div className="grid gap-4">
             <div className="space-y-2">
-              <h4 className="font-medium leading-none">Logout</h4>
-              <p className="text-sm text-muted-foreground">Logout from your account.</p>
+              <h4 className="font-medium leading-none">Account</h4>
+              <p className="text-muted-foreground text-sm">Manage your account and subscription.</p>
             </div>
             <div className="grid gap-2">
-              <div className="w-full flex items-center gap-4">
-                <Button
-                  className="w-full"
-                  tooltip="Logout"
-                  tooltipDirection="bottom"
-                  variant="neutral"
-                  onClick={handleLogout}
-                >
-                  Logout
-                </Button>
-              </div>
+              <Button
+                className="w-full justify-start"
+                tooltip="View Plans"
+                tooltipDirection="bottom"
+                variant="neutral"
+                onClick={() => router.push('/app/plans')}
+              >
+                <CreditCard className="h-4 w-4" />
+                Plans
+              </Button>
+              <Button
+                className="w-full justify-start"
+                tooltip="Logout"
+                tooltipDirection="bottom"
+                variant="neutral"
+                onClick={handleLogout}
+              >
+                <LogOut className="h-4 w-4" />
+                Logout
+              </Button>
             </div>
           </div>
         </PopoverContent>

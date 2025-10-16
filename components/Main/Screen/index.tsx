@@ -11,6 +11,7 @@ import LoginAvatar from '@/components/Navbar/Avatar/LoginAvatar';
 import RedirectsTable from '@/components/RedirectsTable';
 import { Button } from '@/components/ui/button';
 import useRedirectStore from '@/lib/zustand';
+import usePlansStore from '@/lib/zustand/plans';
 import useUserStore from '@/lib/zustand/user';
 
 type Props = {
@@ -20,10 +21,12 @@ type Props = {
 const Screen = ({ redirectsServer }: Props): JSX.Element => {
   const { redirects, fetchRedirects, fetching } = useRedirectStore();
   const { isLoggedIn } = useUserStore();
+  const { fetchAndSetPlan } = usePlansStore();
 
   useEffect(() => {
     if (isLoggedIn) {
       fetchRedirects();
+      fetchAndSetPlan();
     }
   }, [isLoggedIn, fetchRedirects]);
 
