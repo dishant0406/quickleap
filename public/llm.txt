@@ -1,0 +1,242 @@
+# Quickleap - Domain Redirect Service
+
+> Professional domain redirect and URL forwarding service with automatic HTTPS/SSL support
+
+## Overview
+
+Quickleap (quickleap.io) is a hassle-free domain redirect service that allows you to redirect your domains without the burden of hosting them. We provide enterprise-grade domain forwarding with full HTTPS support, API compatibility, and advanced analytics.
+
+## Core Purpose
+
+Redirect domains effortlessly without hosting infrastructure. Perfect for:
+- Domain portfolio management
+- Brand consolidation and rebranding
+- Marketing campaigns with vanity URLs
+- SEO preservation during migrations
+- Temporary redirects for maintenance
+- A/B testing different destinations
+
+## Key Features
+
+### 1. Easy Setup
+- Intuitive dashboard for redirect management
+- Create and configure redirects in minutes
+- No technical expertise required
+- Simple DNS configuration
+
+### 2. HTTPS/SSL Support
+- Automatic SSL certificate provisioning
+- Free HTTPS for all redirects
+- Secure connections guaranteed
+- SSL certificate management handled automatically
+
+### 3. Redirect Types
+- **301 Redirects**: Permanent redirects for SEO
+- **302 Redirects**: Temporary redirects
+- **Path Forwarding**: Preserve URL paths in redirects
+- **Query Parameter Support**: Maintain URL parameters
+
+### 4. Rule-Based Redirects
+- Create intelligent redirect rules
+- Conditional routing based on:
+  - Geographic location
+  - Device type (mobile/desktop)
+  - Browser type
+  - Time-based rules
+  - Custom conditions
+
+### 5. API Integration
+- RESTful API for automation
+- Programmatic redirect management
+- Webhook support for events
+- API documentation available
+- Integration with CI/CD pipelines
+
+### 6. Analytics & Monitoring
+- Real-time traffic monitoring
+- Comprehensive redirect analytics
+- Geographic traffic distribution
+- Device and browser statistics
+- Click tracking and conversion metrics
+- Bot detection and filtering
+- Peak traffic analysis
+- Return visitor tracking
+
+### 7. Global Security
+- Globally distributed network
+- DDoS protection
+- Fast redirection worldwide
+- 99.9% uptime guarantee
+- Secure infrastructure
+
+### 8. Custom Domains
+- Use your own domain names
+- Support for unlimited domains
+- Custom domain verification
+- DNS management assistance
+
+## How It Works
+
+1. **Sign Up**: Create a free Quickleap account
+2. **Add Domain**: Enter the domain you want to redirect
+3. **Configure Target**: Set your destination URL
+4. **Update DNS**: Point your domain to Quickleap nameservers
+5. **Activate**: Your redirect goes live with automatic HTTPS
+
+## Pricing Plans
+
+### Free Tier
+- Up to 5 redirects
+- Basic analytics
+- HTTPS included
+- Community support
+- Perfect for personal projects
+
+### Pro Plan
+- Unlimited redirects
+- Advanced analytics
+- Rule-based routing
+- API access
+- Priority support
+- Custom domain support
+
+### Enterprise
+- All Pro features
+- Dedicated infrastructure
+- SLA guarantees
+- Advanced security
+- Custom integrations
+- White-label options
+
+## Use Cases
+
+### Domain Portfolio Management
+Manage multiple domains pointing to the same destination without separate hosting for each.
+
+### Brand Consolidation
+Redirect old brand domains to new brand seamlessly while preserving SEO value.
+
+### Marketing Campaigns
+Create short, memorable URLs for campaigns that redirect to specific landing pages.
+
+### SEO Migration
+Preserve search rankings by properly redirecting old URLs to new ones during site migrations.
+
+### Geographic Routing
+Route users to region-specific content based on their location.
+
+### A/B Testing
+Test different destinations without changing your main URL.
+
+## Technical Details
+
+### Supported Protocols
+- HTTP → HTTPS automatic upgrade
+- HTTPS native support
+- IPv4 and IPv6 compatible
+
+### DNS Requirements
+- A records or CNAME records
+- NS records for custom domains
+- TXT records for domain verification
+
+### API Endpoints
+- Authentication via OAuth (GitHub)
+- RESTful API architecture
+- JSON request/response format
+- Rate limiting applied
+
+### Browser Support
+- All modern browsers
+- Mobile browsers optimized
+- Legacy browser fallbacks
+
+## Security & Privacy
+
+- End-to-end encryption
+- No personal data stored in redirect URLs
+- GDPR compliant
+- SOC 2 Type II certified infrastructure
+- Regular security audits
+- DDoS protection included
+
+## Support & Resources
+
+- GitHub Repository: https://github.com/dishant0406/redirects
+- Documentation: Available in dashboard
+- Email Support: info@quickleap.io
+- Response time: 24-48 hours
+
+## Technology Stack
+
+- Next.js 14+ with App Router
+- TypeScript for type safety
+- TailwindCSS for styling
+- SuperTokens for authentication
+- RESTful API backend
+- Global CDN distribution
+
+## Getting Started
+
+Visit https://quickleap.io to:
+1. Create your free account
+2. Start redirecting domains immediately
+3. Monitor your traffic in real-time
+4. Scale as your needs grow
+
+## API Example
+
+```bash
+# Create a new redirect
+curl -X POST https://redirect.quickleap.io/api/redirects \
+  -H "Authorization: Bearer YOUR_TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "domain": "example.com",
+    "target": "https://target.com",
+    "type": "301",
+    "preservePath": true
+  }'
+```
+
+## Competitive Advantages
+
+- No hosting infrastructure required
+- Automatic SSL certificate management
+- Advanced analytics included
+- API-first architecture
+- Rule-based intelligent routing
+- Affordable pricing
+- Easy to use interface
+- Enterprise-grade reliability
+
+## Common Questions
+
+**Q: How long does setup take?**
+A: Typically 5-10 minutes after DNS propagation.
+
+**Q: Can I redirect multiple domains to the same target?**
+A: Yes, unlimited domain-to-target relationships.
+
+**Q: Do you support wildcard redirects?**
+A: Yes, wildcard subdomains are supported.
+
+**Q: What happens to my SEO?**
+A: 301 redirects preserve your SEO value properly.
+
+**Q: Can I redirect based on conditions?**
+A: Yes, use our rule-based redirect feature.
+
+## Legal
+
+- Terms of Service: Available on website
+- Privacy Policy: GDPR compliant
+- SLA: 99.9% uptime guarantee
+- Data retention: Configurable per plan
+
+---
+
+**Last Updated**: October 2025
+**Version**: 1.0
+**Contact**: info@quickleap.io
+**Website**: https://quickleap.io

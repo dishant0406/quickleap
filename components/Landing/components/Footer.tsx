@@ -1,8 +1,8 @@
-import { Github } from 'lucide-react';
+import { FileText, Github, Map } from 'lucide-react';
 
 import Logo from '@/components/Micro/Logo';
 
-const Footer = () => {
+const Footer = (): React.JSX.Element => {
   const currentYear = new Date().getFullYear();
 
   return (
@@ -15,6 +15,7 @@ const Footer = () => {
 
           <div className="flex flex-col md:flex-row items-center gap-4 md:gap-8">
             <a
+              aria-label="View source code on GitHub"
               className="flex items-center gap-2 hover:text-[#FFDB58] transition-colors"
               href="https://github.com/dishant0406/redirects"
               rel="noopener noreferrer"
@@ -23,15 +24,33 @@ const Footer = () => {
               <Github className="w-5 h-5" />
               <span>GitHub</span>
             </a>
+            <a
+              aria-label="View sitemap"
+              className="flex items-center gap-2 hover:text-[#FFDB58] transition-colors"
+              href="/sitemap.xml"
+              target="_blank"
+            >
+              <Map className="w-5 h-5" />
+              <span>Sitemap</span>
+            </a>
+            <a
+              aria-label="View LLM documentation"
+              className="flex items-center gap-2 hover:text-[#FFDB58] transition-colors"
+              href="/llm.txt"
+              target="_blank"
+            >
+              <FileText className="w-5 h-5" />
+              <span>LLM.txt</span>
+            </a>
           </div>
         </div>
 
         <div className="border-t border-gray-800 mt-8 pt-8">
-          <div className="flex flex-col md:flex-row justify-between items-center">
-            <p className="text-gray-400">
+          <div className="flex flex-col md:flex-row justify-between items-center gap-4">
+            <p className="text-gray-400 text-center md:text-left">
               &copy; {currentYear} Quickleap - Domain Redirecting Service hassle-free
             </p>
-            <div className="flex items-center text-gray-400 mt-4 md:mt-0">
+            <div className="flex items-center text-gray-400">
               <span className="mr-1">Made with ❤️ by </span>
               <a
                 className="hover:text-yellow-400 transition-colors flex items-center"

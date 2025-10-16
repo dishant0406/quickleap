@@ -1,0 +1,23 @@
+{
+  "name": "Quickleap - Domain Redirect Service",
+  "short_name": "Quickleap",
+  "description": "Professional domain redirect and URL forwarding service with automatic HTTPS/SSL, 301/302 redirects, path forwarding, and API support.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#fef2e8",
+  "theme_color": "#ffdc58",
+  "orientation": "portrait-primary",
+  "icons": [
+    {
+      "src": "/favicon.ico",
+      "sizes": "48x48",
+      "type": "image/x-icon"
+    }
+  ],
+  "categories": ["business", "productivity", "utilities"],
+  "lang": "en-US",
+  "dir": "ltr",
+  "scope": "/",
+  "related_applications": [],
+  "prefer_related_applications": false
+}

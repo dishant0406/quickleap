@@ -1,5 +1,31 @@
+import { type Metadata } from 'next';
+
 import PlansDisplay from '@/components/Plans/PlansDisplay';
 import { fetchPlans } from '@/lib/api/plans';
+
+export const metadata: Metadata = {
+  title: 'Pricing Plans - Choose Your Perfect Plan',
+  description:
+    'Flexible pricing plans for every need. From free tier with 5 redirects to enterprise solutions with unlimited redirects, advanced analytics, API access, and priority support.',
+  keywords: [
+    'domain redirect pricing',
+    'URL forwarding plans',
+    'redirect service pricing',
+    'free domain redirect',
+    'enterprise redirect solution',
+    'redirect API pricing',
+  ],
+  openGraph: {
+    title: 'Pricing Plans - Choose Your Perfect Plan | Quickleap',
+    description:
+      'Flexible pricing plans for domain redirects. Free tier available. Scale from 5 redirects to unlimited with advanced features.',
+  },
+  twitter: {
+    title: 'Pricing Plans - Choose Your Perfect Plan | Quickleap',
+    description:
+      'Flexible pricing plans for domain redirects. Free tier available. Scale from 5 redirects to unlimited with advanced features.',
+  },
+};
 
 export default async function PlansPage(): Promise<React.JSX.Element> {
   const plans = await fetchPlans();

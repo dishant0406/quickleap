@@ -25,42 +25,147 @@ const anton = Anton({
 });
 
 export const metadata: Metadata = {
-  title: 'Domain Redirecting Service hassle-free - quickleap.io',
+  // Core SEO - Title optimized for primary keywords
+  title: {
+    default: 'Domain Redirect Service with HTTPS - Free SSL | QuickLeap.io',
+    template: '%s | QuickLeap - Domain Forwarding Made Easy',
+  },
+
+  // Description targeting user search intent
   description:
-    "Get peace of mind when redirecting your domains without the burden of hosting them. We are a domain redirect service with full HTTPS support and API compatibility. Enter your domain names and we'll take care of the rest.",
+    'Professional domain redirect and URL forwarding service with automatic HTTPS/SSL, 301/302 redirects, path forwarding, and API support. Redirect unlimited domains without hosting hassles. Free trial available.',
+
+  // Application metadata
+  applicationName: 'Quickleap',
+
+  // Keywords - High-intent commercial terms
+  keywords: [
+    'domain redirect service',
+    'URL forwarding service',
+    'domain forwarding',
+    '301 redirect hosting',
+    '302 redirect service',
+    'HTTPS redirect',
+    'SSL domain redirect',
+    'automatic SSL redirect',
+    'path forwarding service',
+    'domain redirect API',
+    'redirect service with HTTPS',
+    'website redirect service',
+    'URL redirect tool',
+    'domain redirection service',
+    'DNS redirect',
+    'web forwarding service',
+    'domain parking redirect',
+    'multiple domain redirect',
+    'redirect without hosting',
+    'enterprise redirect service',
+    'redirect manager',
+    'URL redirect API',
+    'domain migration tool',
+    'website forwarding',
+    'redirect tracking analytics',
+  ],
+
+  // Author information
+  authors: [{ name: 'QuickLeap', url: 'https://quickleap.io' }],
+
+  creator: 'QuickLeap',
+  publisher: 'QuickLeap',
+
+  // Robots - Allow full indexing
+  robots: {
+    index: true,
+    follow: true,
+    nocache: false,
+    googleBot: {
+      index: true,
+      follow: true,
+      'max-video-preview': -1,
+      'max-image-preview': 'large',
+      'max-snippet': -1,
+    },
+  },
+
+  // Canonical and alternate URLs
+  alternates: {
+    canonical: 'https://quickleap.io',
+    languages: {
+      'en-US': 'https://quickleap.io',
+    },
+  },
+
+  // Open Graph for social sharing
+  openGraph: {
+    type: 'website',
+    locale: 'en_US',
+    url: 'https://quickleap.io',
+    siteName: 'QuickLeap - Domain Redirect Service',
+    title: 'Professional Domain Redirect & URL Forwarding with Free SSL',
+    description:
+      'Redirect your domains effortlessly with automatic HTTPS support, 301/302 redirects, path forwarding, and powerful API. No hosting required. Enterprise-grade reliability.',
+    images: [
+      {
+        url: 'https://cdn.jsdelivr.net/gh/dishant0406/images-repo@master/og.png',
+        width: 1200,
+        height: 630,
+        alt: 'QuickLeap Domain Redirect Service Dashboard',
+        type: 'image/png',
+      },
+    ],
+  },
+
+  // Twitter Card metadata
+  twitter: {
+    card: 'summary_large_image',
+    site: '@quickleapio',
+    creator: '@quickleapio',
+    title: 'Domain Redirect Service with Automatic HTTPS | QuickLeap',
+    description:
+      'Set up domain redirects in seconds with free SSL certificates, path forwarding, and API access. Perfect for domain management, rebranding, and SEO.',
+    images: ['https://cdn.jsdelivr.net/gh/dishant0406/images-repo@master/og.png'],
+  },
+
+  // Category for better classification
+  category: 'Web Services',
+
+  // Icons and favicons
+  icons: {
+    icon: '/favicon.ico',
+  },
+
+  // Web app manifest
+  manifest: '/site.webmanifest',
+
+  // Apple Web App settings
+  appleWebApp: {
+    capable: true,
+    title: 'QuickLeap',
+    statusBarStyle: 'black-translucent',
+  },
+
+  // Format detection
+  formatDetection: {
+    telephone: true,
+    email: true,
+    address: true,
+  },
+
+  // Additional metadata
+  other: {
+    'og:email': 'info@quickleap.io',
+  },
 };
 
 const RootLayout = async ({
   children,
 }: Readonly<{
   children: React.ReactNode;
-}>) => {
+}>): Promise<React.JSX.Element> => {
   const { data } = await axiosClientServer.get<UserResponse>('/auth/user');
 
   return (
     <html suppressHydrationWarning lang="en">
-      <head>
-        <meta content="website" property="og:type" />
-        <meta content={env.NEXT_PUBLIC_SITE_URL} property="og:url" />
-        <meta content="Domain Redirecting Service hassle-free - quickleap.io" property="og:title" />
-        <meta
-          content="Get peace of mind when redirecting your domains without the burden of hosting them. We are a domain redirect service with full HTTPS support and API compatibility. Enter your domain names and we'll take care of the rest."
-          property="og:description"
-        />
-        <meta content={env.NEXT_PUBLIC_OG_IMAGE_URL} property="og:image" />
-
-        <meta content="summary_large_image" property="twitter:card" />
-        <meta content={env.NEXT_PUBLIC_SITE_URL} property="twitter:url" />
-        <meta
-          content="Domain Redirecting Service hassle-free - quickleap.io"
-          property="twitter:title"
-        />
-        <meta
-          content="Get peace of mind when redirecting your domains without the burden of hosting them. We are a domain redirect service with full HTTPS support and API compatibility. Enter your domain names and we'll take care of the rest."
-          property="twitter:description"
-        />
-        <meta content={env.NEXT_PUBLIC_OG_IMAGE_URL} property="twitter:image" />
-      </head>
       <Script
         defer
         data-website-id={env.NEXT_PUBLIC_UMAMI_WEBSITE_ID}
