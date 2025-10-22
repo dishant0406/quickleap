@@ -54,15 +54,8 @@ const LoginAvatar: React.FC<{
   user?: User;
   children?: React.ReactNode;
 }> = ({ children }) => {
-  const { fetchUser, isLoggedIn, user } = useUserStore();
+  const { isLoggedIn, user } = useUserStore();
   const router = useRouter();
-
-  const handleLogout = async (): Promise<void> => {
-    await Session.signOut();
-
-    await fetchUser();
-    window?.location?.reload();
-  };
 
   if (isLoggedIn) {
     return (
