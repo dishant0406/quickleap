@@ -28,6 +28,27 @@ export default function sitemap(): MetadataRoute.Sitemap {
       changeFrequency: 'weekly',
       priority: 0.8,
     },
+    // Billing page
+    {
+      url: `${baseUrl}/app/billing`,
+      lastModified: currentDate,
+      changeFrequency: 'weekly',
+      priority: 0.7,
+    },
+    // Subscription management
+    {
+      url: `${baseUrl}/app/subscription`,
+      lastModified: currentDate,
+      changeFrequency: 'weekly',
+      priority: 0.7,
+    },
+    // Payment history
+    {
+      url: `${baseUrl}/app/payment-history`,
+      lastModified: currentDate,
+      changeFrequency: 'weekly',
+      priority: 0.6,
+    },
     // GitHub OAuth callback (no-index for auth routes)
     {
       url: `${baseUrl}/auth/callback/github`,
@@ -44,5 +65,6 @@ export default function sitemap(): MetadataRoute.Sitemap {
     },
     // Note: Dynamic routes like /app/analytics/[id] and /app/rules/[id]
     // are excluded as they require authentication and specific resource IDs
+    // Payment success page is also excluded as it's a callback/confirmation page
   ];
 }

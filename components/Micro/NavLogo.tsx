@@ -3,10 +3,13 @@
 import confetti from 'canvas-confetti';
 import { useRouter } from 'next/navigation';
 
+import useUserStore from '@/lib/zustand/user';
+
 import Logo from './Logo';
 
 const NavLogo = () => {
   const router = useRouter();
+  const { isLoggedIn } = useUserStore();
 
   const handleClick = () => {
     const end = Date.now() + 1 * 1000; // 3 seconds
@@ -35,7 +38,9 @@ const NavLogo = () => {
       requestAnimationFrame(frame);
     };
 
-    if (window?.location?.pathname === '/') {
+    if (isLoggedIn) {
+      router.push('/app');
+    } else if (window?.location?.pathname === '/') {
       frame();
     } else {
       router.push('/');

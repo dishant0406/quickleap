@@ -1,10 +1,17 @@
-import { CheckIcon, SparklesIcon, XIcon } from 'lucide-react';
+'use client';
+
+import { useState } from 'react';
+
+import { CheckIcon, Loader2, SparklesIcon, XIcon } from 'lucide-react';
 
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
+import { createCheckoutSession } from '@/lib/api/payment';
+import { errorToast, successToast } from '@/lib/toast';
 import { cn } from '@/lib/utils';
 import type { Plan } from '@/lib/zustand/plans';
+import useUserStore from '@/lib/zustand/user';
 
 interface PlanCardProps {
   plan: Plan;
@@ -12,6 +19,43 @@ interface PlanCardProps {
 }
 
 export default function PlanCard({ plan, isPopular }: PlanCardProps): React.JSX.Element {
+  const [isLoading, setIsLoading] = useState(false);
+  const { user, isLoggedIn } = useUserStore();
+  const currentPlanId = user?.plan?.id;
+  const isCurrentPlan = currentPlanId === plan.id;
+  const isFree = Number(plan.pricing.amount) <= 0;
+
+  const handleUpgrade = async (): Promise<void> => {
+    if (!isLoggedIn) {
+      errorToast('Please log in to subscribe to a plan');
+      return;
+    }
+
+    if (isFree) {
+      successToast('This is a free plan, no payment required');
+      return;
+    }
+
+    setIsLoading(true);
+    try {
+      const response = await createCheckoutSession({ planId: plan.id });
+
+      if (response.success && response.data.checkoutUrl) {
+        // Redirect to checkout
+        window.location.href = response.data.checkoutUrl;
+      } else {
+        errorToast(response.message || 'Failed to create checkout session');
+      }
+    } catch (error) {
+      console.error('Checkout error:', error);
+      const message =
+        (error as { response?: { data?: { message?: string } } })?.response?.data?.message ||
+        'An error occurred during checkout';
+      errorToast(message);
+    } finally {
+      setIsLoading(false);
+    }
+  };
   const features = Object.entries(plan.features).filter(([, value]) => value === true);
   const notIncludedFeatures = Object.entries(plan.features).filter(([, value]) => value === false);
 
@@ -111,15 +155,36 @@ export default function PlanCard({ plan, isPopular }: PlanCardProps): React.JSX.
         </div>
       </CardContent>
       <CardFooter>
-        <Button
-          asChild
-          className="w-full"
-          disabled={Number(plan.pricing.amount) > 0}
-          href="/app"
-          variant={isPopular ? 'default' : 'neutral'}
-        >
-          <div>{Number(plan.pricing.amount) <= 0 ? 'Get Started' : 'Comming Soon'}</div>
-        </Button>
+        {isCurrentPlan ? (
+          <Button disabled className="w-full" variant="neutral">
+            Current Plan
+          </Button>
+        ) : isFree ? (
+          <Button
+            asChild
+            className="w-full"
+            href="/app"
+            variant={isPopular ? 'default' : 'neutral'}
+          >
+            <div>Get Started</div>
+          </Button>
+        ) : (
+          <Button
+            className="w-full"
+            disabled={isLoading}
+            variant={isPopular ? 'default' : 'neutral'}
+            onClick={handleUpgrade}
+          >
+            {isLoading ? (
+              <>
+                <Loader2 className="h-4 w-4 animate-spin" />
+                Processing...
+              </>
+            ) : (
+              'Upgrade Now'
+            )}
+          </Button>
+        )}
       </CardFooter>
     </Card>
   );
