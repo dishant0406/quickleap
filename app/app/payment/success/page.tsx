@@ -7,6 +7,8 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import axiosClientServer from '@/lib/helpers/axios/server';
 
+import type { PageProps } from '@/.next/types/app/page';
+
 type CheckoutData = {
   id: string;
   status: string;
@@ -30,7 +32,7 @@ type ApiResponse = {
   };
 };
 
-const Success = async (props: Props): Promise<React.JSX.Element> => {
+const Success = async (props: PageProps): Promise<React.JSX.Element> => {
   const dataProps = await props?.searchParams;
   const checkOutId = dataProps?.checkout_id;
 
@@ -158,12 +160,6 @@ const Success = async (props: Props): Promise<React.JSX.Element> => {
       </div>
     </div>
   );
-};
-
-type Props = {
-  searchParams?: {
-    checkout_id?: string;
-  };
 };
 
 export default Success;
