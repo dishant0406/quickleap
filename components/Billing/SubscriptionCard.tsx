@@ -1,11 +1,13 @@
 import React from 'react';
 
-import { AlertCircle, XCircle } from 'lucide-react';
+import { AlertCircle, Clock12Icon, XCircle } from 'lucide-react';
 
 import { StatusBadge } from '@/components/Billing/StatusBadge';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import type { SubscriptionData } from '@/lib/api/payment';
 import { formatDate } from '@/lib/helpers/billing';
+
+import { Alert } from '../ui/alert';
 
 interface SubscriptionCardProps {
   subscription: SubscriptionData;
@@ -93,29 +95,15 @@ export const SubscriptionCard: React.FC<SubscriptionCardProps> = ({ subscription
 
         {/* Trial Information */}
         {subscription.isTrialing && subscription.trialEnd && (
-          <div className="bg-blue-500/10 rounded-lg p-4">
-            <div className="flex items-center gap-2">
-              <svg
-                className="h-5 w-5 text-blue-600 dark:text-blue-500"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                />
-              </svg>
-              <div>
-                <p className="font-semibold text-blue-600 dark:text-blue-500">Trial Period</p>
-                <p className="text-muted-foreground text-sm">
-                  Your trial ends on {formatDate(subscription.trialEnd)}
-                </p>
-              </div>
+          <Alert>
+            <div className="flex gap-1 items-center">
+              <Clock12Icon className="h-4 w-4" />
+              <p className="font-semibold ">Trial Period</p>
             </div>
-          </div>
+            <p className="text-muted-foreground text-sm">
+              Your trial ends on {formatDate(subscription.trialEnd)}
+            </p>
+          </Alert>
         )}
       </CardContent>
     </Card>

@@ -11,6 +11,7 @@ import {
   SubscriptionActions,
   SubscriptionCard,
 } from '@/components/Billing';
+import createConfirmationHandler from '@/components/Micro/ConfirmationHandler';
 import {
   cancelSubscription,
   createPortalSession,
@@ -45,39 +46,47 @@ export default function SubscriptionPage(): React.JSX.Element {
     }
   };
 
-  const handleCancelSubscription = async (immediately = false): Promise<void> => {
-    if (!subscription) return;
+  const handleCancelSubscription = (immediately = false) => {
+    const description = immediately
+      ? 'Are you sure you want to cancel your subscription immediately? You will lose access to all premium features right away and will not receive a refund for the remaining period.'
+      : 'Are you sure you want to cancel your subscription? Your subscription will remain active until the end of the current billing period, after which you will lose access to all premium features.';
 
-    const confirmMessage = immediately
-      ? 'Are you sure you want to cancel your subscription immediately? You will lose access right away.'
-      : 'Are you sure you want to cancel your subscription? You will retain access until the end of your billing period.';
+    return createConfirmationHandler(
+      async (): Promise<void> => {
+        if (!subscription) return;
 
-    // eslint-disable-next-line no-alert
-    if (!window.confirm(confirmMessage)) return;
+        setActionLoading('cancel');
+        try {
+          const response = await cancelSubscription({
+            immediately,
+            reason: 'User requested cancellation',
+          });
 
-    setActionLoading('cancel');
-    try {
-      const response = await cancelSubscription({
-        immediately,
-        reason: 'User requested cancellation',
-      });
-
-      if (response.success) {
-        successToast(
-          immediately
-            ? 'Subscription canceled immediately'
-            : 'Subscription will cancel at period end'
-        );
-        await loadSubscription();
-      } else {
-        errorToast('Failed to cancel subscription');
+          if (response.success) {
+            successToast(
+              immediately
+                ? 'Subscription canceled immediately'
+                : 'Subscription will cancel at period end'
+            );
+            await loadSubscription();
+          } else {
+            errorToast('Failed to cancel subscription');
+          }
+        } catch (error) {
+          console.error('Cancel error:', error);
+          errorToast('An error occurred while canceling subscription');
+        } finally {
+          setActionLoading(null);
+        }
+      },
+      {
+        title: 'Cancel Subscription',
+        description,
+        confirmText: 'Cancel Subscription',
+        cancelText: 'Keep Subscription',
+        confirmButtonClassName: 'bg-red-600 hover:bg-red-700 text-white',
       }
-    } catch (error) {
-      console.error('Cancel error:', error);
-      errorToast('An error occurred while canceling subscription');
-    } finally {
-      setActionLoading(null);
-    }
+    )();
   };
 
   const handleReactivateSubscription = async (): Promise<void> => {
