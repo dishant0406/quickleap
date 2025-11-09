@@ -5,6 +5,7 @@ import { ReactLenis } from 'lenis/react';
 import { ArrowRight } from 'lucide-react';
 import { motion, useScroll, useTransform } from 'motion/react';
 import Image from 'next/image';
+import Link from 'next/link';
 
 import { cn } from '@/lib/utils';
 
@@ -16,6 +17,7 @@ interface ProjectData {
   title: string;
   description: string;
   link: string;
+  navigationLink?: string;
   color?: string;
 }
 
@@ -24,6 +26,7 @@ interface CardProps {
   title: string;
   description: string;
   url: string;
+  navigationLink?: string;
   color?: string;
   progress: MotionValue<number>;
   range: [number, number];
@@ -35,6 +38,7 @@ export const Card = ({
   title,
   description,
   url,
+  navigationLink,
   color,
   progress,
   range,
@@ -94,17 +98,39 @@ export const Card = ({
               {description}
             </p>
             <div className="flex items-center gap-[1vw] mt-auto">
-              <Button
-                className="px-[2vw] py-[1vh]"
-                size="sm"
-                style={{ fontSize: 'clamp(0.75rem, 1vw, 0.875rem)' }}
-                variant="default"
-              >
-                See more
-                <ArrowRight
-                  style={{ width: 'clamp(12px, 1.2vw, 16px)', height: 'clamp(12px, 1.2vw, 16px)' }}
-                />
-              </Button>
+              {navigationLink ? (
+                <Link href={navigationLink}>
+                  <Button
+                    className="px-[2vw] py-[1vh]"
+                    size="sm"
+                    style={{ fontSize: 'clamp(0.75rem, 1vw, 0.875rem)' }}
+                    variant="default"
+                  >
+                    Learn more
+                    <ArrowRight
+                      style={{
+                        width: 'clamp(12px, 1.2vw, 16px)',
+                        height: 'clamp(12px, 1.2vw, 16px)',
+                      }}
+                    />
+                  </Button>
+                </Link>
+              ) : (
+                <Button
+                  className="px-[2vw] py-[1vh]"
+                  size="sm"
+                  style={{ fontSize: 'clamp(0.75rem, 1vw, 0.875rem)' }}
+                  variant="default"
+                >
+                  See more
+                  <ArrowRight
+                    style={{
+                      width: 'clamp(12px, 1.2vw, 16px)',
+                      height: 'clamp(12px, 1.2vw, 16px)',
+                    }}
+                  />
+                </Button>
+              )}
             </div>
           </div>
 
@@ -148,6 +174,7 @@ const Component = forwardRef<HTMLElement, ComponentRootProps>(({ projects }, _re
               color={project.color}
               description={project.description}
               i={i}
+              navigationLink={project.navigationLink}
               progress={scrollYProgress}
               range={[i * 0.25, 1]}
               targetScale={targetScale}

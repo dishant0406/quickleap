@@ -49,6 +49,68 @@ export default function sitemap(): MetadataRoute.Sitemap {
       changeFrequency: 'weekly',
       priority: 0.6,
     },
+    // Feature pages
+    {
+      url: `${baseUrl}/features/easy-setup`,
+      lastModified: currentDate,
+      changeFrequency: 'monthly',
+      priority: 0.8,
+    },
+    {
+      url: `${baseUrl}/features/analytics`,
+      lastModified: currentDate,
+      changeFrequency: 'monthly',
+      priority: 0.8,
+    },
+    {
+      url: `${baseUrl}/features/custom-domains`,
+      lastModified: currentDate,
+      changeFrequency: 'monthly',
+      priority: 0.8,
+    },
+    {
+      url: `${baseUrl}/features/rules`,
+      lastModified: currentDate,
+      changeFrequency: 'monthly',
+      priority: 0.8,
+    },
+    {
+      url: `${baseUrl}/features/api-integration`,
+      lastModified: currentDate,
+      changeFrequency: 'monthly',
+      priority: 0.8,
+    },
+    {
+      url: `${baseUrl}/features/security`,
+      lastModified: currentDate,
+      changeFrequency: 'monthly',
+      priority: 0.8,
+    },
+    // Company pages
+    {
+      url: `${baseUrl}/about`,
+      lastModified: currentDate,
+      changeFrequency: 'monthly',
+      priority: 0.7,
+    },
+    {
+      url: `${baseUrl}/contact`,
+      lastModified: currentDate,
+      changeFrequency: 'monthly',
+      priority: 0.7,
+    },
+    {
+      url: `${baseUrl}/privacy`,
+      lastModified: currentDate,
+      changeFrequency: 'monthly',
+      priority: 0.6,
+    },
+    {
+      url: `${baseUrl}/terms`,
+      lastModified: currentDate,
+      changeFrequency: 'monthly',
+      priority: 0.6,
+    },
     // GitHub OAuth callback (no-index for auth routes)
     {
       url: `${baseUrl}/auth/callback/github`,
