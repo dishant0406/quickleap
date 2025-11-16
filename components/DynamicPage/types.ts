@@ -218,6 +218,8 @@ export interface PageConfig {
     keywords?: string[];
     ogImage?: string;
     twitterCard?: 'summary' | 'summary_large_image';
+    authors?: string[];
+    canonicalUrl?: string;
   };
   customCSS?: string;
   scripts?: Array<{

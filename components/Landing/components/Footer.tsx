@@ -1,4 +1,4 @@
-import { FileText, Github, Map } from 'lucide-react';
+import { BookOpen, FileText, Github, Map } from 'lucide-react';
 import Link from 'next/link';
 
 import Logo from '@/components/Micro/Logo';
@@ -129,6 +129,15 @@ const Footer = (): React.JSX.Element => {
                   <Github className="w-4 h-4" />
                   GitHub
                 </a>
+              </li>
+              <li>
+                <Link
+                  className="text-gray-400 hover:text-[#FFDB58] transition-colors text-sm flex items-center gap-2"
+                  href="/blog"
+                >
+                  <BookOpen className="w-4 h-4" />
+                  Blog
+                </Link>
               </li>
               <li>
                 <a
