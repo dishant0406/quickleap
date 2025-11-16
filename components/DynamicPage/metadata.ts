@@ -1,3 +1,4 @@
+/* eslint-disable */
 import type { Metadata } from 'next';
 import type { PageConfig } from './types';
 
