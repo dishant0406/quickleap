@@ -10,22 +10,16 @@ export function getClient(): ApolloClient {
   // Create client if it doesn't exist or if we're on the server
   if (!client || typeof window === 'undefined') {
     client = new ApolloClient({
-      cache: new InMemoryCache({
-        resultCaching: false, // Disable result caching
-      }),
+      cache: new InMemoryCache(),
       link: new HttpLink({
         uri: HASHNODE_API_URL,
         headers: {
           'Content-Type': 'application/json',
-          'Cache-Control': 'no-cache, no-store, must-revalidate',
-          Pragma: 'no-cache',
-          Expires: '0',
           ...(HASHNODE_PAT && { Authorization: HASHNODE_PAT }),
         },
-        // Disable result caching for SSR
+        // Enable caching for static site generation
         fetchOptions: {
-          cache: 'no-store',
-          next: { revalidate: 0 }, // Next.js specific - always revalidate
+          next: { revalidate: 600 }, // Cache for 1 hour
         },
       }),
     });

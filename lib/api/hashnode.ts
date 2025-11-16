@@ -67,22 +67,16 @@ export async function fetchBlogPosts(
 ): Promise<BlogPostsResponse> {
   try {
     const client = getClient();
-    const cacheBuster = `?t=${Date.now()}`;
     const { data } = await client.query<BlogPostsResponse>({
       query: GET_PUBLICATION_POSTS_QUERY,
       variables: {
-        host: host + cacheBuster,
+        host,
         first: params.first || 10,
         after: params.after || null,
       },
-      fetchPolicy: 'no-cache', // Ensure no caching
       context: {
         fetchOptions: {
-          cache: 'no-store',
-          next: { revalidate: 0 },
-        },
-        headers: {
-          'x-cache-bust': Date.now().toString(),
+          next: { revalidate: 600 }, // Cache for 1 hour
         },
       },
     });
@@ -155,21 +149,15 @@ export async function fetchBlogPostBySlug(
 ): Promise<BlogPostDetailResponse> {
   try {
     const client = getClient();
-    const cacheBuster = `?t=${Date.now()}`;
     const { data } = await client.query<BlogPostDetailResponse>({
       query: GET_POST_BY_SLUG_QUERY,
       variables: {
-        host: host + cacheBuster,
+        host,
         slug,
       },
-      fetchPolicy: 'no-cache', // Ensure no caching
       context: {
         fetchOptions: {
-          cache: 'no-store',
-          next: { revalidate: 0 },
-        },
-        headers: {
-          'x-cache-bust': Date.now().toString(),
+          next: { revalidate: 600 }, // Cache for 1 hour
         },
       },
     });
@@ -220,21 +208,15 @@ export async function fetchBlogPostMetadata(
 ): Promise<BlogPostDetailResponse> {
   try {
     const client = getClient();
-    const cacheBuster = `?t=${Date.now()}`;
     const { data } = await client.query<BlogPostDetailResponse>({
       query: GET_POST_METADATA_QUERY,
       variables: {
-        host: host + cacheBuster,
+        host,
         slug,
       },
-      fetchPolicy: 'no-cache',
       context: {
         fetchOptions: {
-          cache: 'no-store',
-          next: { revalidate: 0 },
-        },
-        headers: {
-          'x-cache-bust': Date.now().toString(),
+          next: { revalidate: 600 }, // Cache for 1 hour
         },
       },
     });
@@ -288,7 +270,7 @@ export async function fetchBlogPostsForSitemap(
       },
       context: {
         fetchOptions: {
-          next: { revalidate: 3600 }, // Cache for 1 hour
+          next: { revalidate: 600 }, // Cache for 1 hour
         },
       },
     });

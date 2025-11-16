@@ -7,6 +7,8 @@ import HeroSection from '@/components/Landing/components/HeroSection';
 import MarqueeSection from '@/components/Landing/components/Marquee';
 import PlansSection from '@/components/Landing/components/PlansSection';
 
+export const revalidate = 600; // Revalidate every hour
+
 const Home: React.FC = () => {
   return (
     <div className="text-primaryBlack">

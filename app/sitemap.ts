@@ -3,7 +3,7 @@ import { env } from '@/lib/env';
 
 import type { MetadataRoute } from 'next';
 
-export const revalidate = 3600; // Revalidate every hour
+export const revalidate = 600; // Revalidate every hour
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const baseUrl = env.NEXT_PUBLIC_SITE_URL;

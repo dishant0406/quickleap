@@ -9,7 +9,7 @@ interface PlansResponse {
 export async function fetchPlans(): Promise<Plan[]> {
   try {
     const response = await fetch(`${env.NEXT_PUBLIC_LAZYWEB_BACKEND_URL}/user/plans`, {
-      cache: 'no-store',
+      next: { revalidate: 600 }, // Cache for 1 hour
       headers: {
         'Content-Type': 'application/json',
       },

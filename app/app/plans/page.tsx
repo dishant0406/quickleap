@@ -3,6 +3,8 @@ import { type Metadata } from 'next';
 import PlansDisplay from '@/components/Plans/PlansDisplay';
 import { fetchPlans } from '@/lib/api/plans';
 
+export const revalidate = 600; // Revalidate every hour
+
 export const metadata: Metadata = {
   title: 'Pricing Plans - Choose Your Perfect Plan',
   description:

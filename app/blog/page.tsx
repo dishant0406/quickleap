@@ -5,6 +5,8 @@ import { env } from '@/lib/env';
 
 import type { Metadata } from 'next';
 
+export const revalidate = 600; // Revalidate every hour
+
 export const metadata: Metadata = {
   title: 'Blog | QuickLeap Redirects',
   description:

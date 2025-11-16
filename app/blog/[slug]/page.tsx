@@ -14,17 +14,20 @@ import { env } from '@/lib/env';
 
 import type { Metadata } from 'next';
 
+export const revalidate = 600; // Revalidate every hour
+
 interface BlogPostPageProps {
-  params: {
+  params: Promise<{
     slug: string;
-  };
+  }>;
 }
 
 export async function generateMetadata({ params }: BlogPostPageProps): Promise<Metadata> {
   const publicationHost = env.NEXT_PUBLIC_HASHNODE_HOST;
+  const { slug } = await params;
 
   try {
-    const response = await fetchBlogPostMetadata(publicationHost, params.slug);
+    const response = await fetchBlogPostMetadata(publicationHost, slug);
     const post = response.publication.post;
 
     if (!post) {
@@ -79,10 +82,11 @@ export default async function BlogPostPage({
   params,
 }: BlogPostPageProps): Promise<React.JSX.Element> {
   const publicationHost = env.NEXT_PUBLIC_HASHNODE_HOST || 'blog.yourdomain.com';
+  const { slug } = await params;
 
   let post;
   try {
-    const response = await fetchBlogPostBySlug(publicationHost, params.slug);
+    const response = await fetchBlogPostBySlug(publicationHost, slug);
     post = response.publication.post;
 
     if (!post) {
