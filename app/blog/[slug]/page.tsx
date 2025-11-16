@@ -10,6 +10,7 @@ import {
 import Footer from '@/components/Landing/components/Footer';
 import { Badge } from '@/components/ui/badge';
 import { fetchBlogPostBySlug, fetchBlogPostMetadata } from '@/lib/api/hashnode';
+import { env } from '@/lib/env';
 
 import type { Metadata } from 'next';
 
@@ -20,7 +21,7 @@ interface BlogPostPageProps {
 }
 
 export async function generateMetadata({ params }: BlogPostPageProps): Promise<Metadata> {
-  const publicationHost = process.env.NEXT_PUBLIC_HASHNODE_HOST || 'blog.yourdomain.com';
+  const publicationHost = env.NEXT_PUBLIC_HASHNODE_HOST;
 
   try {
     const response = await fetchBlogPostMetadata(publicationHost, params.slug);
@@ -77,7 +78,7 @@ export async function generateMetadata({ params }: BlogPostPageProps): Promise<M
 export default async function BlogPostPage({
   params,
 }: BlogPostPageProps): Promise<React.JSX.Element> {
-  const publicationHost = process.env.NEXT_PUBLIC_HASHNODE_HOST || 'blog.yourdomain.com';
+  const publicationHost = env.NEXT_PUBLIC_HASHNODE_HOST || 'blog.yourdomain.com';
 
   let post;
   try {

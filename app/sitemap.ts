@@ -10,7 +10,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const currentDate = new Date();
 
   // Fetch all blog posts for sitemap (lightweight - only slug and publishedAt)
-  const publicationHost = process.env.NEXT_PUBLIC_HASHNODE_HOST || 'blog.yourdomain.com';
+  const publicationHost = env.NEXT_PUBLIC_HASHNODE_HOST || 'blog.yourdomain.com';
   let allBlogPosts: Array<{ slug: string; publishedAt: string }> = [];
 
   try {

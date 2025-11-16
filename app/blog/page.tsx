@@ -1,6 +1,7 @@
 import { BlogGrid } from '@/components/Blog';
 import Footer from '@/components/Landing/components/Footer';
 import { fetchBlogPosts } from '@/lib/api/hashnode';
+import { env } from '@/lib/env';
 
 import type { Metadata } from 'next';
 
@@ -23,7 +24,7 @@ export const metadata: Metadata = {
 };
 
 export default async function BlogPage(): Promise<React.JSX.Element> {
-  const publicationHost = process.env.NEXT_PUBLIC_HASHNODE_HOST || 'blog.yourdomain.com';
+  const publicationHost = env.NEXT_PUBLIC_HASHNODE_HOST || 'blog.yourdomain.com';
 
   // Fetch initial posts on the server
   const response = await fetchBlogPosts(publicationHost, {

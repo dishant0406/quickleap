@@ -30,4 +30,6 @@ export const env = {
     process.env.NEXT_PUBLIC_UMAMI_WEBSITE_ID || '485db16a-1058-49de-b9b8-adb7e2bf2ff0',
   NEXT_PUBLIC_UMAMI_SCRIPT_URL:
     process.env.NEXT_PUBLIC_UMAMI_SCRIPT_URL || 'https://cloud.umami.is/script.js',
+
+  NEXT_PUBLIC_HASHNODE_HOST: process.env.NEXT_PUBLIC_HASHNODE_HOST || 'quickleap.hashnode.dev',
 };
