@@ -9,6 +9,7 @@ import type { BlogPostDetailResponse, BlogPostsParams, BlogPostsResponse } from 
 const GET_PUBLICATION_POSTS_QUERY = gql`
   query GetPublicationPosts($host: String!, $first: Int!, $after: String) {
     publication(host: $host) {
+      id
       title
       posts(first: $first, after: $after) {
         edges {
@@ -96,6 +97,7 @@ export async function fetchBlogPosts(
 const GET_POST_BY_SLUG_QUERY = gql`
   query GetPostBySlug($host: String!, $slug: String!) {
     publication(host: $host) {
+      id
       post(slug: $slug) {
         id
         slug
@@ -174,6 +176,7 @@ export async function fetchBlogPostBySlug(
 const GET_POST_METADATA_QUERY = gql`
   query GetPostMetadata($host: String!, $slug: String!) {
     publication(host: $host) {
+      id
       post(slug: $slug) {
         title
         brief
@@ -229,6 +232,7 @@ export async function fetchBlogPostMetadata(
  */
 const GET_POSTS_FOR_SITEMAP_QUERY = gql`
   query GetPostsForSitemap($host: String!, $first: Int!, $after: String) {
+    id
     publication(host: $host) {
       posts(first: $first, after: $after) {
         edges {
