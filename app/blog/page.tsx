@@ -8,6 +8,7 @@ import type { Metadata } from 'next';
 // Next.js 15: Use dynamic rendering with time-based revalidation
 export const dynamic = 'force-dynamic';
 export const revalidate = 0; // Always fetch fresh data
+export const fetchCache = 'force-no-store';
 
 export const metadata: Metadata = {
   title: 'Blog | QuickLeap Redirects',
