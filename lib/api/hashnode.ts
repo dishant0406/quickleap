@@ -73,6 +73,7 @@ export async function fetchBlogPosts(
         host,
         first: params.first || 10,
         after: params.after || null,
+        randomTimeStamp: Date.now(),
       },
       context: {
         fetchOptions: {
@@ -154,6 +155,7 @@ export async function fetchBlogPostBySlug(
       variables: {
         host,
         slug,
+        randomTimeStamp: Date.now(),
       },
       context: {
         fetchOptions: {
@@ -213,6 +215,7 @@ export async function fetchBlogPostMetadata(
       variables: {
         host,
         slug,
+        randomTimeStamp: Date.now(),
       },
       context: {
         fetchOptions: {
@@ -267,6 +270,7 @@ export async function fetchBlogPostsForSitemap(
         host,
         first: params.first || 50,
         after: params.after || null,
+        randomTimeStamp: Date.now(),
       },
       context: {
         fetchOptions: {
