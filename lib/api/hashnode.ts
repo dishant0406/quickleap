@@ -178,6 +178,7 @@ const GET_POST_METADATA_QUERY = gql`
     publication(host: $host) {
       id
       post(slug: $slug) {
+        id
         title
         brief
         publishedAt
@@ -234,9 +235,11 @@ const GET_POSTS_FOR_SITEMAP_QUERY = gql`
   query GetPostsForSitemap($host: String!, $first: Int!, $after: String) {
     id
     publication(host: $host) {
+      id
       posts(first: $first, after: $after) {
         edges {
           node {
+            id
             slug
             publishedAt
           }
