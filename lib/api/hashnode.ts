@@ -233,7 +233,6 @@ export async function fetchBlogPostMetadata(
  */
 const GET_POSTS_FOR_SITEMAP_QUERY = gql`
   query GetPostsForSitemap($host: String!, $first: Int!, $after: String) {
-    id
     publication(host: $host) {
       id
       posts(first: $first, after: $after) {
