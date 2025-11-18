@@ -1,11 +1,10 @@
 import { ApolloClient, HttpLink, InMemoryCache } from '@apollo/client';
-import { registerApolloClient } from '@apollo/experimental-nextjs-app-support/rsc';
 
 const HASHNODE_API_URL = 'https://gql.hashnode.com';
 const HASHNODE_PAT = '2d092ab2-6e54-4111-9130-59805fa575e0';
 
-// Use Next.js 15 compatible Apollo Client for RSC
-export const { getClient } = registerApolloClient(() => {
+// Create a new Apollo Client instance for each request (Next.js 15 compatible)
+export function getClient(): ApolloClient {
   return new ApolloClient({
     cache: new InMemoryCache(),
     link: new HttpLink({
@@ -14,10 +13,18 @@ export const { getClient } = registerApolloClient(() => {
         'Content-Type': 'application/json',
         ...(HASHNODE_PAT && { Authorization: HASHNODE_PAT }),
       },
-      // Use standard fetch for Next.js 15 compatibility
+      // Disable default caching - let Next.js handle it
       fetchOptions: {
-        cache: 'no-store', // We'll handle caching at the query level
+        cache: 'no-store',
       },
     }),
+    // Disable Apollo Client cache for SSR
+    ssrMode: typeof window === 'undefined',
+    defaultOptions: {
+      query: {
+        fetchPolicy: 'no-cache',
+        errorPolicy: 'all',
+      },
+    },
   });
-});
+}
