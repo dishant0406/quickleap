@@ -73,13 +73,9 @@ export async function fetchBlogPosts(
         host,
         first: params.first || 10,
         after: params.after || null,
-        randomTimeStamp: Date.now(),
       },
-      context: {
-        fetchOptions: {
-          next: { revalidate: 600 }, // Cache for 1 hour
-        },
-      },
+      // In Next.js 15, we rely on the route segment revalidate config
+      fetchPolicy: 'no-cache',
     });
 
     if (!data) {
@@ -155,13 +151,9 @@ export async function fetchBlogPostBySlug(
       variables: {
         host,
         slug,
-        randomTimeStamp: Date.now(),
       },
-      context: {
-        fetchOptions: {
-          next: { revalidate: 600 }, // Cache for 1 hour
-        },
-      },
+      // In Next.js 15, we rely on the route segment revalidate config
+      fetchPolicy: 'no-cache',
     });
 
     if (!data) {
@@ -215,13 +207,9 @@ export async function fetchBlogPostMetadata(
       variables: {
         host,
         slug,
-        randomTimeStamp: Date.now(),
       },
-      context: {
-        fetchOptions: {
-          next: { revalidate: 600 }, // Cache for 1 hour
-        },
-      },
+      // In Next.js 15, we rely on the route segment revalidate config
+      fetchPolicy: 'no-cache',
     });
 
     if (!data) {
@@ -270,13 +258,9 @@ export async function fetchBlogPostsForSitemap(
         host,
         first: params.first || 50,
         after: params.after || null,
-        randomTimeStamp: Date.now(),
       },
-      context: {
-        fetchOptions: {
-          next: { revalidate: 600 }, // Cache for 1 hour
-        },
-      },
+      // In Next.js 15, we rely on the route segment revalidate config
+      fetchPolicy: 'no-cache',
     });
 
     if (!data) {

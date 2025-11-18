@@ -3,7 +3,9 @@ import { env } from '@/lib/env';
 
 import type { MetadataRoute } from 'next';
 
-export const revalidate = 600; // Revalidate every hour
+// Next.js 15: Use dynamic rendering for sitemap
+export const dynamic = 'force-dynamic';
+export const revalidate = 0; // Always fetch fresh data
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const baseUrl = env.NEXT_PUBLIC_SITE_URL;
