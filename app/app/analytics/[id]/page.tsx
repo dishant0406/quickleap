@@ -13,9 +13,13 @@ export async function generateMetadata({ params }: RedirectAnalyticsProps): Prom
   return {
     title: `Analytics - Redirect #${id}`,
     description: `View detailed analytics, traffic statistics, geographic distribution, device breakdown, and performance metrics for your redirect #${id}. Track clicks, monitor bot traffic, and analyze visitor patterns.`,
+    alternates: {
+      canonical: `https://quickleap.io/app/analytics/${id}`,
+    },
     openGraph: {
       title: `Analytics - Redirect #${id} | Quickleap`,
       description: `Comprehensive analytics dashboard for redirect #${id}. Monitor traffic, track performance, and analyze visitor patterns in real-time.`,
+      url: `https://quickleap.io/app/analytics/${id}`,
     },
     twitter: {
       title: `Analytics - Redirect #${id} | Quickleap`,

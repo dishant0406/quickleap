@@ -33,7 +33,7 @@ const FAQS = [
   },
 ];
 
-const FAQSection = () => {
+const FAQSection = (): React.JSX.Element => {
   return (
     <div className="min-h-main flex flex-col items-center  py-[10vh]  md:px-[10vw] px-[5vw]">
       <h2 className="text-[8vw] md:text-[3vw] font-anton text-primaryBlack dark:text-white">

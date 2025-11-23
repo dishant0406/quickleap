@@ -10,6 +10,7 @@ export const ruleBasedRedirectsConfig: PageConfig = {
   },
   seo: {
     keywords: ['rule-based redirects', 'conditional redirects', 'traffic steering', 'QuickLeap'],
+    canonicalUrl: 'https://quickleap.io/features/rules',
   },
   components: [
     {

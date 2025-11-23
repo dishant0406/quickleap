@@ -10,6 +10,7 @@ export const easySetupConfig: PageConfig = {
   },
   seo: {
     keywords: ['easy setup', 'domain redirects', 'dashboard', 'QuickLeap'],
+    canonicalUrl: 'https://quickleap.io/features/easy-setup',
   },
   components: [
     {

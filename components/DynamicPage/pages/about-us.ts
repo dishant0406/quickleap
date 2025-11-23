@@ -10,6 +10,7 @@ export const aboutUsConfig: PageConfig = {
   },
   seo: {
     keywords: ['about us', 'company', 'team', 'mission', 'QuickLeap'],
+    canonicalUrl: 'https://quickleap.io/about',
   },
   components: [
     {

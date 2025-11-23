@@ -10,6 +10,7 @@ export const termsOfServiceConfig: PageConfig = {
   },
   seo: {
     keywords: ['terms of service', 'terms and conditions', 'user agreement', 'QuickLeap'],
+    canonicalUrl: 'https://quickleap.io/terms',
   },
   components: [
     {

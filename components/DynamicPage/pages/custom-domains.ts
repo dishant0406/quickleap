@@ -10,6 +10,7 @@ export const customDomainsConfig: PageConfig = {
   },
   seo: {
     keywords: ['custom domains', 'branding', 'white label', 'DNS', 'QuickLeap'],
+    canonicalUrl: 'https://quickleap.io/features/custom-domains',
   },
   components: [
     {

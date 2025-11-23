@@ -1,5 +1,6 @@
 import { BlogGrid } from '@/components/Blog';
 import Footer from '@/components/Landing/components/Footer';
+import { BreadcrumbSchema } from '@/components/StructuredData';
 import { fetchBlogPosts } from '@/lib/api/hashnode';
 import { env } from '@/lib/env';
 
@@ -14,11 +15,15 @@ export const metadata: Metadata = {
   title: 'Blog | QuickLeap Redirects',
   description:
     'Discover insights, tutorials, and updates from our team. Stay up to date with the latest in tech, design, and innovation.',
+  alternates: {
+    canonical: 'https://quickleap.io/blog',
+  },
   openGraph: {
     title: 'Blog | QuickLeap Redirects',
     description:
       'Discover insights, tutorials, and updates from our team. Stay up to date with the latest in tech, design, and innovation.',
     type: 'website',
+    url: 'https://quickleap.io/blog',
   },
   twitter: {
     card: 'summary_large_image',
@@ -41,6 +46,12 @@ export default async function BlogPage(): Promise<React.JSX.Element> {
 
   return (
     <>
+      <BreadcrumbSchema
+        items={[
+          { name: 'Home', url: 'https://quickleap.io' },
+          { name: 'Blog', url: 'https://quickleap.io/blog' },
+        ]}
+      />
       <div className="h-main  mt-nav overflow-y-auto">
         <div className="container p-4 md:p-[5vh] md:px-[7vw] mx-auto px-4">
           {/* Page Header */}

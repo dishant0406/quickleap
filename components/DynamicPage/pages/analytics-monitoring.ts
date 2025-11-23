@@ -10,6 +10,7 @@ export const analyticsMonitoringConfig: PageConfig = {
   },
   seo: {
     keywords: ['analytics', 'monitoring', 'traffic analysis', 'metrics', 'QuickLeap'],
+    canonicalUrl: 'https://quickleap.io/features/analytics',
   },
   components: [
     {

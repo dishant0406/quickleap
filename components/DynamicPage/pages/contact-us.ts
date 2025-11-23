@@ -10,6 +10,7 @@ export const contactUsConfig: PageConfig = {
   },
   seo: {
     keywords: ['contact', 'support', 'help', 'sales', 'QuickLeap'],
+    canonicalUrl: 'https://quickleap.io/contact',
   },
   components: [
     {

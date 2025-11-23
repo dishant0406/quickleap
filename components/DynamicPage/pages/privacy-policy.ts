@@ -10,6 +10,7 @@ export const privacyPolicyConfig: PageConfig = {
   },
   seo: {
     keywords: ['privacy policy', 'data protection', 'GDPR', 'QuickLeap'],
+    canonicalUrl: 'https://quickleap.io/privacy',
   },
   components: [
     {

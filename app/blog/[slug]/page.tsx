@@ -8,6 +8,7 @@ import {
   BlogPostMeta,
 } from '@/components/Blog';
 import Footer from '@/components/Landing/components/Footer';
+import { BlogPostSchema, BreadcrumbSchema } from '@/components/StructuredData';
 import { Badge } from '@/components/ui/badge';
 import { fetchBlogPostBySlug, fetchBlogPostMetadata } from '@/lib/api/hashnode';
 import { env } from '@/lib/env';
@@ -43,14 +44,19 @@ export async function generateMetadata({ params }: BlogPostPageProps): Promise<M
     const title = post.seo?.title || post.title;
     const description = post.seo?.description || post.brief;
     const image = post.ogMetaData?.image || post.coverImage?.url;
+    const canonicalUrl = `https://quickleap.io/blog/${slug}`;
 
     return {
       title: `${title} | QuickLeap Blog`,
       description,
+      alternates: {
+        canonical: canonicalUrl,
+      },
       openGraph: {
         title,
         description,
         type: 'article',
+        url: canonicalUrl,
         publishedTime: post.publishedAt,
         authors: [post.author.name],
         ...(image && {
@@ -101,6 +107,22 @@ export default async function BlogPostPage({
 
   return (
     <div className="h-main mt-nav overflow-y-auto bg-bg">
+      <BlogPostSchema
+        authorName={post.author.name}
+        authorUrl={`https://quickleap.io/blog/author/${post.author.username}`}
+        description={post.brief}
+        imageUrl={post.coverImage?.url}
+        publishedAt={post.publishedAt}
+        title={post.title}
+        url={`https://quickleap.io/blog/${slug}`}
+      />
+      <BreadcrumbSchema
+        items={[
+          { name: 'Home', url: 'https://quickleap.io' },
+          { name: 'Blog', url: 'https://quickleap.io/blog' },
+          { name: post.title, url: `https://quickleap.io/blog/${slug}` },
+        ]}
+      />
       <BlogPostHeader />
 
       <article className="py-8 sm:py-12 lg:py-16">

@@ -10,6 +10,7 @@ export const globalSecurityConfig: PageConfig = {
   },
   seo: {
     keywords: ['security', 'global network', 'CDN', 'SSL', 'QuickLeap'],
+    canonicalUrl: 'https://quickleap.io/features/security',
   },
   components: [
     {

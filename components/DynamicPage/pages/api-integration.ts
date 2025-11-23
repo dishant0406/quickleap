@@ -10,6 +10,7 @@ export const apiIntegrationConfig: PageConfig = {
   },
   seo: {
     keywords: ['API', 'integration', 'automation', 'developer tools', 'QuickLeap'],
+    canonicalUrl: 'https://quickleap.io/features/api-integration',
   },
   components: [
     {
