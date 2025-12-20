@@ -1,9 +1,11 @@
 export { BlogCard } from './BlogCard';
 export { BlogHeader } from './BlogHeader';
 export { BlogGrid } from './BlogList';
+export { BlogPagination } from './BlogPagination';
 export { BlogPostContent } from './BlogPostContent';
 export { BlogPostCover } from './BlogPostCover';
 export { BlogPostFooter } from './BlogPostFooter';
 export { BlogPostHeader } from './BlogPostHeader';
 export { BlogPostMeta } from './BlogPostMeta';
 export { FeaturedBlogCard } from './FeaturedBlogCard';
+export { SEOPagination } from './SEOPagination';

@@ -1,7 +1,12 @@
 import { gql } from '@apollo/client';
 
 import { getClient } from '../apollo/client';
-import type { BlogPostDetailResponse, BlogPostsParams, BlogPostsResponse } from '../types/blog';
+import type {
+  BlogPost,
+  BlogPostDetailResponse,
+  BlogPostsParams,
+  BlogPostsResponse,
+} from '../types/blog';
 
 /**
  * GraphQL query to fetch blog posts from a publication
@@ -12,6 +17,7 @@ const GET_PUBLICATION_POSTS_QUERY = gql`
       id
       title
       posts(first: $first, after: $after) {
+        totalDocuments
         edges {
           node {
             id
@@ -88,6 +94,69 @@ export async function fetchBlogPosts(
     console.error('Hashnode API Error:', error);
     const errorMessage = error instanceof Error ? error.message : 'Unknown error';
     throw new Error(`Failed to fetch blog posts: ${errorMessage}`);
+  }
+}
+
+/**
+ * Fetch blog posts for a specific page with pagination
+ * This function handles cursor-based pagination more efficiently for page navigation
+ */
+export async function fetchBlogPostsForPage(
+  host: string,
+  page: number = 1,
+  postsPerPage: number = 9
+): Promise<{
+  posts: BlogPost[];
+  totalPosts: number;
+  totalPages: number;
+  currentPage: number;
+  hasNextPage: boolean;
+  hasPrevPage: boolean;
+}> {
+  try {
+    // For page 1, fetch directly
+    if (page === 1) {
+      const response = await fetchBlogPosts(host, { first: postsPerPage });
+      const posts = response.publication.posts.edges.map((edge) => edge.node);
+      const totalPosts = response.publication.posts.totalDocuments || posts.length;
+      const totalPages = Math.ceil(totalPosts / postsPerPage);
+
+      return {
+        posts,
+        totalPosts,
+        totalPages,
+        currentPage: 1,
+        hasNextPage: response.publication.posts.pageInfo.hasNextPage,
+        hasPrevPage: false,
+      };
+    }
+
+    // For other pages, we need to fetch from the beginning and paginate
+    // This is a limitation of cursor-based pagination
+    const postsToFetch = page * postsPerPage;
+    const response = await fetchBlogPosts(host, { first: postsToFetch });
+    const allPosts = response.publication.posts.edges.map((edge) => edge.node);
+    const totalPosts = response.publication.posts.totalDocuments || allPosts.length;
+
+    // Get posts for current page
+    const startIndex = (page - 1) * postsPerPage;
+    const posts = allPosts.slice(startIndex, startIndex + postsPerPage);
+
+    // Calculate pagination info
+    const totalPages = Math.ceil(totalPosts / postsPerPage);
+
+    return {
+      posts,
+      totalPosts,
+      totalPages,
+      currentPage: page,
+      hasNextPage: page < totalPages,
+      hasPrevPage: page > 1,
+    };
+  } catch (error) {
+    console.error('Hashnode API Error:', error);
+    const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+    throw new Error(`Failed to fetch blog posts for page: ${errorMessage}`);
   }
 }
 

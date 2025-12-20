@@ -44,6 +44,7 @@ export interface BlogPostDetail extends BlogPost {
 export interface BlogPostsResponse {
   publication: {
     posts: {
+      totalDocuments?: number;
       edges: Array<{
         node: BlogPost;
       }>;
