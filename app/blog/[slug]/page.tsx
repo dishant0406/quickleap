@@ -6,6 +6,8 @@ import {
   BlogPostFooter,
   BlogPostHeader,
   BlogPostMeta,
+  DynamicSidebar,
+  RelatedPosts,
 } from '@/components/Blog';
 import Footer from '@/components/Landing/components/Footer';
 import { BlogPostSchema, BreadcrumbSchema } from '@/components/StructuredData';
@@ -18,6 +20,7 @@ import type { Metadata } from 'next';
 // Next.js 15: Use dynamic rendering with time-based revalidation
 export const dynamic = 'force-dynamic';
 export const revalidate = 0; // Always fetch fresh data
+export const fetchCache = 'force-no-store';
 
 interface BlogPostPageProps {
   params: Promise<{
@@ -105,68 +108,82 @@ export default async function BlogPostPage({
     notFound();
   }
 
+  const breadcrumbItems = [
+    { name: 'Home', url: 'https://quickleap.io' },
+    { name: 'Blog', url: 'https://quickleap.io/blog' },
+    { name: post.title, url: `https://quickleap.io/blog/${slug}` },
+  ];
+
   return (
-    <div className="h-main mt-nav overflow-y-auto bg-bg">
+    <>
       <BlogPostSchema
         authorName={post.author.name}
-        authorUrl={`https://quickleap.io/blog/author/${post.author.username}`}
+        authorUrl="https://quickleap.io"
         description={post.brief}
         imageUrl={post.coverImage?.url}
         publishedAt={post.publishedAt}
         title={post.title}
         url={`https://quickleap.io/blog/${slug}`}
       />
-      <BreadcrumbSchema
-        items={[
-          { name: 'Home', url: 'https://quickleap.io' },
-          { name: 'Blog', url: 'https://quickleap.io/blog' },
-          { name: post.title, url: `https://quickleap.io/blog/${slug}` },
-        ]}
-      />
-      <BlogPostHeader />
 
-      <article className="py-8 sm:py-12 lg:py-16">
-        <div className="container mx-auto max-w-4xl px-4 sm:px-6 lg:px-8">
-          {/* Tags */}
-          {post.tags && post.tags.length > 0 && (
-            <div className="mb-6 flex flex-wrap gap-2">
-              {post.tags.map((tag) => (
-                <Badge key={tag.slug}>{tag.name}</Badge>
-              ))}
-            </div>
-          )}
+      <BreadcrumbSchema items={breadcrumbItems} />
 
-          {/* Title */}
-          <h1 className="mb-6 text-3xl font-heading leading-tight text-text sm:text-4xl md:text-5xl lg:text-6xl">
-            {post.title}
-          </h1>
+      <div className="relative h-main  mt-nav">
+        {/* Header */}
+        <BlogPostHeader />
 
-          {/* Meta */}
-          <div className="mb-8">
-            <BlogPostMeta
-              author={post.author}
-              publishedAt={post.publishedAt}
-              readTimeInMinutes={post.readTimeInMinutes}
-            />
+        <div className="container mx-auto max-w-7xl px-4 py-8">
+          <div className="grid gap-8 lg:grid-cols-[1fr_350px]">
+            <article className="min-w-0">
+              {/* Tags */}
+              {post.tags && post.tags.length > 0 && (
+                <div className="mb-6 flex flex-wrap gap-2">
+                  {post.tags.slice(0, 3).map((tag) => (
+                    <Badge key={tag.slug} className="hover:bg-muted">
+                      {tag.name}
+                    </Badge>
+                  ))}
+                </div>
+              )}
+
+              {/* Title */}
+              <h1 className="mb-8 text-3xl font-bold leading-tight text-gray-900 sm:text-4xl md:text-5xl lg:text-6xl">
+                {post.title}
+              </h1>
+
+              {/* Meta Section */}
+              <div data-meta-section className="mb-10">
+                <BlogPostMeta
+                  author={post.author}
+                  publishedAt={post.publishedAt}
+                  readTimeInMinutes={post.readTimeInMinutes}
+                />
+              </div>
+
+              {/* Cover Image */}
+              {post.coverImage?.url && (
+                <div data-cover-image className="mb-12">
+                  <BlogPostCover title={post.title} url={post.coverImage.url} />
+                </div>
+              )}
+
+              {/* Content */}
+              <div className="mb-12">
+                <BlogPostContent html={post.content.html} />
+              </div>
+
+              {/* Footer */}
+              <BlogPostFooter />
+            </article>
+
+            {/* Related Posts Sidebar - dynamically positioned */}
+            <DynamicSidebar>
+              <RelatedPosts currentSlug={slug} />
+            </DynamicSidebar>
           </div>
-
-          {/* Cover Image */}
-          {post.coverImage?.url && (
-            <div className="mb-10">
-              <BlogPostCover title={post.title} url={post.coverImage.url} />
-            </div>
-          )}
-
-          {/* Article Content */}
-          <div className="mb-8">
-            <BlogPostContent html={post.content.html} />
-          </div>
-
-          {/* Footer */}
-          <BlogPostFooter />
         </div>
-      </article>
-      <Footer />
-    </div>
+        <Footer />
+      </div>
+    </>
   );
 }

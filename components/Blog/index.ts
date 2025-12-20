@@ -7,5 +7,7 @@ export { BlogPostCover } from './BlogPostCover';
 export { BlogPostFooter } from './BlogPostFooter';
 export { BlogPostHeader } from './BlogPostHeader';
 export { BlogPostMeta } from './BlogPostMeta';
+export { DynamicSidebar } from './DynamicSidebar';
 export { FeaturedBlogCard } from './FeaturedBlogCard';
+export { RelatedPosts } from './RelatedPosts';
 export { SEOPagination } from './SEOPagination';
