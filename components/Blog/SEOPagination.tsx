@@ -16,9 +16,9 @@ export function SEOPagination({ currentPage, totalPages, baseUrl }: SEOPaginatio
 
   return (
     <Head>
-      {prevUrl && <link rel="prev" href={prevUrl} />}
-      {nextUrl && <link rel="next" href={nextUrl} />}
-      {currentPage > 1 && <meta name="robots" content="noindex,follow" />}
+      {prevUrl && <link href={prevUrl} rel="prev" />}
+      {nextUrl && <link href={nextUrl} rel="next" />}
+      {currentPage > 1 && <meta content="noindex,follow" name="robots" />}
     </Head>
   );
 }
