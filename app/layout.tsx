@@ -171,6 +171,21 @@ const RootLayout = async ({
         data-website-id={env.NEXT_PUBLIC_UMAMI_WEBSITE_ID}
         src={env.NEXT_PUBLIC_UMAMI_SCRIPT_URL}
       ></Script>
+
+      {/* Google Analytics */}
+      <Script
+        async
+        src="https://www.googletagmanager.com/gtag/js?id=AW-17847300061"
+        strategy="afterInteractive"
+      />
+      <Script id="google-analytics" strategy="afterInteractive">
+        {`
+          window.dataLayer = window.dataLayer || [];
+          function gtag(){dataLayer.push(arguments);}
+          gtag('js', new Date());
+          gtag('config', 'AW-17847300061');
+        `}
+      </Script>
       <SuperTokensInit>
         <body
           className={`${geistSans.className} text-primaryBlack ${anton.variable} bg-bg antialiased`}
