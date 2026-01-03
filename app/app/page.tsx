@@ -1,4 +1,5 @@
 import { type Metadata } from 'next';
+import Script from 'next/script';
 
 import Main from '@/components/Main';
 
@@ -26,6 +27,15 @@ const Home: React.FC = () => {
   return (
     <div className="text-primaryBlack">
       <Main />
+
+      {/* Google tag (gtag.js) event */}
+      <Script id="gtag-conversion" strategy="afterInteractive">
+        {`
+          gtag('event', 'ads_conversion_Sign_up_1', {
+            // <event_parameters>
+          });
+        `}
+      </Script>
     </div>
   );
 };
