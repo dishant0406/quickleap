@@ -14,6 +14,8 @@ export const env = {
   // Auth Callback URLs
   NEXT_PUBLIC_GITHUB_CALLBACK_URI:
     process.env.NEXT_PUBLIC_GITHUB_CALLBACK_URI || 'https://quickleap.io/auth/callback/github',
+  NEXT_PUBLIC_GOOGLE_CALLBACK_URI:
+    process.env.NEXT_PUBLIC_GOOGLE_CALLBACK_URI || 'https://quickleap.io/auth/callback/google',
 
   // CDN URLs
   NEXT_PUBLIC_DICEBEAR_API_URL:

@@ -4,9 +4,10 @@ import { CalendarCheck, CreditCard, FileClock, GithubIcon, LogOut, Wallet } from
 import { useRouter } from 'next/navigation';
 import Session from 'supertokens-web-js/recipe/session';
 
+import GoogleIcon from '@/components/icons/GoogleIcon';
 import { Button } from '@/components/ui/button';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
-import { githubSignInClicked } from '@/lib/helpers/supertoken/config';
+import { githubSignInClicked, googleSignInClicked } from '@/lib/helpers/supertoken/config';
 import useUserStore from '@/lib/zustand/user';
 
 import AvatarWithToolTip from '.';
@@ -99,7 +100,7 @@ const LoginAvatar: React.FC<{
             </p>
           </div>
           <div className="grid gap-2">
-            <div className="w-full flex items-center gap-4 mt-4">
+            <div className="w-full flex flex-col gap-3 mt-4">
               <Button
                 className="!w-full"
                 tooltipDirection="bottom"
@@ -108,6 +109,15 @@ const LoginAvatar: React.FC<{
               >
                 <GithubIcon className="w-4 h-4" />
                 Github
+              </Button>
+              <Button
+                className="!w-full"
+                tooltipDirection="bottom"
+                variant="neutral"
+                onClick={() => googleSignInClicked()}
+              >
+                <GoogleIcon className="w-4 h-4" />
+                Google
               </Button>
             </div>
           </div>

@@ -18,14 +18,17 @@ export const frontendConfig = (): SuperTokensConfig => {
   };
 };
 
-export const githubSignInClicked = async () => {
+const startThirdPartySignIn = async (
+  providerId: 'github' | 'google',
+  redirectURI: string
+): Promise<void> => {
   try {
     const authUrl = await getAuthorisationURLWithQueryParamsAndSetState({
-      thirdPartyId: 'github',
+      thirdPartyId: providerId,
 
       // This is where GitHub should redirect the user back after login or error.
       // This URL goes on the GitHub's dashboard as well.
-      frontendRedirectURI: env.NEXT_PUBLIC_GITHUB_CALLBACK_URI,
+      frontendRedirectURI: redirectURI,
     });
 
     // we redirect the user to github for auth.
@@ -40,10 +43,18 @@ export const githubSignInClicked = async () => {
   }
 };
 
-export const handleGithubCallback = async (
+export const githubSignInClicked = async () => {
+  return startThirdPartySignIn('github', env.NEXT_PUBLIC_GITHUB_CALLBACK_URI);
+};
+
+export const googleSignInClicked = async () => {
+  return startThirdPartySignIn('google', env.NEXT_PUBLIC_GOOGLE_CALLBACK_URI);
+};
+
+const handleProviderCallback = async (
   router: AppRouterInstance,
   fetchUser: () => Promise<void>
-) => {
+): Promise<void> => {
   try {
     const response = await signInAndUp();
 
@@ -79,3 +90,13 @@ export const handleGithubCallback = async (
     }
   }
 };
+
+export const handleGithubCallback = async (
+  router: AppRouterInstance,
+  fetchUser: () => Promise<void>
+) => handleProviderCallback(router, fetchUser);
+
+export const handleGoogleCallback = async (
+  router: AppRouterInstance,
+  fetchUser: () => Promise<void>
+) => handleProviderCallback(router, fetchUser);

@@ -165,6 +165,13 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       changeFrequency: 'yearly',
       priority: 0.1,
     },
+    // Google OAuth callback (no-index for auth routes)
+    {
+      url: `${baseUrl}/auth/callback/google`,
+      lastModified: currentDate,
+      changeFrequency: 'yearly',
+      priority: 0.1,
+    },
     // LLM.txt - AI-readable documentation
     {
       url: `${baseUrl}/llm.txt`,

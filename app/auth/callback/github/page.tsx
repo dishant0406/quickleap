@@ -13,7 +13,7 @@ const Github = () => {
   const { fetchUser } = useUserStore();
   useEffect(() => {
     handleGithubCallback(router, fetchUser);
-  }, []);
+  }, [router, fetchUser]);
 
   return (
     <div className="h-main flex flex-col items-center justify-center">
