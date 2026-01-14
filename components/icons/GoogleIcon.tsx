@@ -1,24 +1,49 @@
-import type { SVGProps } from 'react';
+const GoogleIcon = ({
+  size = undefined,
+  color = '#000000',
+  strokeWidth = 2,
+  background = 'transparent',
+  opacity = 1,
+  rotation = 0,
+  shadow = 0,
+  flipHorizontal = false,
+  flipVertical = false,
+  padding = 0,
+}) => {
+  const transforms = [];
+  if (rotation !== 0) transforms.push(`rotate(${rotation}deg)`);
+  if (flipHorizontal) transforms.push('scaleX(-1)');
+  if (flipVertical) transforms.push('scaleY(-1)');
 
-const GoogleIcon = (props: SVGProps<SVGSVGElement>) => (
-  <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false" {...props}>
-    <path
-      fill="#4285F4"
-      d="M23.49 12.27c0-.79-.07-1.54-.2-2.27H12v4.28h6.44c-.28 1.45-1.12 2.68-2.39 3.5v2.9h3.86c2.25-2.07 3.55-5.12 3.55-8.41z"
-    />
-    <path
-      fill="#34A853"
-      d="M12 24c3.24 0 5.95-1.07 7.93-2.92l-3.86-2.9c-1.07.71-2.45 1.14-4.07 1.14-3.13 0-5.78-2.11-6.73-4.94H1.27v3.09C3.22 21.29 7.27 24 12 24z"
-    />
-    <path
-      fill="#FBBC05"
-      d="M5.27 14.38A7.214 7.214 0 0 1 4.91 12c0-.82.14-1.62.36-2.38V6.53H1.27A11.96 11.96 0 0 0 0 12c0 1.9.45 3.69 1.27 5.47l4-3.09z"
-    />
-    <path
-      fill="#EA4335"
-      d="M12 4.75c1.76 0 3.33.62 4.56 1.83l3.41-3.42C17.95 1.12 15.24 0 12 0 7.27 0 3.22 2.71 1.27 6.53l4 3.09C6.22 6.79 8.87 4.75 12 4.75z"
-    />
-  </svg>
-);
+  const viewBoxSize = 24 + padding * 2;
+  const viewBoxOffset = -padding;
+  const viewBox = `${viewBoxOffset} ${viewBoxOffset} ${viewBoxSize} ${viewBoxSize}`;
+
+  return (
+    <svg
+      fill="none"
+      height={size}
+      stroke={color}
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      strokeWidth={strokeWidth}
+      style={{
+        opacity,
+        transform: transforms.join(' ') || undefined,
+        filter:
+          shadow > 0 ? `drop-shadow(0 ${shadow}px ${shadow * 2}px rgba(0,0,0,0.3))` : undefined,
+        backgroundColor: background !== 'transparent' ? background : undefined,
+      }}
+      viewBox={viewBox}
+      width={size}
+      xmlns="http://www.w3.org/2000/svg"
+    >
+      <g fill="none" stroke="currentColor" strokeWidth={strokeWidth}>
+        <circle cx="12" cy="12" r="10" />
+        <path d="M12 12h5a5 5 0 1 1-1.464-3.536" strokeLinecap="round" strokeLinejoin="round" />
+      </g>
+    </svg>
+  );
+};
 
 export default GoogleIcon;

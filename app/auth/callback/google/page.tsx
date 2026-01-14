@@ -18,8 +18,8 @@ const Google = () => {
 
   return (
     <div className="h-main flex flex-col items-center justify-center">
-      <div className="w-24 h-24 rounded-full bg-white shadow-lg flex items-center justify-center animate-pulse">
-        <GoogleIcon className="w-14 h-14" />
+      <div className="w-24 h-24 rounded-full shadow-lg flex items-center justify-center animate-pulse">
+        <GoogleIcon />
       </div>
       <p className="mt-4 text-lg">Logging you in with Google...</p>
     </div>
