@@ -116,7 +116,7 @@ const LoginAvatar: React.FC<{
                 variant="neutral"
                 onClick={() => googleSignInClicked()}
               >
-                <GoogleIcon className="w-4 h-4" />
+                <GoogleIcon />
                 Google
               </Button>
             </div>
