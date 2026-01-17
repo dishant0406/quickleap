@@ -1,5 +1,5 @@
-import { industries, topics } from './data';
 import { buildGeoPage, buildIndustryPage, buildTopicHubPage } from './content';
+import { industries, topics } from './data';
 import { getGeoPlaces } from './geo';
 import {
   buildIndustryRelatedLinks,
@@ -7,6 +7,7 @@ import {
   buildTopicRelatedLinks,
 } from './links';
 import { validateProgrammaticPage } from './quality';
+
 import type { ProgrammaticPage } from './types';
 
 const PROGRAMMATIC_TARGET_PAGE_COUNT = 250000;
