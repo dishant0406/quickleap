@@ -4,8 +4,7 @@ import {
   getProgrammaticSitemapPageCount,
 } from '@/lib/seo/sitemap';
 
-export const dynamic = 'force-dynamic';
-export const revalidate = 0;
+export const revalidate = 3600;
 
 interface RouteContext {
   params: Promise<{
@@ -31,6 +30,7 @@ export async function GET(request: Request, { params }: RouteContext): Promise<R
   return new Response(xml, {
     headers: {
       'Content-Type': 'application/xml',
+      'Cache-Control': 'public, max-age=3600, stale-while-revalidate=86400',
     },
   });
 }
