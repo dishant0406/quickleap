@@ -5,3 +5,4 @@ export { OrganizationSchema } from './OrganizationSchema';
 export { ProductSchema } from './ProductSchema';
 export { SoftwareApplicationSchema } from './SoftwareApplicationSchema';
 export { WebsiteSchema } from './WebsiteSchema';
+export { WebPageSchema } from './WebPageSchema';

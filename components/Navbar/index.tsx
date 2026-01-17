@@ -4,6 +4,7 @@ import { useEffect } from 'react';
 
 import Link from 'next/link';
 
+import axiosClient from '@/lib/helpers/axios/client';
 import useUserStore from '@/lib/zustand/user';
 
 import NavLogo from '../Micro/NavLogo';
@@ -16,8 +17,22 @@ const Navbar: React.FC<Props> = ({ user }) => {
   useEffect(() => {
     if (user) {
       setUser(user);
+      return;
     }
-  }, []);
+    let isMounted = true;
+    axiosClient
+      .get<UserResponse>('/auth/user')
+      .then((response) => {
+        if (isMounted && response?.data) {
+          setUser(response.data);
+        }
+      })
+      .catch(() => undefined);
+
+    return () => {
+      isMounted = false;
+    };
+  }, [setUser, user]);
   return (
     <div className="mx-auto z-50 fixed top-0 left-0 items-center border-b-4 border-border dark:border-darkNavBorder bg-white dark:bg-secondaryBlack md:px-[10vw] px-2  w-full flex h-nav justify-between border-input">
       <NavLogo />

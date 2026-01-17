@@ -24,3 +24,18 @@ To get started with our domain redirecting service, follow these simple steps:
 If you have any questions or need assistance, please contact our support team at admin@lazyweb.rocks.
 
 Thank you for choosing our Domain Redirecting Service!
+
+## Programmatic SEO system
+
+The programmatic SEO pages live under `/solutions` and are generated from structured data in `lib/seo`.
+
+To add or update pages:
+
+1. Update base data in `lib/seo/data.ts` (topics, industries, locations).
+2. Adjust templates in `lib/seo/content.ts` for titles, intros, sections, and FAQs.
+3. Review internal linking in `lib/seo/links.ts` and sitemap sizing in `lib/seo/sitemap.ts`.
+4. Verify content quality warnings in development (see `lib/seo/quality.ts`).
+
+Sitemaps are served from `/sitemap.xml` and chunked at `/sitemap/{page}.xml` for scale.
+
+To refresh location data from external APIs, run `pnpm seo:geo` to regenerate `lib/seo/geo.json`.

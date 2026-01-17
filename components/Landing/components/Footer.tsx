@@ -140,6 +140,15 @@ const Footer = (): React.JSX.Element => {
                 </Link>
               </li>
               <li>
+                <Link
+                  className="text-gray-400 hover:text-[#FFDB58] transition-colors text-sm flex items-center gap-2"
+                  href="/solutions"
+                >
+                  <Map className="w-4 h-4" />
+                  Solutions
+                </Link>
+              </li>
+              <li>
                 <a
                   className="text-gray-400 hover:text-[#FFDB58] transition-colors text-sm flex items-center gap-2"
                   href="/sitemap.xml"

@@ -5,7 +5,6 @@ import Navbar from '@/components/Navbar';
 import { SuperTokensInit } from '@/components/Supertoken/Init';
 import { ThemeProvider } from '@/components/ThemeProvider';
 import { env } from '@/lib/env';
-import axiosClientServer from '@/lib/helpers/axios/server';
 import { Toaster } from '@/lib/toast';
 
 import type { Metadata } from 'next';
@@ -157,13 +156,11 @@ export const metadata: Metadata = {
   },
 };
 
-const RootLayout = async ({
+const RootLayout = ({
   children,
 }: Readonly<{
   children: React.ReactNode;
-}>): Promise<React.JSX.Element> => {
-  const { data } = await axiosClientServer.get<UserResponse>('/auth/user');
-
+}>): React.JSX.Element => {
   return (
     <html suppressHydrationWarning lang="en">
       <Script
@@ -196,7 +193,7 @@ const RootLayout = async ({
             attribute="class"
             defaultTheme="light"
           >
-            <Navbar user={data || undefined} />
+            <Navbar />
             {children}
           </ThemeProvider>
           <Toaster />
