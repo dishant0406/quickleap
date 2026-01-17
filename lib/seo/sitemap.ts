@@ -11,7 +11,7 @@ import type { MetadataRoute } from 'next';
 
 const baseUrl = env.NEXT_PUBLIC_SITE_URL || 'https://quickleap.io';
 
-export const PROGRAMMATIC_SITEMAP_PAGE_SIZE = 45000;
+export const PROGRAMMATIC_SITEMAP_PAGE_SIZE = 1000;
 
 export const getProgrammaticSitemapPageCount = (): number =>
   Math.ceil(getProgrammaticPathCount() / PROGRAMMATIC_SITEMAP_PAGE_SIZE);
