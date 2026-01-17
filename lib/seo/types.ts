@@ -1,3 +1,5 @@
+export type { Metadata } from 'next';
+
 export type SeoTemplateKey = 'topic' | 'industry' | 'location';
 
 export type SeoFaq = {

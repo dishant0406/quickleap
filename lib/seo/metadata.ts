@@ -1,8 +1,6 @@
 import { env } from '@/lib/env';
 
-import type { Metadata } from 'next';
-
-import type { SeoMeta } from './types';
+import type { Metadata, SeoMeta } from './types';
 
 const siteUrl = env.NEXT_PUBLIC_SITE_URL || 'https://quickleap.io';
 
