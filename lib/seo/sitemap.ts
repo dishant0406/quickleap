@@ -4,8 +4,8 @@ import { env } from '@/lib/env';
 import { industries, topics } from './data';
 import { getProgrammaticGeoPlaces } from './registry';
 
-import type { MetadataRoute } from 'next';
 import type { Topic } from './types';
+import type { MetadataRoute } from 'next';
 
 const baseUrl = env.NEXT_PUBLIC_SITE_URL || 'https://quickleap.io';
 
