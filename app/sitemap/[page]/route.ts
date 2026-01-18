@@ -2,6 +2,7 @@ import {
   buildSitemapXml,
   getProgrammaticSitemapEntries,
   getProgrammaticSitemapPageCount,
+  parseProgrammaticSitemapFilename,
 } from '@/lib/seo/sitemap';
 
 export const revalidate = 3600;
@@ -14,19 +15,22 @@ interface RouteContext {
 
 export async function GET(request: Request, { params }: RouteContext): Promise<Response> {
   const { page } = await params;
-  const pageIndex = Number.parseInt(page.replace(/\.xml$/, ''), 10);
+  const descriptor = parseProgrammaticSitemapFilename(page);
 
-  if (Number.isNaN(pageIndex) || pageIndex < 0) {
+  if (!descriptor) {
     return new Response('Invalid sitemap page.', { status: 400 });
   }
 
-  const pageCount = await getProgrammaticSitemapPageCount();
+  const pageCount = await getProgrammaticSitemapPageCount(
+    descriptor.topicSlug,
+    descriptor.type
+  );
 
-  if (pageIndex >= pageCount) {
+  if (descriptor.pageIndex >= pageCount) {
     return new Response('Sitemap page not found.', { status: 404 });
   }
 
-  const entries = await getProgrammaticSitemapEntries(pageIndex);
+  const entries = await getProgrammaticSitemapEntries(descriptor);
   const xml = buildSitemapXml(entries);
 
   return new Response(xml, {

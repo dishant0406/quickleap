@@ -70,6 +70,11 @@ export const getProgrammaticPathCount = async (): Promise<number> => {
   return context.totalCount;
 };
 
+export const getProgrammaticGeoPlaces = async (): Promise<GeoPlace[]> => {
+  const context = await getProgrammaticContext();
+  return context.programmaticGeoPlaces;
+};
+
 export const getProgrammaticPathByIndex = async (index: number): Promise<string | null> => {
   const context = await getProgrammaticContext();
 

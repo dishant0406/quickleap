@@ -1,26 +1,61 @@
 import { fetchBlogPostsForSitemap } from '@/lib/api/hashnode';
 import { env } from '@/lib/env';
 
-import {
-  getProgrammaticPathCount,
-  getProgrammaticPathsChunk,
-  isProgrammaticPathValid,
-} from './registry';
+import { industries, topics } from './data';
+import { getProgrammaticGeoPlaces } from './registry';
 
 import type { MetadataRoute } from 'next';
+import type { Topic } from './types';
 
 const baseUrl = env.NEXT_PUBLIC_SITE_URL || 'https://quickleap.io';
 
 export const PROGRAMMATIC_SITEMAP_PAGE_SIZE = 1000;
 
-export const getProgrammaticSitemapPageCount = async (): Promise<number> => {
-  const totalCount = await getProgrammaticPathCount();
-  return Math.ceil(totalCount / PROGRAMMATIC_SITEMAP_PAGE_SIZE);
+export type ProgrammaticSitemapType = 'industry' | 'geo';
+
+export type ProgrammaticSitemapDescriptor = {
+  topicSlug: string;
+  type: ProgrammaticSitemapType;
+  pageIndex: number;
+};
+
+const getTopicBySlug = (slug: string): Topic | undefined =>
+  topics.find((topic) => topic.slug === slug);
+
+export const getProgrammaticSitemapPageCount = async (
+  topicSlug: string,
+  type: ProgrammaticSitemapType
+): Promise<number> => {
+  if (!getTopicBySlug(topicSlug)) {
+    return 0;
+  }
+
+  if (type === 'industry') {
+    const totalCount = industries.length + 1;
+    return Math.ceil(totalCount / PROGRAMMATIC_SITEMAP_PAGE_SIZE);
+  }
+
+  const geoPlaces = await getProgrammaticGeoPlaces();
+  return Math.ceil(geoPlaces.length / PROGRAMMATIC_SITEMAP_PAGE_SIZE);
 };
 
 export const getSitemapIndexUrls = async (siteUrl: string = baseUrl): Promise<string[]> => {
-  const programmaticPages = await getProgrammaticSitemapPageCount();
-  return Array.from({ length: programmaticPages }, (_, index) => `${siteUrl}/sitemap/${index}.xml`);
+  const geoPlaces = await getProgrammaticGeoPlaces();
+  const industryPages = Math.ceil((industries.length + 1) / PROGRAMMATIC_SITEMAP_PAGE_SIZE);
+  const geoPages = Math.ceil(geoPlaces.length / PROGRAMMATIC_SITEMAP_PAGE_SIZE);
+  const urls: string[] = [];
+
+  topics.forEach((topic) => {
+    for (let pageIndex = 0; pageIndex < industryPages; pageIndex += 1) {
+      urls.push(`${siteUrl}/sitemap/topic-${topic.slug}-industry-${pageIndex}.xml`);
+    }
+
+    for (let pageIndex = 0; pageIndex < geoPages; pageIndex += 1) {
+      urls.push(`${siteUrl}/sitemap/topic-${topic.slug}-geo-${pageIndex}.xml`);
+    }
+  });
+
+  return urls;
 };
 
 export const buildSitemapIndexXml = (urls: string[]): string => {
@@ -211,11 +246,31 @@ export const getBaseSitemapEntries = async (): Promise<MetadataRoute.Sitemap> =>
 };
 
 export const getProgrammaticSitemapEntries = async (
-  pageIndex: number
+  descriptor: ProgrammaticSitemapDescriptor
 ): Promise<MetadataRoute.Sitemap> => {
-  const candidates = await getProgrammaticPathsChunk(pageIndex, PROGRAMMATIC_SITEMAP_PAGE_SIZE);
-  const validations = await Promise.all(candidates.map((path) => isProgrammaticPathValid(path)));
-  const urls = candidates.filter((_, index) => validations[index]);
+  const topic = getTopicBySlug(descriptor.topicSlug);
+  if (!topic) {
+    return [];
+  }
+
+  const start = descriptor.pageIndex * PROGRAMMATIC_SITEMAP_PAGE_SIZE;
+  const end = start + PROGRAMMATIC_SITEMAP_PAGE_SIZE;
+  let urls: string[] = [];
+
+  if (descriptor.type === 'industry') {
+    const allPaths = [
+      `/solutions/${topic.slug}`,
+      ...industries.map((industry) => `/solutions/${topic.slug}/${industry.slug}`),
+    ];
+    urls = allPaths.slice(start, end);
+  } else {
+    const geoPlaces = await getProgrammaticGeoPlaces();
+    const pagePlaces = geoPlaces.slice(start, end);
+    urls = pagePlaces.map(
+      (place) => `/solutions/${topic.slug}/in/${place.slug}`
+    );
+  }
+
   const currentDate = new Date();
 
   return urls.map((path) => ({
@@ -224,4 +279,26 @@ export const getProgrammaticSitemapEntries = async (
     changeFrequency: 'monthly',
     priority: 0.6,
   }));
+};
+
+export const parseProgrammaticSitemapFilename = (
+  filename: string
+): ProgrammaticSitemapDescriptor | null => {
+  const match = filename.match(/^topic-([a-z0-9-]+)-(industry|geo)-(\d+)\.xml$/);
+  if (!match) {
+    return null;
+  }
+
+  const [, topicSlug, type, pageIndexValue] = match;
+  const pageIndex = Number.parseInt(pageIndexValue, 10);
+
+  if (Number.isNaN(pageIndex) || pageIndex < 0) {
+    return null;
+  }
+
+  return {
+    topicSlug,
+    type: type as ProgrammaticSitemapType,
+    pageIndex,
+  };
 };
