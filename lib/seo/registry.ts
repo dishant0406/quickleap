@@ -8,7 +8,7 @@ import {
 } from './links';
 import { validateProgrammaticPage } from './quality';
 
-import type { ProgrammaticPage } from './types';
+import type { GeoPlace, ProgrammaticPage } from './types';
 
 const PROGRAMMATIC_TARGET_PAGE_COUNT = 250000;
 const GEO_PATH_SEGMENT = 'in';
@@ -16,57 +16,96 @@ const GEO_PATH_SEGMENT = 'in';
 const topicLookup = new Map(topics.map((topic) => [topic.slug, topic]));
 const industryLookup = new Map(industries.map((industry) => [industry.slug, industry]));
 
-const geoPlaces = getGeoPlaces();
-
 export const baseSolutionsPath = '/solutions';
 
-const hubCount = topics.length;
-const industryCount = topics.length * industries.length;
-const baseCount = hubCount + industryCount;
+type ProgrammaticContext = {
+  geoPlaces: GeoPlace[];
+  programmaticGeoPlaces: GeoPlace[];
+  programmaticGeoLookup: Map<string, GeoPlace>;
+  hubCount: number;
+  industryCount: number;
+  totalCount: number;
+};
 
-const maxGeoPerTopic = Math.max(
-  0,
-  Math.floor((PROGRAMMATIC_TARGET_PAGE_COUNT - baseCount) / Math.max(1, topics.length))
-);
-const programmaticGeoPlaces = geoPlaces.slice(0, maxGeoPerTopic);
-const programmaticGeoLookup = new Map(programmaticGeoPlaces.map((place) => [place.slug, place]));
-const locationCount = topics.length * programmaticGeoPlaces.length;
+let programmaticContextPromise: Promise<ProgrammaticContext> | null = null;
 
-export const getProgrammaticPathCount = (): number => hubCount + industryCount + locationCount;
+const getProgrammaticContext = async (): Promise<ProgrammaticContext> => {
+  if (!programmaticContextPromise) {
+    programmaticContextPromise = (async () => {
+      const geoPlaces = await getGeoPlaces();
+      const hubCount = topics.length;
+      const industryCount = topics.length * industries.length;
+      const baseCount = hubCount + industryCount;
+      const maxGeoPerTopic = Math.max(
+        0,
+        Math.floor((PROGRAMMATIC_TARGET_PAGE_COUNT - baseCount) / Math.max(1, topics.length))
+      );
+      const programmaticGeoPlaces = geoPlaces.slice(0, maxGeoPerTopic);
+      const programmaticGeoLookup = new Map(
+        programmaticGeoPlaces.map((place) => [place.slug, place])
+      );
+      const locationCount = topics.length * programmaticGeoPlaces.length;
 
-export const getProgrammaticPathByIndex = (index: number): string | null => {
-  if (index < 0 || index >= getProgrammaticPathCount()) {
+      return {
+        geoPlaces,
+        programmaticGeoPlaces,
+        programmaticGeoLookup,
+        hubCount,
+        industryCount,
+        totalCount: baseCount + locationCount,
+      };
+    })();
+  }
+
+  try {
+    return await programmaticContextPromise;
+  } catch (error) {
+    programmaticContextPromise = null;
+    throw error;
+  }
+};
+
+export const getProgrammaticPathCount = async (): Promise<number> => {
+  const context = await getProgrammaticContext();
+  return context.totalCount;
+};
+
+export const getProgrammaticPathByIndex = async (index: number): Promise<string | null> => {
+  const context = await getProgrammaticContext();
+
+  if (index < 0 || index >= context.totalCount) {
     return null;
   }
 
-  if (index < hubCount) {
+  if (index < context.hubCount) {
     return `/solutions/${topics[index].slug}`;
   }
 
-  if (index < hubCount + industryCount) {
-    const offset = index - hubCount;
+  if (index < context.hubCount + context.industryCount) {
+    const offset = index - context.hubCount;
     const topicIndex = Math.floor(offset / industries.length);
     const industryIndex = offset % industries.length;
     return `/solutions/${topics[topicIndex].slug}/${industries[industryIndex].slug}`;
   }
 
-  if (programmaticGeoPlaces.length === 0) {
+  if (context.programmaticGeoPlaces.length === 0) {
     return null;
   }
 
-  const offset = index - hubCount - industryCount;
-  const topicIndex = Math.floor(offset / programmaticGeoPlaces.length);
-  const locationIndex = offset % programmaticGeoPlaces.length;
-  return `/solutions/${topics[topicIndex].slug}/${GEO_PATH_SEGMENT}/${programmaticGeoPlaces[locationIndex].slug}`;
+  const offset = index - context.hubCount - context.industryCount;
+  const topicIndex = Math.floor(offset / context.programmaticGeoPlaces.length);
+  const locationIndex = offset % context.programmaticGeoPlaces.length;
+  return `/solutions/${topics[topicIndex].slug}/${GEO_PATH_SEGMENT}/${context.programmaticGeoPlaces[locationIndex].slug}`;
 };
 
-export const getProgrammaticPathsChunk = (pageIndex: number, size: number): string[] => {
+export const getProgrammaticPathsChunk = async (pageIndex: number, size: number): Promise<string[]> => {
   const start = pageIndex * size;
-  const end = Math.min(start + size, getProgrammaticPathCount());
+  const totalCount = await getProgrammaticPathCount();
+  const end = Math.min(start + size, totalCount);
   const paths: string[] = [];
 
   for (let i = start; i < end; i += 1) {
-    const path = getProgrammaticPathByIndex(i);
+    const path = await getProgrammaticPathByIndex(i);
     if (path) {
       paths.push(path);
     }
@@ -75,7 +114,8 @@ export const getProgrammaticPathsChunk = (pageIndex: number, size: number): stri
   return paths;
 };
 
-export const isProgrammaticPathValid = (path: string): boolean => {
+export const isProgrammaticPathValid = async (path: string): Promise<boolean> => {
+  const context = await getProgrammaticContext();
   const cleaned = path.replace(/^\//, '');
   const segments = cleaned.split('/');
 
@@ -96,19 +136,20 @@ export const isProgrammaticPathValid = (path: string): boolean => {
 
   if (slug.length === 3 && slug[1] === GEO_PATH_SEGMENT) {
     const [topicSlug, , geoSlug] = slug;
-    return topicLookup.has(topicSlug) && programmaticGeoLookup.has(geoSlug);
+    return topicLookup.has(topicSlug) && context.programmaticGeoLookup.has(geoSlug);
   }
 
   return false;
 };
 
-export const getProgrammaticPage = (slug: string[]): ProgrammaticPage | null => {
+export const getProgrammaticPage = async (slug: string[]): Promise<ProgrammaticPage | null> => {
+  const context = await getProgrammaticContext();
   if (slug.length === 1) {
     const topic = topicLookup.get(slug[0]);
     if (!topic) {
       return null;
     }
-    const related = buildTopicRelatedLinks(topic, industries, programmaticGeoPlaces);
+    const related = buildTopicRelatedLinks(topic, industries, context.programmaticGeoPlaces);
     const page = buildTopicHubPage(topic, related);
     validateProgrammaticPage(page);
     return page;
@@ -137,9 +178,9 @@ export const getProgrammaticPage = (slug: string[]): ProgrammaticPage | null => 
       return null;
     }
 
-    const geo = programmaticGeoLookup.get(geoSlug);
+    const geo = context.programmaticGeoLookup.get(geoSlug);
     if (geo) {
-      const related = buildLocationRelatedLinks(topic, geo, programmaticGeoPlaces);
+      const related = buildLocationRelatedLinks(topic, geo, context.programmaticGeoPlaces);
       const page = buildGeoPage(topic, geo, related);
       validateProgrammaticPage(page);
       return page;
@@ -149,7 +190,8 @@ export const getProgrammaticPage = (slug: string[]): ProgrammaticPage | null => 
   return null;
 };
 
-export const getProgrammaticStaticParams = (): Array<{ slug: string[] }> => {
+export const getProgrammaticStaticParams = async (): Promise<Array<{ slug: string[] }>> => {
+  const context = await getProgrammaticContext();
   const featuredTopics = topics.filter((topic) => topic.featured);
   const params: Array<{ slug: string[] }> = [];
 
@@ -161,7 +203,7 @@ export const getProgrammaticStaticParams = (): Array<{ slug: string[] }> => {
     });
 
     topic.locations.slice(0, 2).forEach((locationSlug) => {
-      if (programmaticGeoLookup.has(locationSlug)) {
+      if (context.programmaticGeoLookup.has(locationSlug)) {
         params.push({ slug: [topic.slug, GEO_PATH_SEGMENT, locationSlug] });
       }
     });

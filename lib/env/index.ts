@@ -10,6 +10,7 @@ export const env = {
   NEXT_PUBLIC_WEBSITE_DOMAIN: process.env.NEXT_PUBLIC_WEBSITE_DOMAIN || 'https://quickleap.io',
   NEXT_PUBLIC_API_DOMAIN: process.env.NEXT_PUBLIC_API_DOMAIN || 'https://redirect.quickleap.io',
   NEXT_PUBLIC_SITE_URL: process.env.NEXT_PUBLIC_SITE_URL || 'https://quickleap.io',
+  GEO_DATA_URL: process.env.GEO_DATA_URL || 'https://static-asset.quickleap.io/geo.json',
 
   // Auth Callback URLs
   NEXT_PUBLIC_GITHUB_CALLBACK_URI:

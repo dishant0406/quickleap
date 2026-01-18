@@ -13,12 +13,14 @@ const baseUrl = env.NEXT_PUBLIC_SITE_URL || 'https://quickleap.io';
 
 export const PROGRAMMATIC_SITEMAP_PAGE_SIZE = 1000;
 
-export const getProgrammaticSitemapPageCount = (): number =>
-  Math.ceil(getProgrammaticPathCount() / PROGRAMMATIC_SITEMAP_PAGE_SIZE);
+export const getProgrammaticSitemapPageCount = async (): Promise<number> => {
+  const totalCount = await getProgrammaticPathCount();
+  return Math.ceil(totalCount / PROGRAMMATIC_SITEMAP_PAGE_SIZE);
+};
 
-export const getSitemapIndexUrls = (): string[] => {
-  const programmaticPages = getProgrammaticSitemapPageCount();
-  return Array.from({ length: programmaticPages }, (_, index) => `${baseUrl}/sitemap/${index}.xml`);
+export const getSitemapIndexUrls = async (siteUrl: string = baseUrl): Promise<string[]> => {
+  const programmaticPages = await getProgrammaticSitemapPageCount();
+  return Array.from({ length: programmaticPages }, (_, index) => `${siteUrl}/sitemap/${index}.xml`);
 };
 
 export const buildSitemapIndexXml = (urls: string[]): string => {
@@ -208,10 +210,12 @@ export const getBaseSitemapEntries = async (): Promise<MetadataRoute.Sitemap> =>
   ];
 };
 
-export const getProgrammaticSitemapEntries = (pageIndex: number): MetadataRoute.Sitemap => {
-  const urls = getProgrammaticPathsChunk(pageIndex, PROGRAMMATIC_SITEMAP_PAGE_SIZE).filter(
-    isProgrammaticPathValid
-  );
+export const getProgrammaticSitemapEntries = async (
+  pageIndex: number
+): Promise<MetadataRoute.Sitemap> => {
+  const candidates = await getProgrammaticPathsChunk(pageIndex, PROGRAMMATIC_SITEMAP_PAGE_SIZE);
+  const validations = await Promise.all(candidates.map((path) => isProgrammaticPathValid(path)));
+  const urls = candidates.filter((_, index) => validations[index]);
   const currentDate = new Date();
 
   return urls.map((path) => ({

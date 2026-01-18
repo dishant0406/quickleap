@@ -20,11 +20,13 @@ export async function GET(request: Request, { params }: RouteContext): Promise<R
     return new Response('Invalid sitemap page.', { status: 400 });
   }
 
-  if (pageIndex > getProgrammaticSitemapPageCount()) {
+  const pageCount = await getProgrammaticSitemapPageCount();
+
+  if (pageIndex >= pageCount) {
     return new Response('Sitemap page not found.', { status: 404 });
   }
 
-  const entries = getProgrammaticSitemapEntries(pageIndex);
+  const entries = await getProgrammaticSitemapEntries(pageIndex);
   const xml = buildSitemapXml(entries);
 
   return new Response(xml, {

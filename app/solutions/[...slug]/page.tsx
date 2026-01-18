@@ -19,7 +19,7 @@ interface ProgrammaticPageProps {
 
 export async function generateMetadata({ params }: ProgrammaticPageProps): Promise<Metadata> {
   const { slug } = await params;
-  const page = getProgrammaticPage(slug);
+  const page = await getProgrammaticPage(slug);
 
   if (!page) {
     return {
@@ -40,7 +40,7 @@ export default async function ProgrammaticSolutionsPage({
   params,
 }: ProgrammaticPageProps): Promise<React.JSX.Element> {
   const { slug } = await params;
-  const page = getProgrammaticPage(slug);
+  const page = await getProgrammaticPage(slug);
 
   if (!page) {
     notFound();

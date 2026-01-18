@@ -5,7 +5,8 @@ export const revalidate = 3600;
 
 export async function GET(): Promise<Response> {
   const baseUrl = env.NEXT_PUBLIC_SITE_URL || 'https://quickleap.io';
-  const urls = [`${baseUrl}/sitemap.xml`, ...getSitemapIndexUrls()];
+  const programmaticUrls = await getSitemapIndexUrls(baseUrl);
+  const urls = [`${baseUrl}/sitemap.xml`, ...programmaticUrls];
   const xml = buildSitemapIndexXml(urls);
 
   return new Response(xml, {
