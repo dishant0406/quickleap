@@ -7,8 +7,6 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import axiosClientServer from '@/lib/helpers/axios/server';
 
-import type { PageProps } from '@/.next/types/app/page';
-
 type CheckoutData = {
   id: string;
   status: string;
@@ -23,6 +21,12 @@ type CheckoutData = {
     name: string;
     recurringInterval: string;
   };
+};
+
+type PageProps = {
+  searchParams?: Promise<{
+    checkout_id?: string;
+  }>;
 };
 
 type ApiResponse = {
